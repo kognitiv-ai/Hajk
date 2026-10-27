@@ -1,6 +1,7 @@
 import VectorSource from "ol/source/Vector";
 import VectorLayer from "ol/layer/Vector";
 import GeoJSON from "ol/format/GeoJSON";
+import Overlay from "ol/Overlay";
 import { Circle, Fill, Stroke, Style } from "ol/style";
 import { getDistance } from "ol/sphere";
 import { getPointResolution, toLonLat } from "ol/proj";
@@ -34,6 +35,10 @@ export default class SweluxModel {
   #highlightLayer;
   #selected = null;
   #verdict = null; // null | "pass" | "fail"
+  #popupElement = document.createElement("div");
+  #popup;
+  #windowOpen = false;
+  #pointerCursor = false;
 
   constructor(settings) {
     this.#map = settings.map;
@@ -50,7 +55,16 @@ export default class SweluxModel {
       style: this.#highlightStyle,
     });
     this.#map.addLayer(this.#highlightLayer);
+    this.#popup = new Overlay({
+      element: this.#popupElement,
+      positioning: "bottom-center",
+      offset: [0, -14],
+      stopEvent: true,
+      autoPan: { animation: { duration: 250 }, margin: 48 },
+    });
+    this.#map.addOverlay(this.#popup);
     this.#map.on("singleclick", this.#handleMapClick);
+    this.#map.on("pointermove", this.#handlePointerMove);
     this.#loadRoads();
     this.#waitForLightPoints();
   }
@@ -156,24 +170,82 @@ export default class SweluxModel {
     }
   };
 
-  #handleMapClick = (e) => {
+  #lightPointAt = (pixel) => {
     const layer = this.#lightPointLayer();
-    if (!layer || !layer.getVisible()) return;
+    if (!layer || !layer.getVisible()) return null;
     let hit = null;
     this.#map.forEachFeatureAtPixel(
-      e.pixel,
+      pixel,
       (f) => {
         hit = f;
         return true;
       },
       { layerFilter: (l) => l === layer, hitTolerance: 6 }
     );
-    if (!hit) return;
-    this.selectStreet(hit.get("gatakey") || "UNASSIGNED", hit);
+    return hit;
+  };
+
+  // With the window closed a click opens a popup at the pole; with it open the
+  // click goes straight to the window, so stepping through streets stays quick.
+  #handleMapClick = (e) => {
+    const hit = this.#lightPointAt(e.pixel);
+    if (!hit) {
+      if (this.#popup.getPosition()) {
+        this.closePopup();
+        if (!this.#windowOpen) this.clearSelection();
+      }
+      return;
+    }
+    const key = hit.get("gatakey") || "UNASSIGNED";
+    if (this.#windowOpen) {
+      this.closePopup();
+      this.selectStreet(key, hit);
+      return;
+    }
+    this.selectStreet(key, hit);
+    this.#popup.setPosition(hit.getGeometry().getCoordinates());
+    this.#localObserver.publish("swelux.popup", {
+      street: this.#streets.get(key),
+      point: this.#pointInfo(hit),
+      feature: hit,
+    });
+  };
+
+  #handlePointerMove = (e) => {
+    if (e.dragging) return;
+    const over = !!this.#lightPointAt(e.pixel);
+    if (over === this.#pointerCursor) return;
+    this.#pointerCursor = over;
+    this.#map.getTargetElement().style.cursor = over ? "pointer" : "";
+  };
+
+  #pointInfo = (f) => ({
+    id: f.get("id"),
+    stolpe: f.get("stolpe"),
+    armatur: f.get("armatur"),
+    effekt: f.get("effekt_w"),
+  });
+
+  getPopupElement = () => this.#popupElement;
+
+  closePopup = () => {
+    this.#popup.setPosition(undefined);
+    this.#localObserver.publish("swelux.popup", null);
+  };
+
+  // "Beräkna belysning för gatan" in the popup.
+  openStreetFromPopup = (key, feature) => {
+    this.closePopup();
     this.#app.globalObserver.publish("swelux.showWindow", {
       hideOtherPluginWindows: true,
       runCallback: true,
     });
+    this.selectStreet(key, feature);
+  };
+
+  setWindowOpen = (open) => {
+    this.#windowOpen = open;
+    if (open) this.closePopup();
   };
 
   selectStreet = (key, clickedFeature = null, zoom = false) => {
@@ -194,14 +266,7 @@ export default class SweluxModel {
     }
     this.#localObserver.publish("swelux.streetSelected", {
       street,
-      clicked: clickedFeature
-        ? {
-            id: clickedFeature.get("id"),
-            stolpe: clickedFeature.get("stolpe"),
-            armatur: clickedFeature.get("armatur"),
-            effekt: clickedFeature.get("effekt_w"),
-          }
-        : null,
+      clicked: clickedFeature ? this.#pointInfo(clickedFeature) : null,
     });
   };
 
@@ -336,6 +401,8 @@ export default class SweluxModel {
 
   dispose = () => {
     this.#map.un("singleclick", this.#handleMapClick);
+    this.#map.un("pointermove", this.#handlePointerMove);
+    this.#map.removeOverlay(this.#popup);
     this.#map.removeLayer(this.#highlightLayer);
   };
 }
