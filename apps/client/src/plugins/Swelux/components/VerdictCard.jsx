@@ -1,4 +1,5 @@
-import { Box, Paper, Stack, Typography } from "@mui/material";
+import { Box, Button, Paper, Stack, Typography } from "@mui/material";
+import OpenInFullIcon from "@mui/icons-material/OpenInFull";
 import { alpha } from "@mui/material/styles";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
@@ -6,7 +7,14 @@ import PhotometryPanel from "./PhotometryPanel";
 import { checksFor, nf } from "../utils";
 
 /** Result for one luminaire: verdict, requirement checks and energy. */
-function VerdictCard({ result, evaluation, street, hours, photometry }) {
+function VerdictCard({
+  result,
+  evaluation,
+  street,
+  hours,
+  photometry,
+  onDetails,
+}) {
   const pass = result.compliant;
   const checks = checksFor(result, evaluation.target);
   const tone = pass ? "success" : "error";
@@ -40,7 +48,7 @@ function VerdictCard({ result, evaluation, street, hours, photometry }) {
         ) : (
           <CancelIcon color="error" sx={{ mt: 0.25 }} />
         )}
-        <Box sx={{ minWidth: 0 }}>
+        <Box sx={{ minWidth: 0, flex: 1 }}>
           <Typography sx={{ fontWeight: 600 }}>
             {pass ? "Uppfyller" : "Uppfyller inte"} {evaluation.requiredClass}
           </Typography>
@@ -56,6 +64,17 @@ function VerdictCard({ result, evaluation, street, hours, photometry }) {
             {result.manufacturer} · {nf(result.powerW, 1)} W
           </Typography>
         </Box>
+        {onDetails && (
+          <Button
+            size="small"
+            color="inherit"
+            startIcon={<OpenInFullIcon sx={{ fontSize: 16 }} />}
+            onClick={onDetails}
+            sx={{ flex: "none", textTransform: "none" }}
+          >
+            Detaljer
+          </Button>
+        )}
       </Stack>
 
       {photometry && (

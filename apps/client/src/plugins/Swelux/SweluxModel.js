@@ -393,6 +393,15 @@ export default class SweluxModel {
     return this.#photometry.get(luminaireId);
   };
 
+  fetchDetail = (profile, luminaireId) =>
+    this.#request("/street-lighting/detail", {
+      method: "POST",
+      body: JSON.stringify({ ...profile, luminaireId }),
+    });
+
+  ldtUrl = (luminaireId) =>
+    `${this.apiBase}/street-lighting/luminaires/${luminaireId}/ldt`;
+
   evaluate = (profile, luminaireIds = null) =>
     this.#request("/street-lighting/evaluate", {
       method: "POST",

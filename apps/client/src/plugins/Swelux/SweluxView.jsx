@@ -20,6 +20,7 @@ import StreetSummary from "./components/StreetSummary";
 import ProfileCard from "./components/ProfileCard";
 import VerdictCard from "./components/VerdictCard";
 import RankingList from "./components/RankingList";
+import DetailsDialog from "./components/DetailsDialog";
 import { lumLabel, nf, profileFor } from "./utils";
 
 function SweluxView({ model, options, localObserver }) {
@@ -38,6 +39,7 @@ function SweluxView({ model, options, localObserver }) {
   const [elapsed, setElapsed] = React.useState(0);
   const [error, setError] = React.useState(null);
   const [photometry, setPhotometry] = React.useState(null);
+  const [detailsOpen, setDetailsOpen] = React.useState(false);
 
   React.useEffect(() => {
     const a = localObserver.subscribe("swelux.streetsReady", setStreets);
@@ -243,6 +245,19 @@ function SweluxView({ model, options, localObserver }) {
               evaluation={shown}
               street={street}
               hours={hours}
+              photometry={photometry}
+              onDetails={() => setDetailsOpen(true)}
+            />
+          )}
+
+          {result && (
+            <DetailsDialog
+              open={detailsOpen}
+              onClose={() => setDetailsOpen(false)}
+              model={model}
+              street={street}
+              profile={profile}
+              luminaireId={result.luminaireId}
               photometry={photometry}
             />
           )}
