@@ -3,7 +3,9 @@ import VectorLayer from "ol/layer/Vector";
 import GeoJSON from "ol/format/GeoJSON";
 import { Circle, Fill, Stroke, Style } from "ol/style";
 import { getDistance } from "ol/sphere";
-import { toLonLat } from "ol/proj";
+import { getPointResolution, toLonLat } from "ol/proj";
+import LineString from "ol/geom/LineString";
+import Feature from "ol/Feature";
 import { boundingExtent, buffer } from "ol/extent";
 
 // Colours follow the swelux palette; pass/fail match the plugin's result table.
@@ -11,6 +13,10 @@ const AMBER = "#F2B544";
 const NAVY = "#10162A";
 const PASS = "#2E9B66";
 const FAIL = "#D2603A";
+
+// A road sample counts as lit when a light point of the street is this close.
+const LIT_DISTANCE_M = 35;
+const SAMPLE_STEP_M = 5;
 
 /**
  * @summary Map side of the Swelux plugin: finds the street behind a clicked
@@ -214,25 +220,20 @@ export default class SweluxModel {
     this.#highlightSource.clear();
     const street = this.#selected;
     if (!street) return;
-    // Same-named roads exist elsewhere in the city: only keep segments near this street's points.
-    const near = buffer(
-      boundingExtent(
-        street.points.map((p) => p.getGeometry().getCoordinates())
-      ),
-      400
+    // OSM roads often run well past the lit part (and same-named roads exist
+    // elsewhere in the city), so only draw the stretches with light points along them.
+    const pointCoords = street.points.map((p) =>
+      p.getGeometry().getCoordinates()
     );
+    const view = this.#map.getView();
+    const unitsPerMetre =
+      1 / getPointResolution(view.getProjection(), 1, pointCoords[0]);
     const roads = this.#roads
       .filter((r) => r.key === street.key)
-      .map((r) => r.feature.clone())
-      .filter((f) => {
-        const ext = f.getGeometry().getExtent();
-        return (
-          ext[0] <= near[2] &&
-          ext[2] >= near[0] &&
-          ext[1] <= near[3] &&
-          ext[3] >= near[1]
-        );
-      });
+      .flatMap((r) =>
+        this.#litStretches(r.feature.getGeometry(), pointCoords, unitsPerMetre)
+      )
+      .map((coords) => new Feature(new LineString(coords)));
     roads.forEach((f) => f.set("kind", "road"));
     const points = street.points.map((p) => {
       const c = p.clone();
@@ -240,6 +241,39 @@ export default class SweluxModel {
       return c;
     });
     this.#highlightSource.addFeatures([...roads, ...points]);
+  };
+
+  #litStretches = (geometry, pointCoords, unitsPerMetre) => {
+    if (geometry.getType() !== "LineString") return [];
+    const maxSq = (LIT_DISTANCE_M * unitsPerMetre) ** 2;
+    const step = SAMPLE_STEP_M * unitsPerMetre;
+    const isLit = (c) =>
+      pointCoords.some((p) => (p[0] - c[0]) ** 2 + (p[1] - c[1]) ** 2 <= maxSq);
+
+    const coords = geometry.getCoordinates();
+    const runs = [];
+    let run = [];
+    const visit = (c) => {
+      if (isLit(c)) {
+        run.push(c);
+      } else {
+        if (run.length > 1) runs.push(run);
+        run = [];
+      }
+    };
+    for (let i = 0; i < coords.length - 1; i++) {
+      const [a, b] = [coords[i], coords[i + 1]];
+      const n = Math.max(
+        1,
+        Math.ceil(Math.hypot(b[0] - a[0], b[1] - a[1]) / step)
+      );
+      for (let k = 0; k < n; k++) {
+        visit([a[0] + ((b[0] - a[0]) * k) / n, a[1] + ((b[1] - a[1]) * k) / n]);
+      }
+    }
+    visit(coords[coords.length - 1]);
+    if (run.length > 1) runs.push(run);
+    return runs;
   };
 
   #highlightStyle = (feature) => {
