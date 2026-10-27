@@ -240,7 +240,7 @@ export default class SweluxModel {
       hideOtherPluginWindows: true,
       runCallback: true,
     });
-    this.selectStreet(key, feature);
+    this.selectStreet(key, feature, true);
   };
 
   setWindowOpen = (open) => {

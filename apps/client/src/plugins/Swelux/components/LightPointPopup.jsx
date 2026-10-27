@@ -93,7 +93,7 @@ function LightPointPopup({ street, point, onCalculate, onClose }) {
             startIcon={<CalculateOutlinedIcon />}
             disabled={!named}
             onClick={onCalculate}
-            sx={{ mt: 1.5 }}
+            sx={{ mt: 1.5, textTransform: "none", fontWeight: 600 }}
           >
             Beräkna belysning för gatan
           </Button>
