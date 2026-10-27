@@ -2,10 +2,11 @@ import { Box, Paper, Stack, Typography } from "@mui/material";
 import { alpha } from "@mui/material/styles";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
+import PhotometryPanel from "./PhotometryPanel";
 import { checksFor, nf } from "../utils";
 
 /** Result for one luminaire: verdict, requirement checks and energy. */
-function VerdictCard({ result, evaluation, street, hours }) {
+function VerdictCard({ result, evaluation, street, hours, photometry }) {
   const pass = result.compliant;
   const checks = checksFor(result, evaluation.target);
   const tone = pass ? "success" : "error";
@@ -56,6 +57,10 @@ function VerdictCard({ result, evaluation, street, hours }) {
           </Typography>
         </Box>
       </Stack>
+
+      {photometry && (
+        <PhotometryPanel data={photometry} powerW={result.powerW} />
+      )}
 
       <Box sx={{ px: 1.75, pt: 0.5, pb: 1 }}>
         {checks.map((c) => (

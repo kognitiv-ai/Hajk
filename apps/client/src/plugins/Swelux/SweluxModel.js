@@ -316,6 +316,18 @@ export default class SweluxModel {
 
   fetchLuminaires = () => this.#request("/street-lighting/luminaires");
 
+  #photometry = new Map();
+
+  // Intensity distribution from the luminaire's LDT, cached per luminaire.
+  fetchPhotometry = (luminaireId) => {
+    if (!this.#photometry.has(luminaireId)) {
+      const req = this.#request(`/luminaires/${luminaireId}/photometry`);
+      req.catch(() => this.#photometry.delete(luminaireId));
+      this.#photometry.set(luminaireId, req);
+    }
+    return this.#photometry.get(luminaireId);
+  };
+
   evaluate = (profile, luminaireIds = null) =>
     this.#request("/street-lighting/evaluate", {
       method: "POST",

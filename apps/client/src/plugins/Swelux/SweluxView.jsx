@@ -37,6 +37,7 @@ function SweluxView({ model, options, localObserver }) {
   const [busy, setBusy] = React.useState(null); // null | "calc" | "rank"
   const [elapsed, setElapsed] = React.useState(0);
   const [error, setError] = React.useState(null);
+  const [photometry, setPhotometry] = React.useState(null);
 
   React.useEffect(() => {
     const a = localObserver.subscribe("swelux.streetsReady", setStreets);
@@ -82,6 +83,20 @@ function SweluxView({ model, options, localObserver }) {
     luminaire &&
     (evaluation?.results.find((r) => r.luminaireId === luminaire.id) ||
       ranking?.results.find((r) => r.luminaireId === luminaire.id));
+
+  const resultId = result?.luminaireId;
+  React.useEffect(() => {
+    setPhotometry(null);
+    if (!resultId) return;
+    let live = true;
+    model
+      .fetchPhotometry(resultId)
+      .then((p) => live && setPhotometry(p))
+      .catch(() => {}); // no readable LDT: the card simply shows no diagram
+    return () => {
+      live = false;
+    };
+  }, [model, resultId]);
 
   React.useEffect(() => {
     model.setVerdict(result ? (result.compliant ? "pass" : "fail") : null);
@@ -228,6 +243,7 @@ function SweluxView({ model, options, localObserver }) {
               evaluation={shown}
               street={street}
               hours={hours}
+              photometry={photometry}
             />
           )}
 

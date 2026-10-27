@@ -84,6 +84,15 @@ server {
         proxy_read_timeout 300s;
     }
 
+    # Light distribution (LDT) of one luminaire, for the plugin's polar diagram.
+    location ~ ^/swelux-api/luminaires/(\d+)/photometry$ {
+        auth_request /_auth;
+        rewrite ^/swelux-api/luminaires/(\d+)/photometry$ /api/Luminare/$1/photometry-data break;
+        proxy_pass $swelux_api;
+        proxy_set_header Authorization $swelux_bearer;
+        proxy_set_header Host $host;
+    }
+
     location /swelux-api/ {
         return 404;
     }
