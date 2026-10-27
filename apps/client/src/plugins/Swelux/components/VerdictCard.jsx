@@ -101,7 +101,7 @@ function VerdictCard({ result, evaluation, street, hours }) {
         ))}
       </Box>
 
-      {savedKwh != null && (
+      {pass && savedKwh != null && (
         <Box sx={{ px: 1.75, py: 1.25, borderTop: 1, borderColor: "divider" }}>
           <Stack direction="row" alignItems="baseline" spacing={1}>
             <Typography sx={{ fontSize: 22, fontWeight: 600 }}>

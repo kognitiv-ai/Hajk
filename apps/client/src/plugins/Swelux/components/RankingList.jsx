@@ -11,10 +11,18 @@ import { nf } from "../utils";
 /** Whole-catalogue result: the best compliant options, or nearest misses. */
 function RankingList({ ranking, selectedId, onSelect }) {
   const { compliantCount, calculated, requiredClass, target } = ranking;
-  const rows = ranking.results.slice(
-    0,
-    compliantCount ? Math.min(10, compliantCount) : 5
-  );
+  // The catalogue holds some duplicate entries (same product, same photometry);
+  // show each product once.
+  const seen = new Set();
+  const unique = ranking.results.filter((r) => {
+    const key = `${r.manufacturer}|${r.name}|${r.powerW}|${r.lavg}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+  const rows = compliantCount
+    ? unique.filter((r) => r.compliant).slice(0, 10)
+    : unique.slice(0, 5);
 
   return (
     <Box>

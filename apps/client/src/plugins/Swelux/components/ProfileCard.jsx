@@ -57,7 +57,7 @@ function ProfileCard({ profile, onChange }) {
           <Typography variant="caption" color="text.secondary">
             Vägprofil
           </Typography>
-          <Typography variant="body2" sx={{ fontWeight: 500 }} noWrap>
+          <Typography variant="body2" sx={{ fontWeight: 500 }}>
             {summary}
           </Typography>
         </Box>
