@@ -11,9 +11,18 @@ export function printElement(element, title) {
     "position:fixed;right:0;bottom:0;width:0;height:0;border:0";
   document.body.appendChild(frame);
   const doc = frame.contentDocument;
-  const styles = [...document.querySelectorAll('style, link[rel="stylesheet"]')]
-    .map((n) => n.outerHTML)
+  // MUI (emotion) inserts its rules through the CSSOM in production, so the
+  // <style> tags are empty: copy the rules themselves.
+  const css = [...document.styleSheets]
+    .map((sheet) => {
+      try {
+        return [...sheet.cssRules].map((r) => r.cssText).join("\n");
+      } catch {
+        return sheet.href ? `@import url("${sheet.href}");` : "";
+      }
+    })
     .join("\n");
+  const styles = `<style>${css}</style>`;
   doc.open();
   doc.write(`<!doctype html><html lang="sv"><head><meta charset="utf-8"><title>${escapeHtml(title)}</title>${styles}
 <style>

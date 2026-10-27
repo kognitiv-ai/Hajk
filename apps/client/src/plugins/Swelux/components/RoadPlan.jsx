@@ -6,6 +6,7 @@ import { nf } from "../utils";
 const FIELDS = 3; // three pole spacings → four poles on a one-sided road
 const PX_PER_M = 9;
 const MARGIN_M = 3.5;
+const SIDE_M = 2; // room for the outermost poles
 // Sequential scale from dark to bright, readable as "more light".
 const PALETTE = [
   "#1B2440",
@@ -18,10 +19,12 @@ const PALETTE = [
   "#fff1a8",
 ];
 
-function niceCeil(value) {
-  if (!Number.isFinite(value) || value <= 0) return 1;
-  const mag = Math.pow(10, Math.floor(Math.log10(value)));
-  const n = value / mag;
+// Smallest "nice" band width (1, 2, 2.5 or 5 × 10ⁿ) so all bands cover the range.
+function niceStep(max, bands) {
+  const raw = max / bands;
+  if (!Number.isFinite(raw) || raw <= 0) return 1;
+  const mag = Math.pow(10, Math.floor(Math.log10(raw)));
+  const n = raw / mag;
   return (n <= 1 ? 1 : n <= 2 ? 2 : n <= 2.5 ? 2.5 : n <= 5 ? 5 : 10) * mag;
 }
 
@@ -101,8 +104,7 @@ function RoadPlan({ detail, quantity, spacing, arrangement }) {
       }
     });
 
-    const scaleMax = niceCeil(field.max);
-    const step = scaleMax / PALETTE.length;
+    const step = niceStep(field.max, PALETTE.length);
     return {
       x0,
       x1,
@@ -112,7 +114,6 @@ function RoadPlan({ detail, quantity, spacing, arrangement }) {
       yRoad1,
       valueAt,
       poles: shown,
-      scaleMax,
       step,
     };
   }, [road, poles, grid, column, spacing, arrangement]);
@@ -149,9 +150,10 @@ function RoadPlan({ detail, quantity, spacing, arrangement }) {
 
   if (!model) return null;
 
-  const W = (model.x1 - model.x0) * PX_PER_M;
+  const W = (model.x1 - model.x0 + 2 * SIDE_M) * PX_PER_M;
   const H = (model.yMax - model.yMin) * PX_PER_M;
-  const sx = (x) => (x - model.x0) * PX_PER_M;
+  const sx = (x) => (x - model.x0 + SIDE_M) * PX_PER_M;
+  const roadW = (model.x1 - model.x0) * PX_PER_M;
   const sy = (y) => (model.yMax - y) * PX_PER_M;
   const ink = theme.palette.text.primary;
   const muted = theme.palette.text.secondary;
@@ -167,31 +169,31 @@ function RoadPlan({ detail, quantity, spacing, arrangement }) {
         aria-label="Vägen ovanifrån med beräknad ljusfördelning"
       >
         <rect
-          x={0}
+          x={sx(model.x0)}
           y={sy(model.yRoad1)}
-          width={W}
+          width={roadW}
           height={(model.yRoad1 - model.yRoad0) * PX_PER_M}
           fill="#1B2440"
         />
         <image
           href={image}
-          x={0}
+          x={sx(model.x0)}
           y={sy(model.yRoad1)}
-          width={W}
+          width={roadW}
           height={(model.yRoad1 - model.yRoad0) * PX_PER_M}
           preserveAspectRatio="none"
         />
         <line
-          x1={0}
-          x2={W}
+          x1={sx(model.x0)}
+          x2={sx(model.x1)}
           y1={sy(model.yRoad0)}
           y2={sy(model.yRoad0)}
           stroke={ink}
           strokeWidth={1.5}
         />
         <line
-          x1={0}
-          x2={W}
+          x1={sx(model.x0)}
+          x2={sx(model.x1)}
           y1={sy(model.yRoad1)}
           y2={sy(model.yRoad1)}
           stroke={ink}
