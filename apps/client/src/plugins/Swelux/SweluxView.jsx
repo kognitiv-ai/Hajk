@@ -209,7 +209,13 @@ function SweluxView({ model, options, localObserver }) {
     setError(null);
     try {
       if (kind === "calc") {
-        setEvaluation(await model.evaluate(profile, [luminaire.id]));
+        const r = await model.evaluate(profile, [luminaire.id]);
+        if (r.results.length === 0) {
+          throw new Error(
+            "Armaturen saknar användbar ljusdata (effekt) och kan inte beräknas."
+          );
+        }
+        setEvaluation(r);
       } else {
         const r = await model.evaluate(profile, null);
         setRanking(r);
@@ -486,6 +492,12 @@ function SweluxView({ model, options, localObserver }) {
             {nf(ranking.calculated)} armaturer beräknade ·{" "}
             {nf(ranking.compliantCount)} uppfyller {ranking.requiredClass}
           </Typography>
+          {ranking.skippedInvalidPower > 0 && (
+            <Typography variant="caption" color="text.secondary" component="p">
+              {nf(ranking.skippedInvalidPower)} armaturer utan giltig effekt i
+              ljusdatan hoppades över.
+            </Typography>
+          )}
           {ranking.compliantCount === 0 && (
             <Alert severity="info" sx={{ mt: 1 }}>
               Ingen armatur i katalogen klarar kraven med den här profilen.
