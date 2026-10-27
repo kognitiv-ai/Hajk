@@ -5,7 +5,7 @@ set -euo pipefail
 # (native amd64) and restart. Municipality data lives in $DATA_DIR on the server only.
 
 HOST="${HOST:-root@kog-prod}"
-BRANCH="${BRANCH:-swelux}"
+BRANCH="${BRANCH:-master}"
 REMOTE_DIR="/root/swelux-hajk"
 
 ssh "$HOST" "
