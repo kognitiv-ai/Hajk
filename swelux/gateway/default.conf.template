@@ -1,0 +1,112 @@
+# Gateway in front of a swelux Hajk instance.
+#
+# Every request needs a swelux.ai login (JWT in the swelux_token cookie) for a user
+# who belongs to ${SWELUX_TENANT}. The token is checked against the swelux API with
+# auth_request and forwarded as a bearer token on calculation calls, so the browser
+# never handles API keys. Hajk itself is served read-only: no admin, GET only.
+
+map $cookie_swelux_token $swelux_bearer {
+    ""      "";
+    default "Bearer $cookie_swelux_token";
+}
+
+proxy_cache_path /var/cache/nginx/swelux-auth levels=1 keys_zone=swelux_auth:1m max_size=10m inactive=10m;
+
+server {
+    listen 80;
+    server_name _;
+
+    client_max_body_size 1m;
+    server_tokens off;
+
+    # Docker's resolver, so restarts of Hajk or the API (new IPs) are picked up.
+    resolver 127.0.0.11 valid=10s ipv6=off;
+    set $hajk ${HAJK_UPSTREAM};
+    set $swelux_api ${SWELUX_API_UPSTREAM};
+
+    add_header X-Content-Type-Options nosniff always;
+    add_header Referrer-Policy same-origin always;
+
+    # ---- public: login page and the login call itself ----
+
+    location = /login {
+        default_type text/html;
+        add_header Cache-Control "no-store";
+        alias /usr/share/nginx/login/login.html;
+        sub_filter_types text/html;
+        sub_filter "__SWELUX_TENANT__" "${SWELUX_TENANT}";
+        sub_filter_once on;
+    }
+
+    location = /login/logo.svg {
+        alias /usr/share/nginx/login/logo.svg;
+    }
+
+    location = /swelux-api/auth/login {
+        limit_except POST { deny all; }
+        proxy_pass $swelux_api/api/Auth/login;
+        proxy_set_header Host $host;
+    }
+
+    location = /logout {
+        add_header Set-Cookie "swelux_token=; Path=/; Max-Age=0; Secure; SameSite=Strict";
+        return 302 /login;
+    }
+
+    # ---- the gate ----
+
+    location = /_auth {
+        internal;
+        proxy_pass $swelux_api/api/Auth/check?tenant=${SWELUX_TENANT};
+        proxy_pass_request_body off;
+        proxy_set_header Content-Length "";
+        proxy_set_header Authorization $swelux_bearer;
+        proxy_cache swelux_auth;
+        proxy_cache_key $cookie_swelux_token;
+        proxy_cache_valid 204 60s;
+        proxy_cache_valid any 0;
+    }
+
+    location @login {
+        return 302 /login?next=$request_uri;
+    }
+
+    # ---- protected ----
+
+    # Calculation API for the plugin: only the street-lighting endpoints are exposed.
+    location /swelux-api/street-lighting/ {
+        auth_request /_auth;
+        rewrite ^/swelux-api/(.*)$ /api/$1 break;
+        proxy_pass $swelux_api;
+        proxy_set_header Authorization $swelux_bearer;
+        proxy_set_header Host $host;
+        proxy_read_timeout 300s;
+    }
+
+    location /swelux-api/ {
+        return 404;
+    }
+
+    # Municipality data (light points, street geometry): served from the host, never
+    # part of the public repository.
+    location /swelux-data/ {
+        auth_request /_auth;
+        error_page 401 403 = @login;
+        alias /srv/swelux-data/;
+        add_header Cache-Control "private, max-age=300";
+    }
+
+    location /admin {
+        return 404;
+    }
+
+    location / {
+        auth_request /_auth;
+        error_page 401 403 = @login;
+        limit_except GET { deny all; }
+        proxy_pass $hajk;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto https;
+    }
+}

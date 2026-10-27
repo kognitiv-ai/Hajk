@@ -1,0 +1,633 @@
+{
+  "projections": [
+    {
+      "code": "EPSG:3006",
+      "definition": "+proj=utm +zone=33 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs",
+      "extent": [
+        181896.33,
+        6101648.07,
+        864416,
+        7689478.3
+      ],
+      "units": null
+    },
+    {
+      "code": "http://www.opengis.net/gml/srs/epsg.xml#3006",
+      "definition": "+proj=utm +zone=33 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs",
+      "extent": [
+        181896.33,
+        6101648.07,
+        864416,
+        7689478.3
+      ],
+      "units": null
+    },
+    {
+      "code": "EPSG:3007",
+      "definition": "+proj=tmerc +lat_0=0 +lon_0=12 +k=1 +x_0=150000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs",
+      "extent": [
+        60436.5084,
+        6192389.565,
+        217643.4713,
+        6682784.4276
+      ],
+      "units": null
+    },
+    {
+      "code": "http://www.opengis.net/gml/srs/epsg.xml#3007",
+      "definition": "+proj=tmerc +lat_0=0 +lon_0=12 +k=1 +x_0=150000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs",
+      "extent": [
+        60436.5084,
+        6192389.565,
+        217643.4713,
+        6682784.4276
+      ],
+      "units": null
+    },
+    {
+      "code": "EPSG:3008",
+      "definition": "+proj=tmerc +lat_0=0 +lon_0=13.5 +k=1 +x_0=150000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs ",
+      "extent": [
+        60857.4994,
+        6120098.8505,
+        223225.0217,
+        6906693.7888
+      ],
+      "units": null
+    },
+    {
+      "code": "http://www.opengis.net/gml/srs/epsg.xml#3008",
+      "definition": "+proj=tmerc +lat_0=0 +lon_0=13.5 +k=1 +x_0=150000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs ",
+      "extent": [
+        60857.4994,
+        6120098.8505,
+        223225.0217,
+        6906693.7888
+      ],
+      "units": null
+    },
+    {
+      "code": "EPSG:3009",
+      "definition": "+proj=tmerc +lat_0=0 +lon_0=15 +k=1 +x_0=150000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs",
+      "extent": [
+        56294.0365,
+        6203542.5282,
+        218719.0581,
+        6835499.2391
+      ],
+      "units": null
+    },
+    {
+      "code": "http://www.opengis.net/gml/srs/epsg.xml#3009",
+      "definition": "+proj=tmerc +lat_0=0 +lon_0=15 +k=1 +x_0=150000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs",
+      "extent": [
+        56294.0365,
+        6203542.5282,
+        218719.0581,
+        6835499.2391
+      ],
+      "units": null
+    },
+    {
+      "code": "EPSG:3010",
+      "definition": "+proj=tmerc +lat_0=0 +lon_0=16.5 +k=1 +x_0=150000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs",
+      "extent": [
+        97213.6352,
+        6228930.1419,
+        225141.8681,
+        6916524.0785
+      ],
+      "units": null
+    },
+    {
+      "code": "http://www.opengis.net/gml/srs/epsg.xml#3010",
+      "definition": "+proj=tmerc +lat_0=0 +lon_0=16.5 +k=1 +x_0=150000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs",
+      "extent": [
+        97213.6352,
+        6228930.1419,
+        225141.8681,
+        6916524.0785
+      ],
+      "units": null
+    },
+    {
+      "code": "EPSG:3011",
+      "definition": "+proj=tmerc +lat_0=0 +lon_0=18 +k=1 +x_0=150000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs",
+      "extent": [
+        96664.5565,
+        6509617.2232,
+        220146.6914,
+        6727103.5879
+      ],
+      "units": null
+    },
+    {
+      "code": "http://www.opengis.net/gml/srs/epsg.xml#3011",
+      "definition": "+proj=tmerc +lat_0=0 +lon_0=18 +k=1 +x_0=150000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs",
+      "extent": [
+        96664.5565,
+        6509617.2232,
+        220146.6914,
+        6727103.5879
+      ],
+      "units": null
+    },
+    {
+      "code": "EPSG:3012",
+      "definition": "+proj=tmerc +lat_0=0 +lon_0=14.25 +k=1 +x_0=150000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs",
+      "extent": [
+        30462.5263,
+        6829647.9842,
+        216416.1584,
+        7154168.0208
+      ],
+      "units": null
+    },
+    {
+      "code": "http://www.opengis.net/gml/srs/epsg.xml#3012",
+      "definition": "+proj=tmerc +lat_0=0 +lon_0=14.25 +k=1 +x_0=150000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs",
+      "extent": [
+        30462.5263,
+        6829647.9842,
+        216416.1584,
+        7154168.0208
+      ],
+      "units": null
+    },
+    {
+      "code": "EPSG:3013",
+      "definition": "+proj=tmerc +lat_0=0 +lon_0=15.75 +k=1 +x_0=150000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs ",
+      "extent": [
+        34056.6264,
+        6710433.2884,
+        218692.0214,
+        7224144.732
+      ],
+      "units": null
+    },
+    {
+      "code": "http://www.opengis.net/gml/srs/epsg.xml#3013",
+      "definition": "+proj=tmerc +lat_0=0 +lon_0=15.75 +k=1 +x_0=150000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs ",
+      "extent": [
+        34056.6264,
+        6710433.2884,
+        218692.0214,
+        7224144.732
+      ],
+      "units": null
+    },
+    {
+      "code": "EPSG:3014",
+      "definition": "+proj=tmerc +lat_0=0 +lon_0=17.25 +k=1 +x_0=150000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs",
+      "extent": [
+        -1420.28,
+        6888655.5779,
+        212669.1333,
+        7459585.3378
+      ],
+      "units": null
+    },
+    {
+      "code": "http://www.opengis.net/gml/srs/epsg.xml#3014",
+      "definition": "+proj=tmerc +lat_0=0 +lon_0=17.25 +k=1 +x_0=150000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs",
+      "extent": [
+        -1420.28,
+        6888655.5779,
+        212669.1333,
+        7459585.3378
+      ],
+      "units": null
+    },
+    {
+      "code": "EPSG:3015",
+      "definition": "+proj=tmerc +lat_0=0 +lon_0=18.75 +k=1 +x_0=150000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs",
+      "extent": [
+        58479.4774,
+        6304213.2147,
+        241520.5226,
+        7276832.4419
+      ],
+      "units": null
+    },
+    {
+      "code": "http://www.opengis.net/gml/srs/epsg.xml#3015",
+      "definition": "+proj=tmerc +lat_0=0 +lon_0=18.75 +k=1 +x_0=150000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs",
+      "extent": [
+        58479.4774,
+        6304213.2147,
+        241520.5226,
+        7276832.4419
+      ],
+      "units": null
+    },
+    {
+      "code": "EPSG:3016",
+      "definition": "+proj=tmerc +lat_0=0 +lon_0=20.25 +k=1 +x_0=150000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs",
+      "extent": [
+        -93218.3385,
+        7034909.8738,
+        261434.6246,
+        7676279.8691
+      ],
+      "units": null
+    },
+    {
+      "code": "http://www.opengis.net/gml/srs/epsg.xml#3016",
+      "definition": "+proj=tmerc +lat_0=0 +lon_0=20.25 +k=1 +x_0=150000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs",
+      "extent": [
+        -93218.3385,
+        7034909.8738,
+        261434.6246,
+        7676279.8691
+      ],
+      "units": null
+    },
+    {
+      "code": "EPSG:3017",
+      "definition": "+proj=tmerc +lat_0=0 +lon_0=21.75 +k=1 +x_0=150000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs",
+      "extent": [
+        67451.0699,
+        7211342.8483,
+        145349.5699,
+        7254837.254
+      ],
+      "units": null
+    },
+    {
+      "code": "http://www.opengis.net/gml/srs/epsg.xml#3017",
+      "definition": "+proj=tmerc +lat_0=0 +lon_0=21.75 +k=1 +x_0=150000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs",
+      "extent": [
+        67451.0699,
+        7211342.8483,
+        145349.5699,
+        7254837.254
+      ],
+      "units": null
+    },
+    {
+      "code": "EPSG:3018",
+      "definition": "+proj=tmerc +lat_0=0 +lon_0=23.25 +k=1 +x_0=150000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs",
+      "extent": [
+        38920.7048,
+        7267405.2323,
+        193050.246,
+        7597992.2419
+      ],
+      "units": null
+    },
+    {
+      "code": "http://www.opengis.net/gml/srs/epsg.xml#3018",
+      "definition": "+proj=tmerc +lat_0=0 +lon_0=23.25 +k=1 +x_0=150000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs",
+      "extent": [
+        38920.7048,
+        7267405.2323,
+        193050.246,
+        7597992.2419
+      ],
+      "units": null
+    },
+    {
+      "code": "EPSG:3021",
+      "definition": "+proj=tmerc +lat_0=0 +lon_0=15.80827777777778 +k=1 +x_0=1500000 +y_0=0 +ellps=bessel +units=m +no_defs",
+      "extent": [
+        1392811.0743,
+        6208496.7665,
+        1570600.8906,
+        7546077.6984
+      ],
+      "units": null
+    },
+    {
+      "code": "http://www.opengis.net/gml/srs/epsg.xml#3021",
+      "definition": "+proj=tmerc +lat_0=0 +lon_0=15.80827777777778 +k=1 +x_0=1500000 +y_0=0 +ellps=bessel +units=m +no_defs",
+      "extent": [
+        1392811.0743,
+        6208496.7665,
+        1570600.8906,
+        7546077.6984
+      ],
+      "units": null
+    },
+    {
+      "code": "EPSG:3857",
+      "definition": "+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs",
+      "extent": [
+        -20037508.34,
+        -20037508.34,
+        20037508.34,
+        20037508.34
+      ],
+      "units": null
+    },
+    {
+      "code": "http://www.opengis.net/gml/srs/epsg.xml#3857",
+      "definition": "+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs",
+      "extent": [
+        -20037508.34,
+        -20037508.34,
+        20037508.34,
+        20037508.34
+      ],
+      "units": null
+    }
+  ],
+  "tools": [
+    {
+      "type": "layerswitcher",
+      "options": {
+        "groups": [
+          {
+            "id": "belysning",
+            "type": "group",
+            "name": "Belysning",
+            "toggled": true,
+            "expanded": true,
+            "infogroupvisible": false,
+            "infogrouptitle": "",
+            "infogrouptext": "",
+            "infogroupurl": "",
+            "infogroupurltext": "",
+            "infogroupopendatalink": "",
+            "infogroupowner": "",
+            "parent": "-1",
+            "groups": [],
+            "layers": [
+              {
+                "id": "hisingen-ljuspunkter",
+                "drawOrder": 1000,
+                "visibleAtStart": true,
+                "infobox": ""
+              }
+            ]
+          }
+        ],
+        "baselayers": [],
+        "quickAccessPresets": [
+          {
+            "title": "Test-grupp",
+            "description": "Ett preset med vanliga lager och ett grupplager",
+            "layers": [
+              {
+                "id": "0si2ys",
+                "visible": true,
+                "subLayers": [],
+                "opacity": 1,
+                "drawOrder": 1000
+              },
+              {
+                "id": "4y2nnu",
+                "visible": true,
+                "subLayers": [],
+                "opacity": 1,
+                "drawOrder": 1000
+              },
+              {
+                "id": "n0ehiv",
+                "visible": true,
+                "subLayers": [
+                  "Motorvag",
+                  "Motortrafikled",
+                  "Stamvag",
+                  "Storstadsvag",
+                  "Gastvag",
+                  "GangfartsOmrade",
+                  "Provisoriskvag"
+                ],
+                "opacity": 1,
+                "drawOrder": 1000
+              },
+              {
+                "id": "1",
+                "visible": true,
+                "subLayers": [],
+                "opacity": 1,
+                "drawOrder": 0
+              }
+            ],
+            "metadata": {
+              "savedAt": "2025-03-17T06:22:16.974Z",
+              "numberOfLayers": 3,
+              "title": "Test-grupp",
+              "description": "Ett preset med vanliga lager och ett grupplager"
+            }
+          }
+        ],
+        "active": true,
+        "visibleAtStart": false,
+        "visibleAtStartMobile": false,
+        "backgroundSwitcherBlack": true,
+        "backgroundSwitcherWhite": true,
+        "enableOSM": true,
+        "OSMVisibleAtStart": true,
+        "showBreadcrumbs": true,
+        "showDrawOrderView": true,
+        "showFilter": true,
+        "showQuickAccess": false,
+        "legendForceTransparency": false,
+        "legendTryHiDPI": false,
+        "enableSystemLayersSwitch": true,
+        "lockDrawOrderBaselayer": true,
+        "drawOrderViewInfoText": "Här kan du ändra ritordning på tända lager i kartan. Dra lagret upp eller ner i listan och släpp på önskad plats.",
+        "enableQuickAccessPresets": false,
+        "quickAccessTopicsInfoText": "Här kan du ladda färdiga teman till snabbåtkomst. Teman innehåller tända och släckta lager, samt bakgrund.",
+        "enableUserQuickAccessFavorites": false,
+        "userQuickAccessFavoritesInfoText": "Här kan du hantera och redigera dina sparade favoriter. Observera att favoriter endast sparas tillfälligt.",
+        "enableTransparencySlider": true,
+        "instruction": "",
+        "minMaxZoomAlertOnToggleOnly": false,
+        "cqlFilterVisible": false,
+        "renderSpecialBackgroundsAtBottom": true,
+        "dropdownThemeMaps": true,
+        "themeMapHeaderCaption": "Standardkartan",
+        "visibleForGroups": [],
+        "target": "left",
+        "position": "left",
+        "width": "",
+        "height": "",
+        "title": "Lagerhanterare",
+        "description": "Välj vad du vill visa i kartan."
+      },
+      "index": 0
+    },
+    {
+      "type": "measurer",
+      "index": 1,
+      "options": {
+        "target": "left",
+        "position": "left",
+        "visibleAtStart": false,
+        "icons": ""
+      }
+    },
+    {
+      "type": "coordinates",
+      "options": {
+        "target": "toolbar",
+        "position": "right",
+        "instruction": "",
+        "transformations": [
+          {
+            "code": "EPSG:3857",
+            "default": true,
+            "hint": "Web Mercator",
+            "title": "Web Mercator",
+            "xtitle": "Easting",
+            "ytitle": "Northing",
+            "inverseAxis": false
+          },
+          {
+            "code": "EPSG:4326",
+            "default": false,
+            "hint": "WGS84",
+            "title": "WGS84",
+            "xtitle": "Longitude",
+            "ytitle": "Latitude",
+            "inverseAxis": false
+          },
+          {
+            "code": "EPSG:3006",
+            "default": false,
+            "hint": "Sweref99 TM",
+            "title": "Sweref99 TM",
+            "xtitle": "E",
+            "ytitle": "N",
+            "inverseAxis": false
+          }
+        ],
+        "visibleForGroups": []
+      },
+      "index": 2
+    },
+    {
+      "type": "location",
+      "options": {
+        "target": "control",
+        "position": "right",
+        "visibleForGroups": []
+      },
+      "index": 3
+    },
+    {
+      "type": "swelux",
+      "index": 4,
+      "options": {
+        "target": "left",
+        "position": "left",
+        "visibleAtStart": false,
+        "visibleAtStartMobile": false,
+        "title": "Belysningsberäkning",
+        "description": "Beräkna belysning per gata enligt EN 13201",
+        "apiBase": "/swelux-api",
+        "lightPointLayerId": "hisingen-ljuspunkter",
+        "streetsUrl": "/swelux-data/hisingen-gator.geojson",
+        "defaultProfile": {
+          "requiredClass": "M4",
+          "roadWidthM": 7,
+          "lanes": 1,
+          "surfaceClass": "R3",
+          "spacingM": 32,
+          "poleHeightM": 8,
+          "armLengthM": 0.5,
+          "tiltDeg": 5,
+          "arrangement": "single",
+          "maintenanceFactor": 0.9
+        },
+        "operatingHoursPerYear": 4100,
+        "visibleForGroups": []
+      }
+    }
+  ],
+  "map": {
+    "target": "map",
+    "center": [
+      1329711,
+      7913940
+    ],
+    "title": "Belysningskarta Hisingen · swelux",
+    "projection": "EPSG:3857",
+    "zoom": 12,
+    "maxZoom": 18,
+    "minZoom": 0,
+    "resolutions": [
+      156543.03392804097,
+      78271.51696402048,
+      39135.75848201024,
+      19567.87924100512,
+      9783.93962050256,
+      4891.96981025128,
+      2445.98490512564,
+      1222.99245256282,
+      611.49622628141,
+      305.748113140705,
+      152.8740565703525,
+      76.43702828517625,
+      38.21851414258813,
+      19.109257071294063,
+      9.554628535647032,
+      4.777314267823516,
+      2.388657133911758,
+      1.194328566955879,
+      0.5971642834779395
+    ],
+    "origin": [
+      -20037508.34,
+      20037508.34
+    ],
+    "extent": [
+      -20037508.34,
+      -20037508.34,
+      20037508.34,
+      20037508.34
+    ],
+    "constrainOnlyCenter": false,
+    "constrainResolution": false,
+    "logo": "/logoLight.png",
+    "geoserverLegendOptions": "",
+    "mapselector": false,
+    "mapcleaner": false,
+    "showUserAvatar": false,
+    "drawerVisible": false,
+    "drawerPermanent": false,
+    "drawerVisibleMobile": false,
+    "activeDrawerOnStart": "plugins",
+    "showThemeToggler": false,
+    "colors": {
+      "primaryColor": "#10162A",
+      "secondaryColor": "#F2B544",
+      "preferredColorScheme": "light"
+    },
+    "defaultCookieNoticeMessage": "Vi använder cookies för att följa upp användandet och ge en bra upplevelse av kartan. Du kan blockera cookies i webbläsaren men då visas detta meddelande igen.",
+    "defaultCookieNoticeUrl": "https://pts.se/sv/bransch/regler/lagar/lag-om-elektronisk-kommunikation/kakor-cookies/",
+    "crossOrigin": "anonymous",
+    "showRecentlyUsedPlugins": true,
+    "logoLight": "logoLight.png",
+    "logoDark": "logoDark.png",
+    "extraPrintResolutions": [],
+    "constrainResolutionMobile": false,
+    "enableDownloadLink": false,
+    "enableAppStateInHash": true,
+    "confirmOnWindowClose": false,
+    "altShiftDragRotate": true,
+    "onFocusOnly": false,
+    "doubleClickZoom": true,
+    "keyboard": true,
+    "mouseWheelZoom": true,
+    "shiftDragZoom": true,
+    "dragPan": true,
+    "pinchRotate": true,
+    "pinchZoom": true,
+    "zoomDelta": null,
+    "zoomDuration": null,
+    "mapresetter": false,
+    "introductionEnabled": false,
+    "introductionShowControlButton": false,
+    "introductionSteps": [],
+    "drawerStatic": false,
+    "drawerTitle": "Kartverktyg",
+    "drawerButtonTitle": "Kartverktyg",
+    "drawerButtonIcon": "MapIcon",
+    "showCookieNotice": false,
+    "showCookieNoticeButton": false,
+    "cookieUse3dPart": false
+  }
+}

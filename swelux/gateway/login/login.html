@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Logga in · Belysningskarta</title>
+<style>
+  :root {
+    --navy: #10162A;
+    --amber: #F2B544;
+    --cream: #F6F4EE;
+    --ink: #1F2933;
+    --muted: #5F6B76;
+    --line: #DCD8CC;
+    --fail: #B4441F;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body {
+    font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    color: var(--ink);
+    background: var(--cream);
+    display: grid;
+    place-items: center;
+    padding: 24px 16px;
+  }
+  main {
+    width: 100%;
+    max-width: 400px;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  header { background: var(--navy); color: var(--cream); padding: 22px 28px; display: flex; align-items: center; gap: 12px; }
+  header img { width: 28px; height: 28px; }
+  header strong { display: block; font-size: 17px; font-weight: 600; letter-spacing: 0.01em; }
+  header span { display: block; font-size: 13px; color: #AEB8D0; }
+  form { padding: 24px 28px 28px; display: grid; gap: 14px; }
+  label { display: grid; gap: 6px; font-size: 13px; font-weight: 600; }
+  input {
+    height: 42px; border: 1px solid var(--line); border-radius: 6px; padding: 0 12px;
+    font: inherit; color: var(--ink); background: #FCFBF8;
+  }
+  input:focus { outline: 2px solid var(--amber); outline-offset: 1px; border-color: transparent; }
+  button {
+    height: 44px; border: 0; border-radius: 6px; background: var(--navy); color: var(--cream);
+    font: inherit; font-weight: 600; cursor: pointer; margin-top: 4px;
+  }
+  button:disabled { opacity: 0.6; cursor: progress; }
+  .error { color: var(--fail); font-size: 14px; min-height: 1.5em; margin: 0; }
+  .fine { font-size: 13px; color: var(--muted); margin: 0; }
+  .fine a { color: inherit; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <img src="/login/logo.svg" alt="">
+    <div>
+      <strong>Belysningskarta</strong>
+      <span>Hajk med beräkningar från swelux.ai</span>
+    </div>
+  </header>
+  <form id="f" novalidate>
+    <label>E-post
+      <input name="email" type="email" autocomplete="username" required autofocus>
+    </label>
+    <label>Lösenord
+      <input name="password" type="password" autocomplete="current-password" required>
+    </label>
+    <p class="error" id="err" role="alert"></p>
+    <button type="submit" id="go">Logga in</button>
+    <p class="fine">Samma konto som på <a href="https://swelux.ai">swelux.ai</a>. Saknar du konto? Kontakta din kontaktperson på swelux.</p>
+  </form>
+</main>
+<script>
+(function () {
+  var TENANT = "__SWELUX_TENANT__";
+  var form = document.getElementById("f");
+  var err = document.getElementById("err");
+  var go = document.getElementById("go");
+
+  function nextUrl() {
+    var n = new URLSearchParams(location.search).get("next") || "/";
+    // Only same-site paths: no scheme, no protocol-relative URLs, no login loop.
+    return /^\/(?!\/)/.test(n) && n.indexOf("/login") !== 0 ? n : "/";
+  }
+
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    err.textContent = "";
+    var email = form.email.value.trim();
+    var password = form.password.value;
+    if (!email || !password) { err.textContent = "Fyll i e-post och lösenord."; return; }
+    go.disabled = true;
+    fetch("/swelux-api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: email, password: password })
+    }).then(function (res) {
+      if (res.status === 401 || res.status === 400) throw new Error("Fel e-post eller lösenord.");
+      if (!res.ok) throw new Error("Inloggningen fungerar inte just nu. Försök igen om en stund.");
+      return res.json();
+    }).then(function (auth) {
+      var tenants = auth.tenants || [];
+      var allowed = auth.isPlatformAdmin || tenants.some(function (t) { return (t.slug || "").toLowerCase() === TENANT; });
+      if (!allowed) throw new Error("Ditt konto har inte åtkomst till den här kartan.");
+      var maxAge = Math.max(60, Math.floor((new Date(auth.expiration) - new Date()) / 1000));
+      document.cookie = "swelux_token=" + auth.token + "; Path=/; Max-Age=" + maxAge + "; Secure; SameSite=Strict";
+      location.replace(nextUrl());
+    }).catch(function (e2) {
+      err.textContent = e2.message;
+      go.disabled = false;
+    });
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,33 @@
+{
+  "wmtslayers": [],
+  "wmslayers": [],
+  "wfslayers": [],
+  "wfstlayers": [],
+  "arcgislayers": [],
+  "vectorlayers": [
+    {
+      "id": "hisingen-ljuspunkter",
+      "caption": "Ljuspunkter Hisingen (befintlig armatur)",
+      "url": "/swelux-data/hisingen-ljuspunkter.geojson",
+      "layer": "swelux:ljuspunkter",
+      "dataFormat": "GeoJSON",
+      "projection": "EPSG:4326",
+      "loadingStrategy": "all",
+      "queryable": false,
+      "opacity": 1,
+      "sldText": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<StyledLayerDescriptor version=\"1.0.0\" xmlns=\"http://www.opengis.net/sld\" xmlns:ogc=\"http://www.opengis.net/ogc\">\n<NamedLayer><Name>ljuspunkter</Name><UserStyle><Name>Default Styler</Name><FeatureTypeStyle>\n<Rule><Name>Okänd effekt</Name><ogc:Filter><ogc:PropertyIsNull><ogc:PropertyName>effekt_w</ogc:PropertyName></ogc:PropertyIsNull></ogc:Filter><PointSymbolizer><Graphic><Mark><WellKnownName>circle</WellKnownName><Fill><CssParameter name=\"fill\">#B9C0C8</CssParameter></Fill><Stroke><CssParameter name=\"stroke\">#10162A</CssParameter><CssParameter name=\"stroke-width\">0.6</CssParameter><CssParameter name=\"stroke-opacity\">0.5</CssParameter></Stroke></Mark><Size>7</Size></Graphic></PointSymbolizer></Rule>\n<Rule><Name>≤ 35 W</Name><ogc:Filter><ogc:PropertyIsLessThanOrEqualTo><ogc:PropertyName>effekt_w</ogc:PropertyName><ogc:Literal>35</ogc:Literal></ogc:PropertyIsLessThanOrEqualTo></ogc:Filter><PointSymbolizer><Graphic><Mark><WellKnownName>circle</WellKnownName><Fill><CssParameter name=\"fill\">#7AA7D6</CssParameter></Fill><Stroke><CssParameter name=\"stroke\">#10162A</CssParameter><CssParameter name=\"stroke-width\">0.6</CssParameter><CssParameter name=\"stroke-opacity\">0.5</CssParameter></Stroke></Mark><Size>7</Size></Graphic></PointSymbolizer></Rule>\n<Rule><Name>36–55 W</Name><ogc:Filter><ogc:And><ogc:PropertyIsGreaterThan><ogc:PropertyName>effekt_w</ogc:PropertyName><ogc:Literal>35</ogc:Literal></ogc:PropertyIsGreaterThan><ogc:PropertyIsLessThanOrEqualTo><ogc:PropertyName>effekt_w</ogc:PropertyName><ogc:Literal>55</ogc:Literal></ogc:PropertyIsLessThanOrEqualTo></ogc:And></ogc:Filter><PointSymbolizer><Graphic><Mark><WellKnownName>circle</WellKnownName><Fill><CssParameter name=\"fill\">#5C7FA8</CssParameter></Fill><Stroke><CssParameter name=\"stroke\">#10162A</CssParameter><CssParameter name=\"stroke-width\">0.6</CssParameter><CssParameter name=\"stroke-opacity\">0.5</CssParameter></Stroke></Mark><Size>7</Size></Graphic></PointSymbolizer></Rule>\n<Rule><Name>56–80 W</Name><ogc:Filter><ogc:And><ogc:PropertyIsGreaterThan><ogc:PropertyName>effekt_w</ogc:PropertyName><ogc:Literal>55</ogc:Literal></ogc:PropertyIsGreaterThan><ogc:PropertyIsLessThanOrEqualTo><ogc:PropertyName>effekt_w</ogc:PropertyName><ogc:Literal>80</ogc:Literal></ogc:PropertyIsLessThanOrEqualTo></ogc:And></ogc:Filter><PointSymbolizer><Graphic><Mark><WellKnownName>circle</WellKnownName><Fill><CssParameter name=\"fill\">#3D5687</CssParameter></Fill><Stroke><CssParameter name=\"stroke\">#10162A</CssParameter><CssParameter name=\"stroke-width\">0.6</CssParameter><CssParameter name=\"stroke-opacity\">0.5</CssParameter></Stroke></Mark><Size>7</Size></Graphic></PointSymbolizer></Rule>\n<Rule><Name>> 80 W</Name><ogc:Filter><ogc:PropertyIsGreaterThan><ogc:PropertyName>effekt_w</ogc:PropertyName><ogc:Literal>80</ogc:Literal></ogc:PropertyIsGreaterThan></ogc:Filter><PointSymbolizer><Graphic><Mark><WellKnownName>circle</WellKnownName><Fill><CssParameter name=\"fill\">#1F2E5C</CssParameter></Fill><Stroke><CssParameter name=\"stroke\">#10162A</CssParameter><CssParameter name=\"stroke-width\">0.6</CssParameter><CssParameter name=\"stroke-opacity\">0.5</CssParameter></Stroke></Mark><Size>7</Size></Graphic></PointSymbolizer></Rule>\n</FeatureTypeStyle></UserStyle></NamedLayer></StyledLayerDescriptor>",
+      "sldStyle": "Default Styler",
+      "infobox": "",
+      "infoVisible": false,
+      "date": "",
+      "content": "",
+      "legend": "",
+      "legendIcon": "",
+      "attribution": "Ljuspunkter: Göteborgs Stad (urval, Hisingen)",
+      "pointSize": 7,
+      "filterable": false,
+      "timeSliderStart": "",
+      "timeSliderEnd": ""
+    }
+  ]
+}
