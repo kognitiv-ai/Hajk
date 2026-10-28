@@ -6,9 +6,9 @@
   "arcgislayers": [],
   "vectorlayers": [
     {
-      "id": "hisingen-ljuspunkter",
-      "caption": "Ljuspunkter Hisingen (befintlig armatur)",
-      "url": "/swelux-data/hisingen-ljuspunkter.geojson",
+      "id": "swelux-ljuspunkter",
+      "caption": "Ljuspunkter (befintlig armatur)",
+      "url": "/swelux-api/hajk/lightpoints",
       "layer": "swelux:ljuspunkter",
       "dataFormat": "GeoJSON",
       "projection": "EPSG:4326",
@@ -23,7 +23,7 @@
       "content": "",
       "legend": "",
       "legendIcon": "",
-      "attribution": "Ljuspunkter: Göteborgs Stad (urval, Hisingen)",
+      "attribution": "Ljuspunkter: kommunens belysningsregister via swelux.ai",
       "pointSize": 7,
       "filterable": false,
       "timeSliderStart": "",

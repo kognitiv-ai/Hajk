@@ -39,6 +39,8 @@ export default class SweluxModel {
   #popup;
   #windowOpen = false;
   #pointerCursor = false;
+  #context = null; // { name, slug, canSwitch, lightingPointCount } from contextUrl
+  #fitted = false;
 
   constructor(settings) {
     this.#map = settings.map;
@@ -66,6 +68,7 @@ export default class SweluxModel {
     this.#map.on("singleclick", this.#handleMapClick);
     this.#map.on("pointermove", this.#handlePointerMove);
     this.#loadRoads();
+    this.#loadContext();
     this.#waitForLightPoints();
   }
 
@@ -80,16 +83,50 @@ export default class SweluxModel {
 
   getStreet = (key) => this.#streets.get(key) || null;
 
-  // The light point layer loads asynchronously (Hajk vector layer, GeoJSON).
-  // Poll its source until features arrive, then index them by street.
+  getContext = () => this.#context;
+
+  // Hosted map only: which tenant's data is shown, and how much of it there is.
+  #loadContext = async () => {
+    if (!this.#options.contextUrl) return;
+    try {
+      const res = await fetch(this.#options.contextUrl, {
+        credentials: "same-origin",
+      });
+      if (!res.ok) return;
+      this.#context = await res.json();
+      this.#localObserver.publish("swelux.context", this.#context);
+    } catch (error) {
+      console.warn("Swelux: could not load the map context", error);
+    }
+  };
+
+  // The light point layer loads asynchronously (Hajk vector layer, GeoJSON) and
+  // signals nothing when done. Poll its source until features arrive, then index
+  // them by street; stop when the context says there is nothing to wait for.
   #waitForLightPoints = () => {
     const layer = this.#lightPointLayer();
     const source = layer?.getSource();
     if (source && source.getFeatures().length > 0) {
       this.#indexStreets(source.getFeatures());
+      this.#fitToData(source.getFeatures());
       return;
     }
+    if (this.#context?.lightingPointCount === 0) return;
     setTimeout(this.#waitForLightPoints, 500);
+  };
+
+  // One map serves every tenant, so start where this tenant's light points are.
+  #fitToData = (features) => {
+    if (!this.#options.fitToData || this.#fitted) return;
+    this.#fitted = true;
+    const extent = boundingExtent(
+      features.map((f) => f.getGeometry().getCoordinates())
+    );
+    this.#map.getView().fit(buffer(extent, 200), {
+      duration: 300,
+      maxZoom: 16,
+      padding: [40, 40, 40, 40],
+    });
   };
 
   #lightPointLayer = () =>

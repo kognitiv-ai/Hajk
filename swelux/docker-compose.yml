@@ -1,7 +1,5 @@
 # Hajk with the Swelux plugin, behind a gateway that requires a swelux.ai login.
 #
-#   SWELUX_TENANT     tenant slug whose members may open the map (e.g. goteborg)
-#   SWELUX_DATA_DIR   host directory with the municipality's GeoJSON (kept out of git)
 #   GATEWAY_PORT      host port the tunnel / reverse proxy points at
 #   SWELUX_NETWORK    docker network where the swelux API container is reachable
 
@@ -32,7 +30,6 @@ services:
     depends_on:
       - hajk
     environment:
-      SWELUX_TENANT: ${SWELUX_TENANT:?set SWELUX_TENANT}
       HAJK_UPSTREAM: http://swelux-hajk:3002
       SWELUX_API_UPSTREAM: ${SWELUX_API_UPSTREAM:-http://lightwise-calc-engine:5183}
     ports:
@@ -40,7 +37,6 @@ services:
     volumes:
       - ./gateway/default.conf.template:/etc/nginx/templates/default.conf.template:ro
       - ./gateway/login:/usr/share/nginx/login:ro
-      - ${SWELUX_DATA_DIR:?set SWELUX_DATA_DIR}:/srv/swelux-data:ro
     networks:
       - internal
       - swelux

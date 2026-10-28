@@ -28,6 +28,7 @@ function SweluxView({ model, options, localObserver }) {
   const hours = options.operatingHoursPerYear || 4000;
 
   const [streets, setStreets] = React.useState(model.getStreets());
+  const [context, setContext] = React.useState(model.getContext());
   const [street, setStreet] = React.useState(null);
   const [clicked, setClicked] = React.useState(null);
   const [profile, setProfile] = React.useState(profileFor(null, defaults));
@@ -43,6 +44,7 @@ function SweluxView({ model, options, localObserver }) {
 
   React.useEffect(() => {
     const a = localObserver.subscribe("swelux.streetsReady", setStreets);
+    const c = localObserver.subscribe("swelux.context", setContext);
     const b = localObserver.subscribe("swelux.streetSelected", (e) => {
       setStreet(e.street);
       setClicked(e.clicked);
@@ -54,6 +56,7 @@ function SweluxView({ model, options, localObserver }) {
     return () => {
       localObserver.unsubscribe(a);
       localObserver.unsubscribe(b);
+      localObserver.unsubscribe(c);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [localObserver]);
@@ -174,11 +177,23 @@ function SweluxView({ model, options, localObserver }) {
     />
   );
 
+  const noData = context?.lightingPointCount === 0;
+
   return (
     <Stack spacing={2}>
-      {streetPicker}
+      {!noData && streetPicker}
 
-      {!street ? (
+      {noData ? (
+        <Alert severity="info">
+          <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
+            Ingen kartdata för {context.name} ännu
+          </Typography>
+          <Typography variant="body2">
+            Kommunens ljuspunkter läggs in av swelux (swelux-CSV eller GeoJSON).
+            Kontakta din kontaktperson så visas de här.
+          </Typography>
+        </Alert>
+      ) : !street ? (
         <Stack
           alignItems="center"
           spacing={1}
@@ -314,6 +329,21 @@ function SweluxView({ model, options, localObserver }) {
           swelux.ai
         </Link>{" "}
         enligt EN 13201-2/-3 och tillverkarnas ljusdata. Förhandsversion.
+        {context && (
+          <>
+            {" "}
+            Visar {context.name}
+            {context.canSwitch && (
+              <>
+                {" · "}
+                <Link href="/login?switch" color="inherit">
+                  Byt organisation
+                </Link>
+              </>
+            )}
+            .
+          </>
+        )}
       </Typography>
     </Stack>
   );

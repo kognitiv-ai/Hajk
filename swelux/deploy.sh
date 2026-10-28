@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # Deploy the swelux Hajk demo to kog-prod: pull the fork on the server, build there
-# (native amd64) and restart. Municipality data lives in $DATA_DIR on the server only.
+# (native amd64) and restart. Map data is per tenant and served by the swelux API.
 
 HOST="${HOST:-root@kog-prod}"
 BRANCH="${BRANCH:-master}"
@@ -18,7 +18,6 @@ ssh "$HOST" "
   git checkout -q $BRANCH
   git reset -q --hard origin/$BRANCH
   cd swelux
-  test -f .env || { echo 'missing $REMOTE_DIR/swelux/.env (SWELUX_TENANT, SWELUX_DATA_DIR)'; exit 1; }
   docker compose build hajk
   docker compose up -d
   docker compose ps

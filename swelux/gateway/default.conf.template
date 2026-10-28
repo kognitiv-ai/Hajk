@@ -1,9 +1,11 @@
 # Gateway in front of a swelux Hajk instance.
 #
-# Every request needs a swelux.ai login (JWT in the swelux_token cookie) for a user
-# who belongs to ${SWELUX_TENANT}. The token is checked against the swelux API with
-# auth_request and forwarded as a bearer token on calculation calls, so the browser
-# never handles API keys. Hajk itself is served read-only: no admin, GET only.
+# Every request needs a swelux.ai login (JWT in the swelux_token cookie) and a
+# tenant picked at login (slug in the swelux_tenant cookie) that the user belongs
+# to; platform admins may pick any tenant. Both are checked against the swelux API
+# with auth_request, and the token is forwarded as a bearer token, so the browser
+# never handles API keys. The map shows the picked tenant's light points, served
+# by the API. Hajk itself is served read-only: no admin, GET only.
 
 map $cookie_swelux_token $swelux_bearer {
     ""      "";
@@ -20,6 +22,10 @@ server {
     server_tokens off;
     absolute_redirect off;
 
+    gzip on;
+    gzip_proxied any;
+    gzip_types application/json application/geo+json;
+
     # Docker's resolver, so restarts of Hajk or the API (new IPs) are picked up.
     resolver 127.0.0.11 valid=10s ipv6=off;
     set $hajk ${HAJK_UPSTREAM};
@@ -34,9 +40,6 @@ server {
         default_type text/html;
         add_header Cache-Control "no-store";
         alias /usr/share/nginx/login/login.html;
-        sub_filter_types text/html;
-        sub_filter "__SWELUX_TENANT__" "${SWELUX_TENANT}";
-        sub_filter_once on;
     }
 
     location = /login/logo.svg {
@@ -51,19 +54,29 @@ server {
 
     location = /logout {
         add_header Set-Cookie "swelux_token=; Path=/; Max-Age=0; Secure; SameSite=Strict";
+        add_header Set-Cookie "swelux_tenant=; Path=/; Max-Age=0; Secure; SameSite=Strict";
         return 302 /login;
+    }
+
+    # Tenants the logged-in user may open, for the picker on the login page. The
+    # API checks the token itself.
+    location = /swelux-api/hajk/tenants {
+        limit_except GET { deny all; }
+        proxy_pass $swelux_api/api/hajk/tenants;
+        proxy_set_header Authorization $swelux_bearer;
+        proxy_set_header Host $host;
     }
 
     # ---- the gate ----
 
     location = /_auth {
         internal;
-        proxy_pass $swelux_api/api/Auth/check?tenant=${SWELUX_TENANT};
+        proxy_pass $swelux_api/api/Auth/check?tenant=$cookie_swelux_tenant;
         proxy_pass_request_body off;
         proxy_set_header Content-Length "";
         proxy_set_header Authorization $swelux_bearer;
         proxy_cache swelux_auth;
-        proxy_cache_key $cookie_swelux_token;
+        proxy_cache_key "$cookie_swelux_token|$cookie_swelux_tenant";
         proxy_cache_valid 204 60s;
         proxy_cache_valid any 0;
     }
@@ -93,17 +106,18 @@ server {
         proxy_set_header Host $host;
     }
 
-    location /swelux-api/ {
-        return 404;
+    # The picked tenant's map data (light points, street geometry, name) as GeoJSON.
+    location ~ ^/swelux-api/hajk/(lightpoints|streets|context)$ {
+        auth_request /_auth;
+        limit_except GET { deny all; }
+        proxy_pass $swelux_api/api/hajk/$1?tenant=$cookie_swelux_tenant;
+        proxy_set_header Authorization $swelux_bearer;
+        proxy_set_header Host $host;
+        proxy_read_timeout 120s;
     }
 
-    # Municipality data (light points, street geometry): served from the host, never
-    # part of the public repository.
-    location /swelux-data/ {
-        auth_request /_auth;
-        error_page 401 403 = @login;
-        alias /srv/swelux-data/;
-        add_header Cache-Control "private, max-age=300";
+    location /swelux-api/ {
+        return 404;
     }
 
     location /admin {

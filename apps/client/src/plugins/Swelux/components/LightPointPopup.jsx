@@ -54,7 +54,7 @@ function LightPointPopup({ street, point, onCalculate, onClose }) {
               {named ? street.name : "Ljuspunkt utan gatunamn"}
             </Typography>
             <Typography variant="caption" sx={{ opacity: 0.75 }}>
-              Stolpe {point.stolpe}
+              {point.stolpe ? `Stolpe ${point.stolpe}` : "Ljuspunkt"}
             </Typography>
           </Box>
           <IconButton

@@ -34,7 +34,7 @@ function StreetSummary({ street, clicked }) {
         {street.name}
       </Typography>
       <Typography variant="body2" color="text.secondary">
-        {[street.area, clicked && `stolpe ${clicked.stolpe}`]
+        {[street.area, clicked?.stolpe && `stolpe ${clicked.stolpe}`]
           .filter(Boolean)
           .join(" · ")}
       </Typography>

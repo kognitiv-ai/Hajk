@@ -353,7 +353,7 @@
             "groups": [],
             "layers": [
               {
-                "id": "hisingen-ljuspunkter",
+                "id": "swelux-ljuspunkter",
                 "drawOrder": 1000,
                 "visibleAtStart": true,
                 "infobox": ""
@@ -518,8 +518,10 @@
         "title": "Belysningsberäkning",
         "description": "Beräkna belysning per gata enligt EN 13201",
         "apiBase": "/swelux-api",
-        "lightPointLayerId": "hisingen-ljuspunkter",
-        "streetsUrl": "/swelux-data/hisingen-gator.geojson",
+        "lightPointLayerId": "swelux-ljuspunkter",
+        "streetsUrl": "/swelux-api/hajk/streets",
+        "contextUrl": "/swelux-api/hajk/context",
+        "fitToData": true,
         "defaultProfile": {
           "requiredClass": "M4",
           "roadWidthM": 7,
@@ -543,7 +545,7 @@
       1329711,
       7913940
     ],
-    "title": "Belysningskarta Hisingen · swelux",
+    "title": "Belysningskarta · swelux",
     "projection": "EPSG:3857",
     "zoom": 12,
     "maxZoom": 18,

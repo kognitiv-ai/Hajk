@@ -29,8 +29,10 @@ The gateway adds the user's token, so the browser never holds an API key.
   "options": {
     "target": "left",
     "apiBase": "/swelux-api",
-    "lightPointLayerId": "hisingen-ljuspunkter",
-    "streetsUrl": "/swelux-data/hisingen-gator.geojson",
+    "lightPointLayerId": "swelux-ljuspunkter",
+    "streetsUrl": "/swelux-api/hajk/streets",
+    "contextUrl": "/swelux-api/hajk/context",
+    "fitToData": true,
     "defaultProfile": { "requiredClass": "M4", "roadWidthM": 7, "lanes": 1, "surfaceClass": "R3",
                         "spacingM": 32, "poleHeightM": 8, "armLengthM": 0.5, "tiltDeg": 5,
                         "arrangement": "single", "maintenanceFactor": 0.9 },
@@ -40,6 +42,8 @@ The gateway adds the user's token, so the browser never holds an API key.
 ```
 
 Light point features need these properties: `gatakey` (street key), `gata` (display name), `omrade`, `armatur`, `effekt_w`, `stolpe` and `id`.
+
+`streetsUrl`, `contextUrl` and `fitToData` are optional. In a municipality's own Hajk, point `lightPointLayerId` at their light point layer and leave them out. `contextUrl` returns the tenant's name for the window footer and whether the user can switch tenant. `fitToData` zooms the map to the light points once they have loaded.
 
 ## Demo deployment
 
@@ -53,16 +57,22 @@ swelux/
 └── deploy.sh                   pull, build and restart on the server
 ```
 
-On the server, `swelux/.env` sets:
+`swelux/.env` on the server is optional. It can set `GATEWAY_PORT` (default 8092) and `SWELUX_API_UPSTREAM`.
 
-```
-SWELUX_TENANT=goteborg                 # tenant whose members may open the map
-SWELUX_DATA_DIR=/root/swelux-hajk-data # municipality GeoJSON, never committed
-GATEWAY_PORT=8092
-```
+### Tenants and map data
+
+One deployment serves every tenant:
+- At login, the user picks a tenant (an organisation in swelux.ai). Users with a single tenant skip the picker, and platform admins can pick any tenant. The choice is stored in the `swelux_tenant` cookie.
+- `/login?tenant=<slug>` opens a specific tenant directly, and `/login?switch` shows the picker again.
+- The map shows the picked tenant's light points from `GET /api/hajk/lightpoints`, with street geometry from `GET /api/hajk/streets`.
+
+Platform admins manage map data in swelux.ai under **Admin → Tenants**:
+1. Upload the regular swelux CSV, or a GeoJSON point file, for a tenant.
+2. The worker groups the points into streets and fetches each street's geometry from OpenStreetMap.
+3. A new upload replaces the previous one.
 
 Access rules:
-- Every request passes `auth_request`, which calls `GET /api/Auth/check?tenant=…` on the swelux API. The result is cached for 60 s per token.
-- Users who aren't signed in are redirected to `/login`.
+- Every request passes `auth_request`, which calls `GET /api/Auth/check?tenant=<swelux_tenant>` on the swelux API. The result is cached for 60 s per token and tenant.
+- Users who aren't signed in, or who haven't picked a tenant they belong to, are redirected to `/login`.
 - Hajk admin is not exposed, and Hajk only accepts `GET`.
-- Municipality data (light points, street geometry) is served from `SWELUX_DATA_DIR` behind the same gate and is not part of this repository.
+- No municipality data is stored in this repository or on the Hajk host.
