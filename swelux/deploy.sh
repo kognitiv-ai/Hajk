@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # Deploy the swelux Hajk demo to kog-prod: pull the fork on the server, build there
-# (native amd64) and restart. Map data is per tenant and served by the swelux API.
+# (native amd64) and restart. Map data is per organisation and served by swelux-platform.
 
 HOST="${HOST:-root@kog-prod}"
 BRANCH="${BRANCH:-master}"
