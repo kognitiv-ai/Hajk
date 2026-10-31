@@ -1,15 +1,37 @@
 # Gateway in front of a swelux Hajk instance.
 #
-# Every request needs a swelux.ai login (JWT in the swelux_token cookie) and a
-# tenant picked at login (slug in the swelux_tenant cookie) that the user belongs
-# to; platform admins may pick any tenant. Both are checked against the swelux API
-# with auth_request, and the token is forwarded as a bearer token, so the browser
-# never handles API keys. The map shows the picked tenant's light points, served
-# by the API. Hajk itself is served read-only: no admin, GET only.
+# Every request needs a swelux.ai sign-in and an organisation picked at sign-in
+# that the user may open. Sign-in is the platform's own e-mailed one-time code;
+# the gateway proxies /api/v1/sessions* to the platform on this origin, so the
+# platform's refresh cookie (HttpOnly, Path=/api/v1/sessions) is first-party here.
+#
+# Cookies set by the login page and by session.js (both in ./login):
+#   swelux_token           the current platform access token (15 min). nginx turns
+#                          it into "Authorization: Bearer", because Hajk's layer
+#                          loader fetches the light points without our headers.
+#   swelux_token_expires   when that token expires (ms since epoch), for session.js.
+#   swelux_tenant          id (GUID) of the picked organisation.
+#
+# The gate is auth_request against GET /api/v1/organisations/<swelux_tenant>/map/access
+# (204 = allowed). Only the map API of the picked organisation and the sign-in
+# routes are exposed; everything else under /api is 404. Hajk itself is served
+# read-only: no admin, GET only.
 
 map $cookie_swelux_token $swelux_bearer {
     ""      "";
     default "Bearer $cookie_swelux_token";
+}
+
+# The organisation id goes into upstream URLs, so only a GUID is accepted.
+map $cookie_swelux_tenant $swelux_tenant {
+    "~*^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$" $cookie_swelux_tenant;
+    default "";
+}
+
+# Map API calls must name the organisation the gate checked (the picked one).
+map "$swelux_path_org:$swelux_tenant" $swelux_other_org {
+    "~*^([0-9a-f-]{36}):\1$" 0;
+    default 1;
 }
 
 proxy_cache_path /var/cache/nginx/swelux-auth levels=1 keys_zone=swelux_auth:1m max_size=10m inactive=10m;
@@ -24,21 +46,23 @@ server {
 
     gzip on;
     gzip_proxied any;
-    gzip_types application/json application/geo+json;
+    gzip_types application/json application/geo+json application/problem+json application/javascript;
 
-    # Docker's resolver, so restarts of Hajk or the API (new IPs) are picked up.
+    # Docker's resolver, so restarts of Hajk or the platform (new IPs) are picked up.
     resolver 127.0.0.11 valid=10s ipv6=off;
     set $hajk ${HAJK_UPSTREAM};
-    set $swelux_api ${SWELUX_API_UPSTREAM};
+    set $platform ${SWELUX_PLATFORM_UPSTREAM};
 
     add_header X-Content-Type-Options nosniff always;
     add_header Referrer-Policy same-origin always;
 
-    # ---- public: login page and the login call itself ----
+    # ---- public: login page, session script, sign-in ----
 
     location = /login {
         default_type text/html;
         add_header Cache-Control "no-store";
+        add_header X-Content-Type-Options nosniff always;
+        add_header Referrer-Policy same-origin always;
         alias /usr/share/nginx/login/login.html;
     }
 
@@ -46,39 +70,96 @@ server {
         alias /usr/share/nginx/login/logo.svg;
     }
 
-    location = /swelux-api/auth/login {
-        limit_except POST { deny all; }
-        proxy_pass $swelux_api/api/Auth/login;
-        proxy_set_header Host $host;
+    # Keeps swelux_token fresh; injected into Hajk's index.html below.
+    location = /login/session.js {
+        default_type application/javascript;
+        add_header Cache-Control "no-cache";
+        add_header X-Content-Type-Options nosniff always;
+        alias /usr/share/nginx/login/session.js;
     }
 
+    # The login page signs out (DELETE /api/v1/sessions/current), clears the
+    # cookies and shows the form.
     location = /logout {
-        add_header Set-Cookie "swelux_token=; Path=/; Max-Age=0; Secure; SameSite=Strict";
-        add_header Set-Cookie "swelux_tenant=; Path=/; Max-Age=0; Secure; SameSite=Strict";
-        return 302 /login;
+        default_type text/html;
+        add_header Cache-Control "no-store";
+        add_header X-Content-Type-Options nosniff always;
+        add_header Referrer-Policy same-origin always;
+        alias /usr/share/nginx/login/login.html;
     }
 
-    # Tenants the logged-in user may open, for the picker on the login page. The
-    # API checks the token itself.
-    location = /swelux-api/hajk/tenants {
+    # Platform sessions: e-mail a code, sign in with it, refresh, sign out. The
+    # platform checks Origin on refresh and sign-out; browsers send it on POST and
+    # DELETE and nginx passes it through.
+    location = /api/v1/sessions/codes {
+        limit_except POST { deny all; }
+        proxy_pass $platform/api/v1/sessions/codes;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto https;
+    }
+
+    location = /api/v1/sessions {
+        limit_except POST { deny all; }
+        proxy_pass $platform/api/v1/sessions;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto https;
+    }
+
+    location = /api/v1/sessions/refresh {
+        limit_except POST { deny all; }
+        proxy_pass $platform/api/v1/sessions/refresh;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto https;
+    }
+
+    location = /api/v1/sessions/current {
+        limit_except DELETE { deny all; }
+        proxy_pass $platform/api/v1/sessions/current;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto https;
+    }
+
+    # The signed-in user, and the organisations whose map they may open (for the
+    # picker on the login page). The platform checks the token itself.
+    location ~ ^/api/v1/me(?<swelux_me_route>/map-organisations)?$ {
         limit_except GET { deny all; }
-        proxy_pass $swelux_api/api/hajk/tenants;
+        proxy_pass $platform/api/v1/me$swelux_me_route;
         proxy_set_header Authorization $swelux_bearer;
         proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-Proto https;
     }
 
     # ---- the gate ----
 
     location = /_auth {
         internal;
-        proxy_pass $swelux_api/api/Auth/check?tenant=$cookie_swelux_tenant;
+        if ($swelux_tenant = "") { return 403; }
+        # The subrequest inherits the method of the request it guards (POST for
+        # the evaluations); the access check is a GET.
+        proxy_method GET;
+        proxy_pass $platform/api/v1/organisations/$swelux_tenant/map/access;
         proxy_pass_request_body off;
         proxy_set_header Content-Length "";
         proxy_set_header Authorization $swelux_bearer;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-Proto https;
         proxy_cache swelux_auth;
-        proxy_cache_key "$cookie_swelux_token|$cookie_swelux_tenant";
+        proxy_cache_key "$cookie_swelux_token|$swelux_tenant";
         proxy_cache_valid 204 60s;
         proxy_cache_valid any 0;
+        proxy_ignore_headers Cache-Control Expires Set-Cookie Vary;
+        # The platform answers 404 to non-members; auth_request only understands
+        # 401 and 403 as "denied" (anything else would be a 500).
+        proxy_intercept_errors on;
+        error_page 400 404 = @auth_denied;
+    }
+
+    location @auth_denied {
+        return 403;
     }
 
     location @login {
@@ -87,36 +168,47 @@ server {
 
     # ---- protected ----
 
-    # Calculation API for the plugin: only the street-lighting endpoints are exposed.
-    location /swelux-api/street-lighting/ {
-        auth_request /_auth;
-        rewrite ^/swelux-api/(.*)$ /api/$1 break;
-        proxy_pass $swelux_api;
-        proxy_set_header Authorization $swelux_bearer;
-        proxy_set_header Host $host;
-        proxy_read_timeout 300s;
-    }
-
-    # Light distribution (LDT) of one luminaire, for the plugin's polar diagram.
-    location ~ ^/swelux-api/luminaires/(\d+)/photometry$ {
-        auth_request /_auth;
-        rewrite ^/swelux-api/luminaires/(\d+)/photometry$ /api/Luminare/$1/photometry-data break;
-        proxy_pass $swelux_api;
-        proxy_set_header Authorization $swelux_bearer;
-        proxy_set_header Host $host;
-    }
-
-    # The picked tenant's map data (light points, street geometry, name) as GeoJSON.
-    location ~ ^/swelux-api/hajk/(lightpoints|streets|context)$ {
+    # The picked organisation's map API, read-only.
+    location ~ "^/api/v1/organisations/(?<swelux_path_org>[^/]+)/map/(?<swelux_map_route>context|light-points|streets|luminaires|luminaires/[0-9A-Fa-f-]{36}/(?:photometry|photometric-file))$" {
         auth_request /_auth;
         limit_except GET { deny all; }
-        proxy_pass $swelux_api/api/hajk/$1?tenant=$cookie_swelux_tenant;
+        if ($swelux_other_org) { return 404; }
+        proxy_pass $platform/api/v1/organisations/$swelux_tenant/map/$swelux_map_route;
         proxy_set_header Authorization $swelux_bearer;
         proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-Proto https;
         proxy_read_timeout 120s;
     }
 
-    location /swelux-api/ {
+    # Evaluations: the only POSTs past the gate. A whole catalogue takes a while.
+    location ~ "^/api/v1/organisations/(?<swelux_path_org>[^/]+)/map/(?<swelux_map_route>evaluations|evaluations/detail)$" {
+        auth_request /_auth;
+        limit_except POST { deny all; }
+        if ($swelux_other_org) { return 404; }
+        proxy_pass $platform/api/v1/organisations/$swelux_tenant/map/$swelux_map_route;
+        proxy_set_header Authorization $swelux_bearer;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-Proto https;
+        proxy_read_timeout 300s;
+    }
+
+    # Light points for Hajk's vector layer (layers.json). The layer URL is static,
+    # so the gateway fills in the picked organisation.
+    location = /swelux-map/light-points {
+        auth_request /_auth;
+        limit_except GET { deny all; }
+        proxy_pass $platform/api/v1/organisations/$swelux_tenant/map/light-points;
+        proxy_set_header Authorization $swelux_bearer;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-Proto https;
+        proxy_read_timeout 120s;
+    }
+
+    location /api/ {
+        return 404;
+    }
+
+    location /swelux-map/ {
         return 404;
     }
 
@@ -132,5 +224,9 @@ server {
         proxy_set_header Host $host;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto https;
+        # Load session.js into Hajk's page to keep the access token fresh.
+        proxy_set_header Accept-Encoding "";
+        sub_filter "</head>" "<script src=\"/login/session.js\" defer></script></head>";
+        sub_filter_once on;
     }
 }

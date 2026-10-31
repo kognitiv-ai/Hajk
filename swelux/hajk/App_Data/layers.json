@@ -8,7 +8,7 @@
     {
       "id": "swelux-ljuspunkter",
       "caption": "Ljuspunkter (befintlig armatur)",
-      "url": "/swelux-api/hajk/lightpoints",
+      "url": "/swelux-map/light-points",
       "layer": "swelux:ljuspunkter",
       "dataFormat": "GeoJSON",
       "projection": "EPSG:4326",

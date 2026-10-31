@@ -1,7 +1,8 @@
 # Hajk with the Swelux plugin, behind a gateway that requires a swelux.ai login.
 #
-#   GATEWAY_PORT      host port the tunnel / reverse proxy points at
-#   SWELUX_NETWORK    docker network where the swelux API container is reachable
+#   GATEWAY_PORT              host port the tunnel / reverse proxy points at
+#   SWELUX_PLATFORM_UPSTREAM  base URL of the swelux-platform API, as seen from the gateway
+#   SWELUX_NETWORK            docker network where the platform container is reachable
 
 services:
   hajk:
@@ -31,7 +32,7 @@ services:
       - hajk
     environment:
       HAJK_UPSTREAM: http://swelux-hajk:3002
-      SWELUX_API_UPSTREAM: ${SWELUX_API_UPSTREAM:-http://lightwise-calc-engine:5183}
+      SWELUX_PLATFORM_UPSTREAM: ${SWELUX_PLATFORM_UPSTREAM:-http://swelux-platform:8080}
     ports:
       - "127.0.0.1:${GATEWAY_PORT:-8092}:80"
     volumes:
