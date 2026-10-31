@@ -8,9 +8,10 @@ This fork of [Hajk](https://github.com/hajkmap/Hajk) adds **Swelux**, a plugin t
 
 ## How the plugin works
 
-1. Click a light point in the configured vector layer (`lightPointLayerId`). Every point on the same street (`gatakey` property) is selected and highlighted, together with the street geometry from `streetsUrl`.
-2. The road profile is pre-filled. Spacing is estimated from the light points (median nearest-neighbour distance); class, width and the other fields come from `defaultProfile`. Everything can be edited.
-3. Choose one luminaire and press **Beräkna**, or **Hitta bästa armatur** to calculate the tenant's whole catalogue. The window shows pass/fail per requirement and the energy difference against today's wattage.
+1. Click a light point in the configured vector layer (`lightPointLayerId`). Every point with the same `streetId` is selected and highlighted, together with the street's centrelines from `streetsUrl`.
+2. The street and its poles are pre-filled in the platform's terms: a street (`lightingClass`, `width`, `laneCount`, `roadSurfaceId`, `maintenanceFactor`, `averageLuminanceCoefficient`) and a placement (`arrangement` OneSide/Staggered/Opposite/Central, `spacing`, `lightCentreHeight`, `outreach`, `tiltDegrees`). Spacing is estimated from the light points (median nearest-neighbour distance); light centre height and outreach come from the register's `poleHeight` and `armLength` where plausible; the rest from `defaultProfile`. Lighting classes come from the platform's EN 13201 standard and road surfaces from its catalogue. Everything can be edited.
+3. Choose one luminaire and press **Beräkna**, or **Hitta bästa armatur** to calculate the organisation's whole catalogue. The window shows the calculation engine's verdict with each of the class's metrics (value, requirement, status), the platform's ranking (compliant first, then power per kilometre), luminaires that could not be calculated and why, and the energy difference against today's wattage.
+4. **Detaljer** shows the road from above as the engine calculated it (rows, arms, and the calculation field coloured by luminance or illuminance), the metrics per observer, the light distribution, and exports: the photometric file, a DIALux evo exchange file (format v2, with the platform street, placement, street design and luminaire) and print/PDF.
 
 Calls go to the [swelux.ai platform](https://swelux.ai) map API of one organisation, `apiBase` (default `/api/v1/organisations/{tenantId}/map`):
 
@@ -18,12 +19,14 @@ Calls go to the [swelux.ai platform](https://swelux.ai) map API of one organisat
 | --- | --- |
 | `GET /context` | Organisation name, light point count, whether the user can switch organisation |
 | `GET /light-points` | Light points as GeoJSON (normally loaded by Hajk as a vector layer) |
-| `GET /streets` | Street centrelines as GeoJSON, for the highlight |
+| `GET /streets` | Street centrelines as GeoJSON (`streetId`, `street`), for the highlight |
 | `GET /luminaires` | The organisation's luminaires |
-| `POST /evaluations` | One road profile against `luminaireIds` (max 50), or the whole catalogue when `null` |
-| `POST /evaluations/detail` | One luminaire on the profile, with poles and the calculation grid |
-| `GET /luminaires/{id}/photometry` | Polar curves for the light distribution diagram |
-| `GET /luminaires/{id}/photometric-file` | The luminaire's LDT file |
+| `POST /evaluations` | `{ street, placement, luminaireIds }` (max 50, or `null` for the whole catalogue) → the engine's verdicts, ranked |
+| `POST /evaluations/detail` | `{ street, placement, luminaireId }` → the street design and the engine's whole assessment, with grids |
+| `GET /luminaires/{id}/photometry` | Polar curves and key figures of the photometric file |
+| `GET /luminaires/{id}/photometric-file` | The luminaire's photometric file |
+
+Plus the shared reference data `GET /api/v1/standards` (lighting classes; `standardsUrl`) and `GET /api/v1/road-surfaces` (`roadSurfacesUrl`).
 
 Luminaire ids are GUID strings. `{tenantId}` in `apiBase`, `streetsUrl` and `contextUrl` is replaced by the organisation id: the `tenantId` option, or the value of the cookie named by `tenantIdCookie`. Requests are same-origin with cookies; the gateway adds the user's access token, so the browser never holds an API key.
 
@@ -40,15 +43,20 @@ Luminaire ids are GUID strings. `{tenantId}` in `apiBase`, `streetsUrl` and `con
     "streetsUrl": "/api/v1/organisations/{tenantId}/map/streets",
     "contextUrl": "/api/v1/organisations/{tenantId}/map/context",
     "fitToData": true,
-    "defaultProfile": { "requiredClass": "M4", "roadWidthM": 7, "lanes": 1, "surfaceClass": "R3",
-                        "spacingM": 32, "poleHeightM": 8, "armLengthM": 0.5, "tiltDeg": 5,
-                        "arrangement": "single", "maintenanceFactor": 0.9 },
+    "defaultProfile": {
+      "street": { "lightingClass": "M4", "width": 7, "laneCount": 2, "roadSurface": "CIE R3",
+                  "maintenanceFactor": 0.9, "averageLuminanceCoefficient": null },
+      "placement": { "arrangement": "OneSide", "spacing": 32, "lightCentreHeight": 8,
+                     "outreach": 0.5, "tiltDegrees": 5 }
+    },
     "operatingHoursPerYear": 4100
   }
 }
 ```
 
-Light point features need these properties: `gatakey` (street key), `gata` (display name), `omrade`, `armatur`, `effekt_w`, `stolpe` and `id`.
+The default road surface is given by name (`roadSurface`, as listed by `GET /api/v1/road-surfaces`) or by id (`roadSurfaceId`).
+
+Light point features need these properties: `id`, `streetId` (null when the point belongs to no street), `street` (display name), `area`, `poleId`, `existingLuminaire`, `existingManufacturer`, `existingWattage` (W), `poleHeight` and `armLength` (m).
 
 `tenantId` (a fixed organisation id) or `tenantIdCookie` (the cookie a sign-in gateway sets when the user picks an organisation) fills in `{tenantId}`. `streetsUrl`, `contextUrl` and `fitToData` are optional. In a municipality's own Hajk, set `tenantId`, point `lightPointLayerId` at their light point layer and leave the others out. `contextUrl` returns the organisation's name for the window footer and whether the user can switch. `fitToData` zooms the map to the light points once they have loaded.
 
@@ -95,6 +103,6 @@ Platform administrators upload an organisation's light points (swelux CSV or Geo
 Access rules:
 - Every request passes `auth_request`, which calls `GET /api/v1/organisations/<swelux_tenant>/map/access` on the platform (204 = allowed). The result is cached for 60 s per token and organisation.
 - Users who aren't signed in, or who haven't picked an organisation they may open, are redirected to `/login`.
-- Only the sign-in routes, `/api/v1/me`, `/api/v1/me/map-organisations` and the picked organisation's map routes are proxied (`GET`, plus `POST` for the two evaluation routes). Map calls naming another organisation, and everything else under `/api`, get 404.
+- Only the sign-in routes, `/api/v1/me`, `/api/v1/me/map-organisations`, `GET /api/v1/standards` and `GET /api/v1/road-surfaces` (behind the gate) and the picked organisation's map routes are proxied (`GET`, plus `POST` for the two evaluation routes). Map calls naming another organisation, and everything else under `/api/v1`, get 404; Hajk's own `/api/v2` goes to Hajk behind the gate.
 - Hajk admin is not exposed, and Hajk only accepts `GET`.
 - No municipality data is stored in this repository or on the Hajk host.
