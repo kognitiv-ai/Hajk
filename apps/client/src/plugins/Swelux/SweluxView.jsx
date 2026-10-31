@@ -177,7 +177,7 @@ function SweluxView({ model, options, localObserver }) {
     />
   );
 
-  const noData = context?.lightingPointCount === 0;
+  const noData = context?.lightPointCount === 0;
 
   return (
     <Stack spacing={2}>

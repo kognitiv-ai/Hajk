@@ -22,7 +22,7 @@ const SAMPLE_STEP_M = 5;
 /**
  * @summary Map side of the Swelux plugin: finds the street behind a clicked
  * light point, keeps per-street statistics, highlights the selected street and
- * talks to the swelux street-lighting API.
+ * talks to the swelux.ai map API for one organisation.
  */
 export default class SweluxModel {
   #map;
@@ -39,7 +39,7 @@ export default class SweluxModel {
   #popup;
   #windowOpen = false;
   #pointerCursor = false;
-  #context = null; // { name, slug, canSwitch, lightingPointCount } from contextUrl
+  #context = null; // { id, name, slug, canSwitch, lightPointCount } from contextUrl
   #fitted = false;
 
   constructor(settings) {
@@ -72,9 +72,29 @@ export default class SweluxModel {
     this.#waitForLightPoints();
   }
 
+  // Base of the organisation's map API. "{tenantId}" in apiBase, streetsUrl and
+  // contextUrl is replaced by the organisation id: the tenantId option, or the
+  // value of the cookie named by tenantIdCookie (set by a sign-in gateway that
+  // lets the user pick an organisation).
   get apiBase() {
-    return this.#options.apiBase || "/swelux-api";
+    return this.#resolve(
+      this.#options.apiBase || "/api/v1/organisations/{tenantId}/map"
+    );
   }
+
+  #tenantId = () => {
+    if (this.#options.tenantId) return this.#options.tenantId;
+    const name = this.#options.tenantIdCookie;
+    if (!name) return "";
+    const cookie = document.cookie
+      .split(";")
+      .map((c) => c.trim())
+      .find((c) => c.startsWith(`${name}=`));
+    return cookie ? decodeURIComponent(cookie.slice(name.length + 1)) : "";
+  };
+
+  #resolve = (url) =>
+    url.replace("{tenantId}", encodeURIComponent(this.#tenantId()));
 
   getStreets = () =>
     [...this.#streets.values()]
@@ -89,7 +109,7 @@ export default class SweluxModel {
   #loadContext = async () => {
     if (!this.#options.contextUrl) return;
     try {
-      const res = await fetch(this.#options.contextUrl, {
+      const res = await fetch(this.#resolve(this.#options.contextUrl), {
         credentials: "same-origin",
       });
       if (!res.ok) return;
@@ -111,7 +131,7 @@ export default class SweluxModel {
       this.#fitToData(source.getFeatures());
       return;
     }
-    if (this.#context?.lightingPointCount === 0) return;
+    if (this.#context?.lightPointCount === 0) return;
     setTimeout(this.#waitForLightPoints, 500);
   };
 
@@ -190,7 +210,7 @@ export default class SweluxModel {
   #loadRoads = async () => {
     if (!this.#options.streetsUrl) return;
     try {
-      const res = await fetch(this.#options.streetsUrl, {
+      const res = await fetch(this.#resolve(this.#options.streetsUrl), {
         credentials: "same-origin",
       });
       const geojson = await res.json();
@@ -396,7 +416,7 @@ export default class SweluxModel {
     });
   };
 
-  // ---- swelux API (same origin; the gateway adds the user's token) ----
+  // ---- swelux.ai map API (same origin; the gateway adds the user's token) ----
 
   #request = async (path, init = {}) => {
     const res = await fetch(`${this.apiBase}${path}`, {
@@ -411,36 +431,46 @@ export default class SweluxModel {
     }
     const body = await res.json().catch(() => ({}));
     if (!res.ok) {
-      throw new Error(body.error || `Beräkningstjänsten svarade ${res.status}`);
+      // The platform answers with RFC 9457 problem details.
+      throw new Error(
+        body.detail ||
+          body.title ||
+          body.error ||
+          `Beräkningstjänsten svarade ${res.status}`
+      );
     }
     return body;
   };
 
-  fetchLuminaires = () => this.#request("/street-lighting/luminaires");
+  fetchLuminaires = () => this.#request("/luminaires");
 
+  // Luminaire ids are opaque strings (GUIDs); use them as given.
   #photometry = new Map();
 
-  // Intensity distribution from the luminaire's LDT, cached per luminaire.
+  // Intensity distribution from the luminaire's photometric file, cached per luminaire.
   fetchPhotometry = (luminaireId) => {
-    if (!this.#photometry.has(luminaireId)) {
-      const req = this.#request(`/luminaires/${luminaireId}/photometry`);
-      req.catch(() => this.#photometry.delete(luminaireId));
-      this.#photometry.set(luminaireId, req);
+    const key = String(luminaireId);
+    if (!this.#photometry.has(key)) {
+      const req = this.#request(
+        `/luminaires/${encodeURIComponent(key)}/photometry`
+      );
+      req.catch(() => this.#photometry.delete(key));
+      this.#photometry.set(key, req);
     }
-    return this.#photometry.get(luminaireId);
+    return this.#photometry.get(key);
   };
 
   fetchDetail = (profile, luminaireId) =>
-    this.#request("/street-lighting/detail", {
+    this.#request("/evaluations/detail", {
       method: "POST",
       body: JSON.stringify({ ...profile, luminaireId }),
     });
 
   ldtUrl = (luminaireId) =>
-    `${this.apiBase}/street-lighting/luminaires/${luminaireId}/ldt`;
+    `${this.apiBase}/luminaires/${encodeURIComponent(luminaireId)}/photometric-file`;
 
   evaluate = (profile, luminaireIds = null) =>
-    this.#request("/street-lighting/evaluate", {
+    this.#request("/evaluations", {
       method: "POST",
       body: JSON.stringify({ ...profile, luminaireIds }),
     });
