@@ -204,7 +204,9 @@ server {
         proxy_read_timeout 120s;
     }
 
-    location /api/ {
+    # The rest of the platform's API stays private. Hajk's own backend (/api/v2/...: map configuration, layers) is
+    # served by Hajk through the location below, behind the same sign-in gate.
+    location /api/v1/ {
         return 404;
     }
 
