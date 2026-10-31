@@ -71,49 +71,59 @@ export const safeFileName = (s) =>
     .slice(0, 80);
 
 /**
- * Same exchange format swelux.ai's replacement export writes for DIALux evo
- * (format "swelux-dialux-evo-exchange", v1): the street as one typology with
- * geometry and a reference to the luminaire's LDT.
+ * Exchange file for DIALux evo (format "swelux-dialux-evo-exchange"): the
+ * street as one typology. Version 2 carries the street and placement in the
+ * swelux.ai platform's terms, the street design the engine calculated
+ * (areas, pole design, rows) and the chosen luminaire with a reference to its
+ * photometric file.
  */
 export function buildEvoExchange({
   street,
   profile,
   detail,
+  surface,
   ldtFileName,
-  flux,
 }) {
+  const { luminaire, evaluation } = detail;
   return {
     format: "swelux-dialux-evo-exchange",
-    formatVersion: 1,
+    formatVersion: 2,
     note:
       "Structured Swelux→DIALux evo exchange. Import the typology as a street scene; " +
-      "photometryRef points at the manufacturer LDT (download it alongside). " +
+      "photometryRef points at the manufacturer's photometric file (download it alongside). " +
       "Full binary .STF export is on the roadmap.",
     project: "Hajk · swelux",
     dataset: street.name,
     typologies: [
       {
         typologyId: street.key,
-        description: `${street.name} (${street.area})`,
-        lightingClass: profile.requiredClass,
-        geometry: {
-          roadWidthM: profile.roadWidthM,
-          lanes: profile.lanes,
-          poleHeightM: profile.poleHeightM,
-          armLengthM: profile.armLengthM,
-          tiltDeg: profile.tiltDeg,
-          spacingM: profile.spacingM,
-          arrangement: profile.arrangement,
-          surfaceClass: profile.surfaceClass,
-        },
+        description: [street.name, street.area].filter(Boolean).join(" · "),
+        standard: evaluation.standard?.id || detail.design.standardId,
+        lightingClass: profile.street.lightingClass,
+        street: profile.street,
+        roadSurface: surface
+          ? {
+              id: surface.id,
+              name: surface.name,
+              averageLuminanceCoefficient: surface.averageLuminanceCoefficient,
+            }
+          : null,
+        placement: profile.placement,
+        design: detail.design,
         luminaire: {
-          name: detail.luminaire.name,
-          vendor: detail.luminaire.manufacturer,
-          articleNumber: detail.luminaire.articleNumber || "",
+          id: luminaire.id,
+          name: luminaire.name,
+          manufacturer: luminaire.manufacturer,
+          articleNumber: luminaire.articleNumber || "",
+          luminousFlux: luminaire.luminousFlux,
+          systemPower: luminaire.systemPower,
           photometryRef: ldtFileName,
-          lumens: flux || 0,
-          wattage: detail.luminaire.powerW,
-          cct: 0,
+        },
+        result: {
+          status: evaluation.status,
+          metrics: evaluation.areas[0]?.metrics || [],
+          polesPerKilometre: detail.polesPerKilometre,
+          powerPerKilometre: detail.powerPerKilometre,
         },
         quantity: street.stats.count,
       },

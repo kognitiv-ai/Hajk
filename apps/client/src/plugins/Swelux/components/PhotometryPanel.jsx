@@ -15,14 +15,8 @@ function Fact({ label, value }) {
   );
 }
 
-/** The luminaire's light distribution from its LDT, with the key figures. */
-function PhotometryPanel({ data, powerW }) {
-  const flux = data.luminousFlux > 0 ? data.luminousFlux : null;
-  const lor = data.lightOutputRatio > 0 ? data.lightOutputRatio : null;
-  // LDT flux is lamp flux; the luminaire emits flux × LOR.
-  const emitted = flux && lor ? (flux * lor) / (lor > 1 ? 100 : 1) : flux;
-  const efficacy = emitted && powerW > 0 ? emitted / powerW : null;
-
+/** What the engine reads from the luminaire's photometric file. */
+function PhotometryPanel({ data }) {
   return (
     <Stack
       direction="row"
@@ -35,12 +29,16 @@ function PhotometryPanel({ data, powerW }) {
         <Typography variant="caption" color="text.secondary">
           Ljusfördelning
         </Typography>
-        {emitted && <Fact label="Ljusflöde" value={`${nf(emitted)} lm`} />}
-        {efficacy && <Fact label="Ljusutbyte" value={`${nf(efficacy)} lm/W`} />}
-        {lor && (
+        {data.luminousFlux > 0 && (
+          <Fact label="Ljusflöde" value={`${nf(data.luminousFlux)} lm`} />
+        )}
+        {data.efficacy > 0 && (
+          <Fact label="Ljusutbyte" value={`${nf(data.efficacy)} lm/W`} />
+        )}
+        {data.maximumIntensity > 0 && (
           <Fact
-            label="Verkningsgrad (LOR)"
-            value={`${nf(lor > 1 ? lor : lor * 100)} %`}
+            label="Största ljusstyrka"
+            value={`${nf(data.maximumIntensity)} cd`}
           />
         )}
       </Stack>

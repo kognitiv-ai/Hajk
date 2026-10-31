@@ -14,6 +14,7 @@ import {
   Table,
   TableBody,
   TableCell,
+  TableHead,
   TableRow,
   ToggleButton,
   ToggleButtonGroup,
@@ -26,10 +27,19 @@ import PrintOutlinedIcon from "@mui/icons-material/PrintOutlined";
 import DownloadOutlinedIcon from "@mui/icons-material/DownloadOutlined";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
+import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
 
 import RoadPlan from "./RoadPlan";
 import PolarDiagram from "./PolarDiagram";
-import { arrangementLabel, checksFor, nf } from "../utils";
+import MetricTable from "./MetricTable";
+import {
+  arrangementLabel,
+  formatMetric,
+  gridsFor,
+  metricLabel,
+  nf,
+  statusText,
+} from "../utils";
 import {
   buildEvoExchange,
   downloadJson,
@@ -84,13 +94,15 @@ function DetailsDialog({
   street,
   profile,
   luminaireId,
+  surface,
+  hours,
   photometry,
 }) {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
   const [detail, setDetail] = React.useState(null);
   const [error, setError] = React.useState(null);
-  const [quantity, setQuantity] = React.useState("L");
+  const [quantity, setQuantity] = React.useState("Luminance");
   const contentRef = React.useRef(null);
 
   React.useEffect(() => {
@@ -108,16 +120,23 @@ function DetailsDialog({
   }, [open, model, profile, luminaireId]);
 
   const lum = detail?.luminaire;
-  const res = detail?.result;
-  const checks = res ? checksFor(res, detail.target) : [];
+  const area = detail?.evaluation.areas[0];
+  const status = detail?.evaluation.status;
+  const lightingClass = area?.lightingClass || profile.street.lightingClass;
+  const hasLuminance = gridsFor(area, "Luminance").length > 0;
+  const shownQuantity = hasLuminance ? quantity : "HorizontalIlluminance";
   const ldtFileName = lum
     ? `${safeFileName(`${lum.manufacturer} ${lum.name}`)}.ldt`
     : "";
-  const flux = photometry?.luminousFlux > 0 ? photometry.luminousFlux : null;
+  const flux = photometry?.luminousFlux || lum?.luminousFlux || null;
+  const efficacy =
+    photometry?.efficacy ||
+    (flux && lum?.systemPower ? flux / lum.systemPower : null);
+  const pass = status === "Compliant";
 
   const exportEvo = () =>
     downloadJson(
-      buildEvoExchange({ street, profile, detail, ldtFileName, flux }),
+      buildEvoExchange({ street, profile, detail, surface, ldtFileName }),
       `${safeFileName(street.name)}_dialux-evo.json`
     );
 
@@ -143,23 +162,34 @@ function DetailsDialog({
       >
         <Box sx={{ flex: 1, minWidth: 0 }}>
           <Typography variant="overline" sx={{ opacity: 0.7, lineHeight: 1.4 }}>
-            {street.name} · {profile.requiredClass}
+            {street.name} · {lightingClass}
           </Typography>
           <Typography variant="h6" sx={{ fontWeight: 600, lineHeight: 1.25 }}>
             {lum?.name || "Beräknar …"}
           </Typography>
           {lum && (
             <Typography variant="body2" sx={{ opacity: 0.8 }}>
-              {lum.manufacturer} · {nf(lum.powerW, 1)} W
+              {lum.manufacturer}
+              {lum.systemPower ? ` · ${nf(lum.systemPower, 1)} W` : ""}
               {lum.articleNumber ? ` · art.nr ${lum.articleNumber}` : ""}
             </Typography>
           )}
         </Box>
-        {res && (
+        {status && (
           <Chip
-            icon={res.compliant ? <CheckCircleIcon /> : <CancelIcon />}
-            color={res.compliant ? "success" : "error"}
-            label={`${res.compliant ? "Uppfyller" : "Uppfyller inte"} ${detail.requiredClass}`}
+            icon={
+              pass ? (
+                <CheckCircleIcon />
+              ) : status === "NonCompliant" ? (
+                <CancelIcon />
+              ) : (
+                <RemoveCircleOutlineIcon />
+              )
+            }
+            color={
+              pass ? "success" : status === "NonCompliant" ? "error" : "default"
+            }
+            label={statusText(status, lightingClass)}
             sx={{ mt: 0.5, fontWeight: 600 }}
           />
         )}
@@ -185,31 +215,34 @@ function DetailsDialog({
             <Box sx={{ display: "none", "@media print": { display: "block" } }}>
               <Typography variant="h5">{lum.name}</Typography>
               <Typography>
-                {lum.manufacturer} · {street.name} · {detail.requiredClass} ·{" "}
-                {res.compliant ? "uppfyller" : "uppfyller inte"} kraven
+                {lum.manufacturer} · {street.name} ·{" "}
+                {statusText(status, lightingClass).toLowerCase()}
               </Typography>
             </Box>
 
             <Section
               title={`Vägen ovanifrån · ${FIELDS_LABEL}`}
               action={
-                <ToggleButtonGroup
-                  size="small"
-                  exclusive
-                  value={quantity}
-                  onChange={(e, v) => v && setQuantity(v)}
-                  data-print-hide
-                >
-                  <ToggleButton value="L">Luminans</ToggleButton>
-                  <ToggleButton value="E">Belysningsstyrka</ToggleButton>
-                </ToggleButtonGroup>
+                hasLuminance && (
+                  <ToggleButtonGroup
+                    size="small"
+                    exclusive
+                    value={shownQuantity}
+                    onChange={(e, v) => v && setQuantity(v)}
+                    data-print-hide
+                  >
+                    <ToggleButton value="Luminance">Luminans</ToggleButton>
+                    <ToggleButton value="HorizontalIlluminance">
+                      Belysningsstyrka
+                    </ToggleButton>
+                  </ToggleButtonGroup>
+                )
               }
             >
               <RoadPlan
-                detail={detail}
-                quantity={quantity}
-                spacing={profile.spacingM}
-                arrangement={profile.arrangement}
+                design={detail.design}
+                evaluation={detail.evaluation}
+                quantity={shownQuantity}
               />
               <Typography
                 variant="caption"
@@ -219,7 +252,7 @@ function DetailsDialog({
               >
                 Beräkningsfältet enligt EN 13201-3 (ett stolpavstånd) upprepat
                 längs vägen.
-                {quantity === "L"
+                {shownQuantity === "Luminance"
                   ? " Luminans som medel över observatörerna."
                   : ""}
               </Typography>
@@ -238,53 +271,27 @@ function DetailsDialog({
                 </Section>
               </Grid>
               <Grid size={{ xs: 12, sm: 7 }}>
-                <Section title={`Resultat mot ${detail.requiredClass}`}>
-                  <Table size="small">
-                    <TableBody>
-                      {checks.map((c) => (
-                        <TableRow key={c.label}>
-                          <TableCell sx={{ pl: 0 }}>{c.label}</TableCell>
-                          <TableCell
-                            align="right"
-                            sx={{
-                              fontWeight: 600,
-                              fontVariantNumeric: "tabular-nums",
-                            }}
-                          >
-                            {nf(c.value, c.d)}
-                            {c.unit && ` ${c.unit}`}
-                          </TableCell>
-                          <TableCell
-                            align="right"
-                            sx={{ color: "text.secondary" }}
-                          >
-                            {c.op} {nf(c.req, c.d)}
-                          </TableCell>
-                          <TableCell padding="checkbox" sx={{ pr: 0 }}>
-                            {c.ok ? (
-                              <CheckCircleIcon
-                                color="success"
-                                fontSize="small"
-                              />
-                            ) : (
-                              <CancelIcon color="error" fontSize="small" />
-                            )}
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
+                <Section title={`Resultat mot ${lightingClass}`}>
+                  <MetricTable metrics={area.metrics} />
                   <Box sx={{ mt: 2 }}>
                     <KeyValues
                       rows={[
-                        [
-                          "Belysningsstyrka medel / min / max",
-                          `${nf(res.eavg, 1)} / ${nf(res.emin, 1)} / ${nf(res.emax, 1)} lx`,
-                        ],
-                        ["Kantbelysningsförhållande (EIR)", nf(res.eir, 2)],
+                        ["Stolpar per km", nf(detail.polesPerKilometre, 1)],
+                        ...(detail.powerPerKilometre != null
+                          ? [
+                              [
+                                "Effekt per km",
+                                `${nf(detail.powerPerKilometre / 1000, 2)} kW`,
+                              ],
+                              [
+                                "Energi per km och år",
+                                `${nf((detail.powerPerKilometre * (hours || detail.design.annualOperatingHours)) / 1000)} kWh`,
+                              ],
+                            ]
+                          : []),
                         ...(flux ? [["Ljusflöde", `${nf(flux)} lm`]] : []),
-                        ...(flux && lum.powerW
-                          ? [["Ljusutbyte", `${nf(flux / lum.powerW)} lm/W`]]
+                        ...(efficacy
+                          ? [["Ljusutbyte", `${nf(efficacy)} lm/W`]]
                           : []),
                       ]}
                     />
@@ -293,36 +300,51 @@ function DetailsDialog({
               </Grid>
             </Grid>
 
+            {area.observers.length > 0 && (
+              <Section title="Per observatör">
+                <ObserverTable observers={area.observers} />
+              </Section>
+            )}
+
             <Section title="Förutsättningar">
               <Grid container spacing={3}>
                 <Grid size={{ xs: 12, sm: 6 }}>
                   <KeyValues
                     rows={[
-                      ["Gata", `${street.name}, ${street.area}`],
-                      ["Belysningsklass", profile.requiredClass],
+                      [
+                        "Gata",
+                        [street.name, street.area].filter(Boolean).join(", "),
+                      ],
+                      ["Belysningsklass", lightingClass],
                       [
                         "Vägbredd / körfält",
-                        `${nf(profile.roadWidthM, 1)} m / ${profile.lanes}`,
+                        `${nf(profile.street.width, 1)} m / ${profile.street.laneCount}`,
                       ],
-                      ["Beläggning", `CIE ${profile.surfaceClass}`],
+                      [
+                        "Beläggning / Q0",
+                        `${surface?.name || "–"} / ${nf(profile.street.averageLuminanceCoefficient ?? surface?.averageLuminanceCoefficient, 2)}`,
+                      ],
                     ]}
                   />
                 </Grid>
                 <Grid size={{ xs: 12, sm: 6 }}>
                   <KeyValues
                     rows={[
-                      ["Uppställning", arrangementLabel(profile.arrangement)],
+                      [
+                        "Uppställning",
+                        arrangementLabel(profile.placement.arrangement),
+                      ],
                       [
                         "Stolpavstånd / ljuspunktshöjd",
-                        `${nf(profile.spacingM)} m / ${nf(profile.poleHeightM, 1)} m`,
+                        `${nf(profile.placement.spacing)} m / ${nf(profile.placement.lightCentreHeight, 1)} m`,
                       ],
                       [
                         "Utliggare / lutning",
-                        `${nf(profile.armLengthM, 1)} m / ${nf(profile.tiltDeg)}°`,
+                        `${nf(profile.placement.outreach, 1)} m / ${nf(profile.placement.tiltDegrees)}°`,
                       ],
                       [
                         "Underhållsfaktor",
-                        nf(detail.assumptions.maintenanceFactor, 2),
+                        nf(detail.design.maintenanceFactor, 2),
                       ],
                     ]}
                   />
@@ -334,8 +356,9 @@ function DetailsDialog({
                 component="p"
                 sx={{ mt: 1.5 }}
               >
-                Beräknat med swelux.ai enligt EN 13201-2/-3 med tillverkarens
-                ljusdata (LDT). Förhandsversion – klass och vägbredd är
+                Beräknat med swelux.ai enligt{" "}
+                {detail.evaluation.standard?.title || "EN 13201-2/-3"} med
+                tillverkarens ljusdata. Förhandsversion – klass och vägbredd är
                 standardvärden tills de hämtas från GIS/NVDB.
               </Typography>
             </Section>
@@ -376,5 +399,48 @@ function DetailsDialog({
 }
 
 const FIELDS_LABEL = "tre stolpavstånd";
+
+/** The observer-dependent metrics per observer (M classes): one row each. */
+function ObserverTable({ observers }) {
+  const metrics = observers[0].metrics;
+  return (
+    <Box sx={{ overflowX: "auto" }}>
+      <Table size="small">
+        <TableHead>
+          <TableRow>
+            <TableCell sx={{ pl: 0 }}>Observatör</TableCell>
+            {metrics.map((m) => (
+              <TableCell key={m.id} align="right" title={metricLabel(m)}>
+                {m.symbol}
+              </TableCell>
+            ))}
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {observers.map((o, i) => (
+            <TableRow key={o.id}>
+              <TableCell sx={{ pl: 0 }} title={o.description}>
+                Körfält {i + 1}
+              </TableCell>
+              {o.metrics.map((m) => (
+                <TableCell
+                  key={m.id}
+                  align="right"
+                  sx={{
+                    fontVariantNumeric: "tabular-nums",
+                    color:
+                      m.status === "NonCompliant" ? "error.main" : undefined,
+                  }}
+                >
+                  {formatMetric(m)}
+                </TableCell>
+              ))}
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </Box>
+  );
+}
 
 export default DetailsDialog;

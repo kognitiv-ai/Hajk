@@ -13,39 +13,48 @@ function niceCeil(value) {
   return mul * mag;
 }
 
-// Intensities for the measured C-plane closest to `target` (degrees).
-function plane(data, target, fallback) {
-  const { cPlanes = [], intensitiesByCPlane = [] } = data;
-  let best = -1;
-  let bestDiff = Infinity;
-  cPlanes.forEach((c, i) => {
-    const diff = Math.abs(c - target);
-    if (diff < bestDiff) {
-      bestDiff = diff;
-      best = i;
-    }
+// The engine's curve in the C-plane closest to `target` (0 or 90 degrees).
+function curve(curves, target) {
+  let best = null;
+  curves.forEach((c) => {
+    const diff = Math.abs((((c.cPlaneDegrees - target) % 180) + 180) % 180);
+    const d = Math.min(diff, 180 - diff);
+    if (!best || d < best.d) best = { c, d };
   });
-  const row = best >= 0 ? intensitiesByCPlane[best] : null;
-  return row?.length ? row : fallback || [];
+  return best?.c || null;
 }
 
 /**
- * Luminous intensity distribution in cd/klm, as in a datasheet: C0–C180 and
- * C90–C270 cross-sections, nadir pointing down. Each half is drawn from its own
- * measured plane so asymmetric road optics show their real shape.
+ * Luminous intensity distribution in cd/klm, as in a datasheet: the engine's
+ * polar curves in C0–C180 and C90–C270, nadir pointing down. Each half is its
+ * own plane, so asymmetric road optics show their real shape.
  */
 function PolarDiagram({ data, size = 168 }) {
   const theme = useTheme();
-  const gammas = data?.gammaAngles || [];
-  if (gammas.length === 0) return null;
+  const curves = data?.polarCurves || [];
+  const along = curve(curves, 0);
+  const across = curve(curves, 90);
+  if (!along) return null;
 
   const perKlm = data.luminousFlux > 0 ? data.luminousFlux / 1000 : 1;
-  const norm = (row) => gammas.map((_, i) => Math.max(0, row[i] ?? 0) / perKlm);
-  const c0 = norm(plane(data, 0, data.c0C180));
-  const c180 = norm(plane(data, 180, data.c0C180));
-  const c90 = norm(plane(data, 90, data.c90C270));
-  const c270 = norm(plane(data, 270, data.c90C270));
-  const max = niceCeil(Math.max(1, ...c0, ...c180, ...c90, ...c270));
+  const halves = (c) =>
+    c
+      ? {
+          gammas: c.gammaDegrees,
+          right: c.candela.map((v) => Math.max(0, v ?? 0) / perKlm),
+          left: c.oppositeCandela.map((v) => Math.max(0, v ?? 0) / perKlm),
+        }
+      : null;
+  const c0 = halves(along);
+  const c90 = halves(across && across !== along ? across : null);
+  const max = niceCeil(
+    Math.max(
+      1,
+      ...c0.right,
+      ...c0.left,
+      ...(c90 ? [...c90.right, ...c90.left] : [])
+    )
+  );
 
   const pad = 14;
   const r = (size - 2 * pad) / (2 * Math.sin((MAX_GAMMA * Math.PI) / 180));
@@ -58,7 +67,7 @@ function PolarDiagram({ data, size = 168 }) {
     const len = (value / max) * r;
     return [cx + side * len * Math.sin(rad), cy + len * Math.cos(rad)];
   };
-  const path = (right, left) => {
+  const path = ({ gammas, right, left }) => {
     const pts = [];
     for (let i = gammas.length - 1; i >= 0; i--)
       if (gammas[i] <= MAX_GAMMA) pts.push(point(left[i], gammas[i], -1));
@@ -105,16 +114,18 @@ function PolarDiagram({ data, size = 168 }) {
             );
           })
         )}
+        {c90 && (
+          <path
+            d={path(c90)}
+            fill={secondary}
+            fillOpacity={0.18}
+            stroke={secondary}
+            strokeWidth={1.75}
+            strokeDasharray="4 2"
+          />
+        )}
         <path
-          d={path(c90, c270)}
-          fill={secondary}
-          fillOpacity={0.18}
-          stroke={secondary}
-          strokeWidth={1.75}
-          strokeDasharray="4 2"
-        />
-        <path
-          d={path(c0, c180)}
+          d={path(c0)}
           fill={primary}
           fillOpacity={0.12}
           stroke={primary}
@@ -129,7 +140,7 @@ function PolarDiagram({ data, size = 168 }) {
       </svg>
       <Stack direction="row" spacing={1.5} sx={{ mt: 0.25 }}>
         <Legend color={primary} label="C0–C180" />
-        <Legend color={secondary} label="C90–C270" dashed />
+        {c90 && <Legend color={secondary} label="C90–C270" dashed />}
       </Stack>
       <Typography variant="caption" color="text.secondary">
         cd/klm

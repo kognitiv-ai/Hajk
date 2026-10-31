@@ -1,9 +1,9 @@
 import React from "react";
 import { Box, Stack, Typography } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
-import { nf } from "../utils";
+import { gridsFor, nf } from "../utils";
 
-const FIELDS = 3; // three pole spacings → four poles on a one-sided road
+const FIELDS = 3; // the calculation field (one spacing) repeated three times
 const PX_PER_M = 9;
 const MARGIN_M = 3.5;
 const SIDE_M = 2; // room for the outermost poles
@@ -28,14 +28,20 @@ function niceStep(max, bands) {
   return (n <= 1 ? 1 : n <= 2 ? 2 : n <= 2.5 ? 2.5 : n <= 5 ? 5 : 10) * mag;
 }
 
-// Regular grid of calculation points → lookup with bilinear interpolation.
-function buildField(grid, column) {
-  const xs = [...new Set(grid.map((p) => p[0]))].sort((a, b) => a - b);
-  const ys = [...new Set(grid.map((p) => p[1]))].sort((a, b) => a - b);
-  const index = new Map(grid.map((p) => [`${p[0]}|${p[1]}`, p[column]]));
-  const at = (i, j) => index.get(`${xs[i]}|${ys[j]}`) ?? 0;
+/**
+ * The grids of one quantity as a lookup with bilinear interpolation. The
+ * engine's GridDto has values[i][j] at (x[i], y[j]); several grids of the same
+ * quantity on the same points (luminance per observer) are averaged.
+ */
+function buildField(grids) {
+  const { x: xs, y: ys } = grids[0];
+  const same = grids.filter(
+    (g) => g.x.length === xs.length && g.y.length === ys.length
+  );
+  const at = (i, j) =>
+    same.reduce((sum, g) => sum + (g.values[i]?.[j] ?? 0), 0) / same.length;
   const locate = (arr, v) => {
-    if (v <= arr[0]) return [0, 0, 0];
+    if (arr.length === 1 || v <= arr[0]) return [0, 0, 0];
     if (v >= arr[arr.length - 1]) return [arr.length - 1, arr.length - 1, 0];
     let i = 0;
     while (arr[i + 1] < v) i++;
@@ -48,75 +54,81 @@ function buildField(grid, column) {
     const b = at(i0, j1) * (1 - tx) + at(i1, j1) * tx;
     return a * (1 - ty) + b * ty;
   };
-  return { sample, max: Math.max(...grid.map((p) => p[column])) };
+  let max = 0;
+  xs.forEach((_, i) => ys.forEach((__, j) => (max = Math.max(max, at(i, j)))));
+  return { sample, max };
 }
 
 /**
- * The road from above over three pole spacings: the EN 13201-3 calculation
- * field repeated along the road, coloured by luminance or illuminance in steps.
+ * The road from above over three pole spacings, as the engine calculated it:
+ * the areas across the road and the rows of poles from the design, the
+ * calculation field coloured by luminance or illuminance in steps.
  */
-function RoadPlan({ detail, quantity, spacing, arrangement }) {
+function RoadPlan({ design, evaluation, quantity }) {
   const theme = useTheme();
-  const { road, poles, grid } = detail;
-  const column = quantity === "E" ? 2 : 3;
 
   const model = React.useMemo(() => {
-    if (!road || !grid?.length) return null;
-    const calc = road.calc;
-    const field = buildField(grid, column);
-    const fieldLen = calc.endX - calc.startX;
-    const x0 = calc.startX;
+    const area = evaluation?.areas?.[0];
+    const grids = gridsFor(area, quantity);
+    const option = design?.options?.[0];
+    if (!grids.length || !option) return null;
+    const field = buildField(grids);
+    const x0 = evaluation.field.startX;
+    const fieldLen = evaluation.field.endX - x0;
     const x1 = x0 + FIELDS * fieldLen;
-    const yRoad0 = Math.min(road.overall.startY, road.overall.endY);
-    const yRoad1 = Math.max(road.overall.startY, road.overall.endY);
-    const poleYs = poles.flatMap((p) => [p.y, ...p.heads.map((h) => h.y)]);
-    const yMin = Math.min(yRoad0, ...poleYs) - MARGIN_M;
-    const yMax = Math.max(yRoad1, ...poleYs) + MARGIN_M;
-    const staggered = arrangement === "staggered";
-    const mid = (yRoad0 + yRoad1) / 2;
+    const yRoad0 = 0;
+    const yRoad1 = design.areas.reduce((w, a) => w + a.width, 0);
 
+    // Every row repeats at its spacing, so the field tiles along the road.
     const valueAt = (x, y) => {
       const k = Math.floor((x - x0) / fieldLen);
-      const lx = x0 + (x - x0 - k * fieldLen);
-      const ly = staggered && k % 2 !== 0 ? 2 * mid - y : y;
-      return field.sample(lx, ly);
+      return field.sample(x - k * fieldLen, y);
     };
 
-    // Poles repeat with the spacing (twice the spacing for staggered rows).
-    const period = (staggered ? 2 : 1) * spacing;
-    const shown = [];
-    poles.forEach((p) => {
-      for (let k = -FIELDS - 2; k <= FIELDS + 2; k++) {
-        const dx = k * period;
-        const px = p.x + dx;
-        if (px < x0 - 0.01 || px > x1 + 0.01) continue;
-        if (
-          shown.some(
-            (s) => Math.abs(s.x - px) < 0.01 && Math.abs(s.y - p.y) < 0.01
-          )
-        )
-          continue;
-        shown.push({
-          x: px,
-          y: p.y,
-          heads: p.heads.map((h) => ({ x: h.x + dx, y: h.y })),
+    const poles = [];
+    option.rows.forEach((row) => {
+      const pole = design.equipment.find((p) => p.id === row.poleId);
+      if (!pole || !(row.spacing > 0)) return;
+      const kMin = Math.ceil((x0 - 0.01 - row.firstPolePosition) / row.spacing);
+      const kMax = Math.floor(
+        (x1 + 0.01 - row.firstPolePosition) / row.spacing
+      );
+      for (let k = kMin; k <= kMax; k++) {
+        const x = row.firstPolePosition + k * row.spacing;
+        const y = row.lateralPosition;
+        poles.push({
+          x,
+          y,
+          heads: pole.arms.map((arm) => {
+            const rad =
+              ((arm.directionDegrees + row.rotationDegrees) * Math.PI) / 180;
+            return {
+              x: x + arm.outreach * Math.cos(rad),
+              y: y + arm.outreach * Math.sin(rad),
+            };
+          }),
         });
       }
     });
 
+    const ys = poles.flatMap((p) => [p.y, ...p.heads.map((h) => h.y)]);
     const step = niceStep(field.max, PALETTE.length);
     return {
       x0,
       x1,
-      yMin,
-      yMax,
+      yMin: Math.min(yRoad0, ...ys) - MARGIN_M,
+      yMax: Math.max(yRoad1, ...ys) + MARGIN_M,
       yRoad0,
       yRoad1,
+      boundaries: design.areas
+        .slice(0, -1)
+        .reduce((acc, a) => [...acc, (acc.at(-1) ?? 0) + a.width], []),
       valueAt,
-      poles: shown,
+      poles,
       step,
+      unit: grids[0].unit,
     };
-  }, [road, poles, grid, column, spacing, arrangement]);
+  }, [design, evaluation, quantity]);
 
   // Raster the field once per input into a data URL, so it also survives printing.
   const image = React.useMemo(() => {
@@ -157,8 +169,12 @@ function RoadPlan({ detail, quantity, spacing, arrangement }) {
   const sy = (y) => (model.yMax - y) * PX_PER_M;
   const ink = theme.palette.text.primary;
   const muted = theme.palette.text.secondary;
-  const unit = quantity === "E" ? "lx" : "cd/m²";
-  const first = model.poles.slice().sort((a, b) => a.x - b.x);
+  const unit = model.unit;
+  // The first row's poles, for the spacing dimension.
+  const firstRowY = model.poles[0]?.y;
+  const first = model.poles
+    .filter((p) => Math.abs(p.y - firstRowY) < 0.01)
+    .sort((a, b) => a.x - b.x);
 
   return (
     <Box>
@@ -191,6 +207,18 @@ function RoadPlan({ detail, quantity, spacing, arrangement }) {
           stroke={ink}
           strokeWidth={1.5}
         />
+        {model.boundaries.map((y) => (
+          <line
+            key={y}
+            x1={sx(model.x0)}
+            x2={sx(model.x1)}
+            y1={sy(y)}
+            y2={sy(y)}
+            stroke={ink}
+            strokeWidth={1}
+            strokeDasharray="6 4"
+          />
+        ))}
         <line
           x1={sx(model.x0)}
           x2={sx(model.x1)}
@@ -272,7 +300,7 @@ function RoadPlan({ detail, quantity, spacing, arrangement }) {
           color="text.secondary"
           sx={{ flex: "none" }}
         >
-          {quantity === "E" ? "Belysningsstyrka" : "Luminans"}
+          {quantity === "Luminance" ? "Luminans" : "Belysningsstyrka"}
         </Typography>
         <Box sx={{ flex: 1, display: "flex", minWidth: 0 }}>
           {PALETTE.map((c, i) => (
