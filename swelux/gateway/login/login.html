@@ -62,6 +62,10 @@
   }
   #list button:hover, #list button:focus-visible { border-color: var(--amber); outline: none; background: #fff; }
   #list small { font-weight: 400; color: var(--muted); white-space: nowrap; }
+  input.code { font-size: 22px; letter-spacing: 0.3em; text-align: center; font-variant-numeric: tabular-nums; }
+  .linkish { background: none; color: var(--ink); height: auto; margin: 0; padding: 0; font-weight: 400; text-decoration: underline; font-size: 13px; }
+  .row { display: flex; gap: 16px; flex-wrap: wrap; }
+  #wait { padding: 28px; margin: 0; color: var(--muted); }
   [hidden] { display: none !important; }
 </style>
 </head>
@@ -74,19 +78,30 @@
       <span>Hajk med beräkningar från swelux.ai</span>
     </div>
   </header>
-  <form id="f" novalidate>
+  <p id="wait">Loggar in …</p>
+  <form id="emailForm" novalidate hidden>
     <label>E-post
-      <input name="email" type="email" autocomplete="username" required autofocus>
+      <input name="email" type="email" autocomplete="email" inputmode="email" required>
     </label>
-    <label>Lösenord
-      <input name="password" type="password" autocomplete="current-password" required>
+    <p class="error" id="emailErr" role="alert"></p>
+    <button type="submit">Skicka kod</button>
+    <p class="fine">Vi skickar en engångskod till din e-post. Samma konto som på <a href="https://swelux.ai">swelux.ai</a>. Saknar du konto? Kontakta din kontaktperson på swelux.</p>
+  </form>
+  <form id="codeForm" novalidate hidden>
+    <p class="fine" id="sentTo"></p>
+    <label>Kod
+      <input name="code" class="code" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]*" maxlength="6" required>
     </label>
-    <p class="error" id="err" role="alert"></p>
-    <button type="submit" id="go">Logga in</button>
-    <p class="fine">Samma konto som på <a href="https://swelux.ai">swelux.ai</a>. Saknar du konto? Kontakta din kontaktperson på swelux.</p>
+    <p class="error" id="codeErr" role="alert"></p>
+    <button type="submit">Logga in</button>
+    <div class="row">
+      <button type="button" class="linkish" id="resend">Skicka en ny kod</button>
+      <button type="button" class="linkish" id="otherEmail">Använd en annan e-postadress</button>
+    </div>
   </form>
   <section id="pick" hidden>
     <h2>Välj organisation</h2>
+    <p class="fine" id="who"></p>
     <div id="list"></div>
     <p class="error" id="pickErr" role="alert"></p>
     <p class="fine"><a href="/logout">Logga in med ett annat konto</a></p>
@@ -94,108 +109,253 @@
 </main>
 <script>
 (function () {
+  "use strict";
   var params = new URLSearchParams(location.search);
   var WANTED = (params.get("tenant") || "").toLowerCase();
-  var form = document.getElementById("f");
-  var err = document.getElementById("err");
-  var go = document.getElementById("go");
-  var pick = document.getElementById("pick");
-  var list = document.getElementById("list");
-  var pickErr = document.getElementById("pickErr");
+  var SWITCH = params.has("switch");
+  var $ = function (id) { return document.getElementById(id); };
+  var emailForm = $("emailForm"), codeForm = $("codeForm"), pick = $("pick"), wait = $("wait");
+  var list = $("list"), pickErr = $("pickErr");
   var nf = new Intl.NumberFormat("sv-SE");
+  var LATER = "Inloggningen fungerar inte just nu. Försök igen om en stund.";
+  var email = "";
+  var signingIn = false;
+
+  function show(el) {
+    [wait, emailForm, codeForm, pick].forEach(function (x) { x.hidden = x !== el; });
+    var input = el.querySelector("input");
+    if (input) input.focus();
+  }
 
   function nextUrl() {
     var n = params.get("next") || "/";
     // Only same-site paths: no scheme, no protocol-relative URLs, no login loop.
-    return /^\/(?!\/)/.test(n) && n.indexOf("/login") !== 0 ? n : "/";
+    return /^\/(?![\/\\])/.test(n) && n.indexOf("/login") !== 0 && n.indexOf("/logout") !== 0 ? n : "/";
   }
 
-  function hasToken() {
-    return document.cookie.split(";").some(function (c) { return c.trim().indexOf("swelux_token=") === 0; });
+  function readCookie(name) {
+    var prefix = name + "=";
+    var found = document.cookie.split(";").map(function (c) { return c.trim(); })
+      .filter(function (c) { return c.indexOf(prefix) === 0; })[0];
+    return found ? decodeURIComponent(found.slice(prefix.length)) : "";
   }
 
   function setCookie(name, value, maxAge) {
     document.cookie = name + "=" + encodeURIComponent(value) + "; Path=/; Max-Age=" + maxAge + "; Secure; SameSite=Strict";
   }
 
-  function choose(slug) {
-    setCookie("swelux_tenant", slug, 60 * 60 * 24 * 30);
+  function clearCookies() {
+    ["swelux_token", "swelux_token_expires", "swelux_tenant"].forEach(function (n) { setCookie(n, "", 0); });
+  }
+
+  // The access token goes in a cookie because Hajk loads the light point layer
+  // without our headers; the gateway turns it into the Authorization header.
+  // session.js renews it while the map is open.
+  function storeSession(session) {
+    var exp = new Date(session.expiresAt).getTime();
+    var maxAge = Math.max(60, Math.floor((exp - Date.now()) / 1000));
+    setCookie("swelux_token", session.accessToken, maxAge);
+    setCookie("swelux_token_expires", String(exp), maxAge);
+  }
+
+  function hasFreshToken() {
+    return readCookie("swelux_token") && Number(readCookie("swelux_token_expires")) - Date.now() > 30000;
+  }
+
+  function post(url, body) {
+    return fetch(url, {
+      method: "POST",
+      credentials: "same-origin",
+      headers: body ? { "Content-Type": "application/json" } : {},
+      body: body ? JSON.stringify(body) : undefined
+    });
+  }
+
+  // A returning user whose access token ran out still has the platform's
+  // refresh cookie: renew silently instead of asking for a new code.
+  function silentRefresh() {
+    return post("/api/v1/sessions/refresh").then(function (res) {
+      if (!res.ok) return false;
+      return res.json().then(function (s) { storeSession(s); return true; });
+    }, function () { return false; });
+  }
+
+  function choose(id) {
+    setCookie("swelux_tenant", id, 60 * 60 * 24 * 30);
+    try { sessionStorage.setItem("swelux_login_auto", String(Date.now())); } catch (e) { /* private mode */ }
     location.replace(nextUrl());
   }
 
-  // Tenants this login may open (all of them for platform admins). One, or the
-  // one asked for in ?tenant=, opens straight away; several show a picker.
-  function loadTenants() {
-    return fetch("/swelux-api/hajk/tenants", { credentials: "same-origin" }).then(function (res) {
+  // If we sent the user on a moment ago and the gateway bounced them back, the
+  // organisation doesn't open after all: show the picker instead of looping.
+  function recentlyBounced() {
+    try { return Date.now() - Number(sessionStorage.getItem("swelux_login_auto") || 0) < 15000; } catch (e) { return false; }
+  }
+
+  // Organisations whose map this account may open (all with light points for
+  // platform administrators). ?tenant=<id or slug>, the one picked last time, or
+  // a single one opens straight away; otherwise the picker.
+  function loadOrganisations() {
+    return fetch("/api/v1/me/map-organisations", { credentials: "same-origin" }).then(function (res) {
       if (res.status === 401) return null;
       if (!res.ok) throw new Error("Kartan går inte att öppna just nu. Försök igen om en stund.");
       return res.json();
     });
   }
 
-  function showTenants(tenants) {
-    if (tenants.length === 0) {
-      form.hidden = true;
-      pick.hidden = false;
-      list.innerHTML = "";
+  function showWho() {
+    fetch("/api/v1/me", { credentials: "same-origin" }).then(function (res) {
+      return res.ok ? res.json() : null;
+    }).then(function (me) {
+      if (me) $("who").textContent = "Inloggad som " + (me.email || me.displayName);
+    }).catch(function () { /* the picker works without it */ });
+  }
+
+  function showOrganisations(orgs) {
+    show(pick);
+    list.innerHTML = "";
+    pickErr.textContent = "";
+    showWho();
+    if (orgs.length === 0) {
       pickErr.textContent = "Ditt konto har inte åtkomst till någon belysningskarta ännu.";
       return;
     }
-    var wanted = tenants.filter(function (t) { return t.slug === WANTED; })[0];
-    if (wanted) return choose(wanted.slug);
-    if (tenants.length === 1 && !params.has("switch")) return choose(tenants[0].slug);
-    form.hidden = true;
-    pick.hidden = false;
-    list.innerHTML = "";
-    tenants.forEach(function (t) {
+    var bounced = recentlyBounced();
+    try { sessionStorage.removeItem("swelux_login_auto"); } catch (e) { /* private mode */ }
+    if (!bounced) {
+      var current = readCookie("swelux_tenant").toLowerCase();
+      var match = function (key) {
+        return orgs.filter(function (o) { return String(o.id).toLowerCase() === key || o.slug === key; })[0];
+      };
+      var wanted = WANTED && match(WANTED);
+      if (wanted) return choose(wanted.id);
+      if (!SWITCH) {
+        var last = current && match(current);
+        if (last) return choose(last.id);
+        if (orgs.length === 1) return choose(orgs[0].id);
+      }
+    } else {
+      pickErr.textContent = "Kartan för den valda organisationen gick inte att öppna. Välj igen.";
+    }
+    orgs.forEach(function (o) {
       var b = document.createElement("button");
       b.type = "button";
       var name = document.createElement("span");
-      name.textContent = t.name;
+      name.textContent = o.name;
       var count = document.createElement("small");
-      count.textContent = t.lightingPointCount ? nf.format(t.lightingPointCount) + " ljuspunkter" : "ingen kartdata";
+      count.textContent = o.lightPointCount ? nf.format(o.lightPointCount) + " ljuspunkter" : "ingen kartdata";
       b.appendChild(name);
       b.appendChild(count);
-      b.addEventListener("click", function () { choose(t.slug); });
+      b.addEventListener("click", function () { choose(o.id); });
       list.appendChild(b);
     });
     list.querySelector("button").focus();
   }
 
-  if (hasToken()) {
-    loadTenants().then(function (tenants) {
-      if (tenants) showTenants(tenants);
-    }).catch(function () { /* fall back to the login form */ });
+  function afterSignIn() {
+    return loadOrganisations().then(function (orgs) {
+      if (!orgs) throw new Error(LATER);
+      showOrganisations(orgs);
+    });
   }
 
-  form.addEventListener("submit", function (e) {
+  function busy(form, on) {
+    Array.prototype.forEach.call(form.querySelectorAll("button"), function (b) { b.disabled = on; });
+  }
+
+  function sendCode() {
+    return post("/api/v1/sessions/codes", { email: email }).then(function (res) {
+      if (res.status === 404) throw new Error("Adressen har inget konto på swelux.ai. Kontakta din kontaktperson på swelux.");
+      if (res.status === 403) throw new Error("Kontot är avaktiverat. Kontakta din kontaktperson på swelux.");
+      if (res.status === 429) throw new Error("För många försök. Vänta en stund och försök igen.");
+      if (res.status === 400) throw new Error("Ange en giltig e-postadress.");
+      if (!res.ok) throw new Error(LATER);
+    });
+  }
+
+  emailForm.addEventListener("submit", function (e) {
     e.preventDefault();
+    var err = $("emailErr");
     err.textContent = "";
-    var email = form.email.value.trim();
-    var password = form.password.value;
-    if (!email || !password) { err.textContent = "Fyll i e-post och lösenord."; return; }
-    go.disabled = true;
-    fetch("/swelux-api/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: email, password: password })
-    }).then(function (res) {
-      if (res.status === 401 || res.status === 400) throw new Error("Fel e-post eller lösenord.");
-      if (!res.ok) throw new Error("Inloggningen fungerar inte just nu. Försök igen om en stund.");
-      return res.json();
-    }).then(function (auth) {
-      var maxAge = Math.max(60, Math.floor((new Date(auth.expiration) - new Date()) / 1000));
-      setCookie("swelux_token", auth.token, maxAge);
-      return loadTenants();
-    }).then(function (tenants) {
-      if (!tenants) throw new Error("Inloggningen fungerar inte just nu. Försök igen om en stund.");
-      showTenants(tenants);
-      go.disabled = false;
+    email = emailForm.email.value.trim();
+    if (!email) { err.textContent = "Fyll i din e-postadress."; return; }
+    busy(emailForm, true);
+    sendCode().then(function () {
+      $("sentTo").textContent = "Vi har skickat en kod med sex siffror till " + email + ". Den gäller en kort stund.";
+      codeForm.code.value = "";
+      $("codeErr").textContent = "";
+      show(codeForm);
     }).catch(function (e2) {
       err.textContent = e2.message;
-      go.disabled = false;
-    });
+    }).then(function () { busy(emailForm, false); });
   });
+
+  codeForm.code.addEventListener("input", function () {
+    var digits = codeForm.code.value.replace(/\D/g, "").slice(0, 6);
+    if (digits !== codeForm.code.value) codeForm.code.value = digits;
+    if (digits.length === 6) codeForm.requestSubmit();
+  });
+
+  codeForm.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var err = $("codeErr");
+    err.textContent = "";
+    var code = codeForm.code.value.replace(/\D/g, "");
+    if (code.length !== 6) { err.textContent = "Koden har sex siffror."; return; }
+    if (signingIn) return;
+    signingIn = true;
+    busy(codeForm, true);
+    post("/api/v1/sessions", { email: email, code: code }).then(function (res) {
+      if (res.status === 400 || res.status === 401) throw new Error("Fel eller för gammal kod. Kontrollera koden eller skicka en ny.");
+      if (res.status === 403) throw new Error("Kontot är avaktiverat. Kontakta din kontaktperson på swelux.");
+      if (res.status === 429) throw new Error("För många försök. Vänta en stund och skicka en ny kod.");
+      if (!res.ok) throw new Error(LATER);
+      return res.json();
+    }).then(function (session) {
+      storeSession(session);
+      return afterSignIn();
+    }).catch(function (e2) {
+      err.textContent = e2.message;
+      codeForm.code.select();
+    }).then(function () { signingIn = false; busy(codeForm, false); });
+  });
+
+  $("resend").addEventListener("click", function () {
+    var err = $("codeErr");
+    err.textContent = "";
+    busy(codeForm, true);
+    sendCode().then(function () {
+      err.textContent = "En ny kod är skickad.";
+    }).catch(function (e2) {
+      err.textContent = e2.message;
+    }).then(function () { busy(codeForm, false); codeForm.code.focus(); });
+  });
+
+  $("otherEmail").addEventListener("click", function () {
+    show(emailForm);
+  });
+
+  function start() {
+    if (hasFreshToken()) return afterSignIn().catch(function () { show(emailForm); });
+    return silentRefresh().then(function (ok) {
+      if (!ok) return show(emailForm);
+      return afterSignIn().catch(function () { show(emailForm); });
+    });
+  }
+
+  if (location.pathname === "/logout") {
+    // Sign out on the platform (revokes the session behind the refresh cookie),
+    // then start over.
+    fetch("/api/v1/sessions/current", { method: "DELETE", credentials: "same-origin" })
+      .catch(function () { /* signed out locally either way */ })
+      .then(function () {
+        clearCookies();
+        history.replaceState(null, "", "/login");
+        show(emailForm);
+      });
+  } else {
+    start();
+  }
 })();
 </script>
 </body>
