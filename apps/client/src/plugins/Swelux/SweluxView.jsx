@@ -28,10 +28,15 @@ function SweluxView({ model, options, localObserver }) {
   const hours = options.operatingHoursPerYear || 4000;
 
   const [streets, setStreets] = React.useState(model.getStreets());
+  const surfacesRef = React.useRef([]);
   const [context, setContext] = React.useState(model.getContext());
   const [street, setStreet] = React.useState(null);
   const [clicked, setClicked] = React.useState(null);
-  const [profile, setProfile] = React.useState(profileFor(null, defaults));
+  const [classes, setClasses] = React.useState([]);
+  const [surfaces, setSurfaces] = React.useState([]);
+  const [profile, setProfile] = React.useState(() =>
+    profileFor(null, defaults, [])
+  );
   const [luminaires, setLuminaires] = React.useState([]);
   const [luminaire, setLuminaire] = React.useState(null);
   const [evaluation, setEvaluation] = React.useState(null); // single-luminaire response
@@ -48,7 +53,7 @@ function SweluxView({ model, options, localObserver }) {
     const b = localObserver.subscribe("swelux.streetSelected", (e) => {
       setStreet(e.street);
       setClicked(e.clicked);
-      setProfile(profileFor(e.street, defaults));
+      setProfile(profileFor(e.street, defaults, surfacesRef.current));
       setEvaluation(null);
       setRanking(null);
       setError(null);
@@ -60,6 +65,30 @@ function SweluxView({ model, options, localObserver }) {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [localObserver]);
+
+  // Reference data from the platform: lighting classes and road surfaces.
+  React.useEffect(() => {
+    model
+      .fetchLightingClasses()
+      .then(setClasses)
+      .catch((e) => setError(e.message));
+    model
+      .fetchRoadSurfaces()
+      .then((list) => {
+        surfacesRef.current = list;
+        setSurfaces(list);
+        // The default surface is configured by name; resolve it now.
+        const roadSurfaceId = profileFor(null, defaults, list).street
+          .roadSurfaceId;
+        setProfile((p) =>
+          p.street.roadSurfaceId
+            ? p
+            : { ...p, street: { ...p.street, roadSurfaceId } }
+        );
+      })
+      .catch((e) => setError(e.message));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [model]);
 
   React.useEffect(() => {
     model
@@ -86,10 +115,10 @@ function SweluxView({ model, options, localObserver }) {
   const shown = evaluation || ranking;
   const result =
     luminaire &&
-    (evaluation?.results.find((r) => r.luminaireId === luminaire.id) ||
-      ranking?.results.find((r) => r.luminaireId === luminaire.id));
+    (evaluation?.results.find((r) => r.luminaire.id === luminaire.id) ||
+      ranking?.results.find((r) => r.luminaire.id === luminaire.id));
 
-  const resultId = result?.luminaireId;
+  const resultId = result?.luminaire.id;
   React.useEffect(() => {
     setPhotometry(null);
     if (!resultId) return;
@@ -104,11 +133,17 @@ function SweluxView({ model, options, localObserver }) {
   }, [model, resultId]);
 
   React.useEffect(() => {
-    model.setVerdict(result ? (result.compliant ? "pass" : "fail") : null);
+    model.setVerdict(
+      result?.status === "Compliant"
+        ? "pass"
+        : result?.status === "NonCompliant"
+          ? "fail"
+          : null
+    );
   }, [model, result]);
 
-  const changeProfile = (key, value) => {
-    setProfile((p) => ({ ...p, [key]: value }));
+  const changeProfile = (section, key, value) => {
+    setProfile((p) => ({ ...p, [section]: { ...p[section], [key]: value } }));
     setEvaluation(null);
     setRanking(null);
   };
@@ -124,8 +159,9 @@ function SweluxView({ model, options, localObserver }) {
       if (kind === "calc") {
         const r = await model.evaluate(profile, [luminaire.id]);
         if (r.results.length === 0) {
+          const reason = r.skipped[0]?.reason;
           throw new Error(
-            "Armaturen saknar användbar ljusdata (effekt) och kan inte beräknas."
+            `Armaturen kan inte beräknas${reason ? `: ${reason}` : "."}`
           );
         }
         setEvaluation(r);
@@ -133,7 +169,7 @@ function SweluxView({ model, options, localObserver }) {
         const r = await model.evaluate(profile, null);
         setEvaluation(null);
         setRanking(r);
-        if (r.results.length) selectLuminaire(r.results[0].luminaireId);
+        if (r.results.length) selectLuminaire(r.results[0].luminaire.id);
       }
     } catch (e) {
       setError(e.message);
@@ -178,6 +214,7 @@ function SweluxView({ model, options, localObserver }) {
   );
 
   const noData = context?.lightPointCount === 0;
+  const ready = !!profile.street.roadSurfaceId;
 
   return (
     <Stack spacing={2}>
@@ -215,7 +252,12 @@ function SweluxView({ model, options, localObserver }) {
       ) : (
         <>
           <StreetSummary street={street} clicked={clicked} />
-          <ProfileCard profile={profile} onChange={changeProfile} />
+          <ProfileCard
+            profile={profile}
+            onChange={changeProfile}
+            classes={classes}
+            surfaces={surfaces}
+          />
 
           <Box>
             <Button
@@ -225,7 +267,7 @@ function SweluxView({ model, options, localObserver }) {
               fullWidth
               disableElevation
               startIcon={<AutoAwesomeIcon />}
-              disabled={!!busy}
+              disabled={!!busy || !ready}
               onClick={() => run("rank")}
             >
               Hitta bästa armatur
@@ -257,7 +299,7 @@ function SweluxView({ model, options, localObserver }) {
           {result && shown && (
             <VerdictCard
               result={result}
-              evaluation={shown}
+              lightingClass={shown.lightingClass}
               street={street}
               hours={hours}
               photometry={photometry}
@@ -272,7 +314,11 @@ function SweluxView({ model, options, localObserver }) {
               model={model}
               street={street}
               profile={profile}
-              luminaireId={result.luminaireId}
+              luminaireId={result.luminaire.id}
+              surface={surfaces.find(
+                (x) => x.id === profile.street.roadSurfaceId
+              )}
+              hours={hours}
               photometry={photometry}
             />
           )}
@@ -282,6 +328,7 @@ function SweluxView({ model, options, localObserver }) {
               ranking={ranking}
               selectedId={luminaire?.id}
               onSelect={selectLuminaire}
+              luminaires={luminaires}
             />
           )}
 
@@ -309,7 +356,7 @@ function SweluxView({ model, options, localObserver }) {
             />
             <Button
               variant="outlined"
-              disabled={!luminaire || !!busy}
+              disabled={!luminaire || !!busy || !ready}
               onClick={() => run("calc")}
             >
               Beräkna

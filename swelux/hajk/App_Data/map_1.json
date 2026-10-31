@@ -524,16 +524,21 @@
         "contextUrl": "/api/v1/organisations/{tenantId}/map/context",
         "fitToData": true,
         "defaultProfile": {
-          "requiredClass": "M4",
-          "roadWidthM": 7,
-          "lanes": 1,
-          "surfaceClass": "R3",
-          "spacingM": 32,
-          "poleHeightM": 8,
-          "armLengthM": 0.5,
-          "tiltDeg": 5,
-          "arrangement": "single",
-          "maintenanceFactor": 0.9
+          "street": {
+            "lightingClass": "M4",
+            "width": 7,
+            "laneCount": 2,
+            "roadSurface": "CIE R3",
+            "maintenanceFactor": 0.9,
+            "averageLuminanceCoefficient": null
+          },
+          "placement": {
+            "arrangement": "OneSide",
+            "spacing": 32,
+            "lightCentreHeight": 8,
+            "outreach": 0.5,
+            "tiltDegrees": 5
+          }
         },
         "operatingHoursPerYear": 4100,
         "visibleForGroups": []

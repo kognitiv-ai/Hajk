@@ -8,6 +8,7 @@ import { getPointResolution, toLonLat } from "ol/proj";
 import LineString from "ol/geom/LineString";
 import Feature from "ol/Feature";
 import { boundingExtent, buffer } from "ol/extent";
+import { NO_STREET, STANDARD_ID } from "./utils";
 
 // Colours follow the swelux palette; pass/fail match the plugin's result table.
 const AMBER = "#F2B544";
@@ -29,8 +30,8 @@ export default class SweluxModel {
   #app;
   #localObserver;
   #options;
-  #streets = new Map(); // gatakey -> { key, name, points: Feature[], stats }
-  #roads = []; // OSM road segments: { key, feature }
+  #streets = new Map(); // streetId -> { key, name, area, points: Feature[], stats }
+  #roads = []; // road segment centrelines: { key: streetId, feature }
   #highlightSource = new VectorSource();
   #highlightLayer;
   #selected = null;
@@ -98,7 +99,7 @@ export default class SweluxModel {
 
   getStreets = () =>
     [...this.#streets.values()]
-      .filter((s) => s.key && s.key !== "UNASSIGNED")
+      .filter((s) => s.key !== NO_STREET)
       .sort((a, b) => a.name.localeCompare(b.name, "sv"));
 
   getStreet = (key) => this.#streets.get(key) || null;
@@ -154,18 +155,23 @@ export default class SweluxModel {
       .getAllLayers()
       .find((l) => l.get("name") === this.#options.lightPointLayerId);
 
+  #streetKey = (feature) => {
+    const id = feature.get("streetId");
+    return id == null || id === "" ? NO_STREET : String(id);
+  };
+
   #indexStreets = (features) => {
     const groups = new Map();
     features.forEach((f) => {
-      const key = f.get("gatakey") || "UNASSIGNED";
+      const key = this.#streetKey(f);
       if (!groups.has(key)) groups.set(key, []);
       groups.get(key).push(f);
     });
     groups.forEach((points, key) => {
       this.#streets.set(key, {
         key,
-        name: points[0].get("gata") || "Okänd gata",
-        area: points[0].get("omrade") || "",
+        name: points[0].get("street") || "Okänd gata",
+        area: points[0].get("area") || "",
         points,
         stats: this.#streetStats(points),
       });
@@ -174,10 +180,12 @@ export default class SweluxModel {
   };
 
   #streetStats = (points) => {
-    const watts = points.map((p) => p.get("effekt_w")).filter((w) => w > 0);
+    const watts = points
+      .map((p) => p.get("existingWattage"))
+      .filter((w) => w > 0);
     const lums = new Map();
     points.forEach((p) => {
-      const l = p.get("armatur");
+      const l = p.get("existingLuminaire");
       if (l) lums.set(l, (lums.get(l) || 0) + 1);
     });
     const typical = [...lums.entries()].sort((a, b) => b[1] - a[1])[0];
@@ -187,7 +195,9 @@ export default class SweluxModel {
         ? watts.reduce((a, b) => a + b, 0) / watts.length
         : null,
       typicalLuminaire: typical ? typical[0] : null,
-      spacingM: this.#medianNeighbourDistance(points),
+      spacing: this.#medianNeighbourDistance(points),
+      poleHeight: median(points.map((p) => p.get("poleHeight"))),
+      armLength: median(points.map((p) => p.get("armLength"))),
     };
   };
 
@@ -218,10 +228,9 @@ export default class SweluxModel {
         dataProjection: "EPSG:4326",
         featureProjection: this.#map.getView().getProjection(),
       });
-      this.#roads = features.map((f) => ({
-        key: f.get("gatakey"),
-        feature: f,
-      }));
+      this.#roads = features
+        .filter((f) => f.get("streetId") != null)
+        .map((f) => ({ key: String(f.get("streetId")), feature: f }));
     } catch (error) {
       console.warn("Swelux: could not load street geometries", error);
     }
@@ -253,7 +262,7 @@ export default class SweluxModel {
       }
       return;
     }
-    const key = hit.get("gatakey") || "UNASSIGNED";
+    const key = this.#streetKey(hit);
     if (this.#windowOpen) {
       this.closePopup();
       this.selectStreet(key, hit);
@@ -278,9 +287,10 @@ export default class SweluxModel {
 
   #pointInfo = (f) => ({
     id: f.get("id"),
-    stolpe: f.get("stolpe"),
-    armatur: f.get("armatur"),
-    effekt: f.get("effekt_w"),
+    poleId: f.get("poleId"),
+    existingLuminaire: f.get("existingLuminaire"),
+    existingManufacturer: f.get("existingManufacturer"),
+    existingWattage: f.get("existingWattage"),
   });
 
   getPopupElement = () => this.#popupElement;
@@ -366,6 +376,13 @@ export default class SweluxModel {
   };
 
   #litStretches = (geometry, pointCoords, unitsPerMetre) => {
+    if (geometry.getType() === "MultiLineString") {
+      return geometry
+        .getLineStrings()
+        .flatMap((line) =>
+          this.#litStretches(line, pointCoords, unitsPerMetre)
+        );
+    }
     if (geometry.getType() !== "LineString") return [];
     const maxSq = (LIT_DISTANCE_M * unitsPerMetre) ** 2;
     const step = SAMPLE_STEP_M * unitsPerMetre;
@@ -418,13 +435,13 @@ export default class SweluxModel {
 
   // ---- swelux.ai map API (same origin; the gateway adds the user's token) ----
 
-  #request = async (path, init = {}) => {
-    const res = await fetch(`${this.apiBase}${path}`, {
+  #request = async (url, init = {}) => {
+    const res = await fetch(url, {
       credentials: "same-origin",
       ...init,
       headers: { "Content-Type": "application/json", ...(init.headers || {}) },
     });
-    if (res.status === 401 || res.status === 403) {
+    if (res.status === 401) {
       throw new Error(
         "Din inloggning har gått ut. Ladda om sidan och logga in igen."
       );
@@ -442,16 +459,37 @@ export default class SweluxModel {
     return body;
   };
 
-  fetchLuminaires = () => this.#request("/luminaires");
+  #mapApi = (path, init) => this.#request(`${this.apiBase}${path}`, init);
+
+  fetchLuminaires = () => this.#mapApi("/luminaires");
+
+  // The EN 13201 lighting classes, with their requirements, from the platform.
+  fetchLightingClasses = async () => {
+    const standards = await this.#request(
+      this.#options.standardsUrl || "/api/v1/standards"
+    );
+    const standard =
+      standards.find((s) => s.standard.id === STANDARD_ID) || standards[0];
+    return standard ? standard.lightingClasses : [];
+  };
+
+  // Dry road surfaces (CIE R-tables) to choose from; wet tables are not a
+  // street's surface on their own.
+  fetchRoadSurfaces = async () => {
+    const surfaces = await this.#request(
+      this.#options.roadSurfacesUrl || "/api/v1/road-surfaces"
+    );
+    return surfaces.filter((s) => s.condition !== "Wet");
+  };
 
   // Luminaire ids are opaque strings (GUIDs); use them as given.
   #photometry = new Map();
 
-  // Intensity distribution from the luminaire's photometric file, cached per luminaire.
+  // What the engine reads from the luminaire's photometric file, cached per luminaire.
   fetchPhotometry = (luminaireId) => {
     const key = String(luminaireId);
     if (!this.#photometry.has(key)) {
-      const req = this.#request(
+      const req = this.#mapApi(
         `/luminaires/${encodeURIComponent(key)}/photometry`
       );
       req.catch(() => this.#photometry.delete(key));
@@ -460,30 +498,21 @@ export default class SweluxModel {
     return this.#photometry.get(key);
   };
 
-  fetchDetail = (profile, luminaireId) =>
-    this.#request("/evaluations/detail", {
+  // profile = { street, placement } in the platform's terms; every field is sent.
+  fetchDetail = ({ street, placement }, luminaireId) =>
+    this.#mapApi("/evaluations/detail", {
       method: "POST",
-      body: JSON.stringify({
-        ...this.#withOptionalFields(profile),
-        luminaireId,
-      }),
+      body: JSON.stringify({ street, placement, luminaireId }),
     });
 
   ldtUrl = (luminaireId) =>
     `${this.apiBase}/luminaires/${encodeURIComponent(luminaireId)}/photometric-file`;
 
-  evaluate = (profile, luminaireIds = null) =>
-    this.#request("/evaluations", {
+  evaluate = ({ street, placement }, luminaireIds = null) =>
+    this.#mapApi("/evaluations", {
       method: "POST",
-      body: JSON.stringify({
-        ...this.#withOptionalFields(profile),
-        luminaireIds,
-      }),
+      body: JSON.stringify({ street, placement, luminaireIds }),
     });
-
-  // The platform expects every profile field to be present: q0 (a measured road
-  // surface value) is null unless the profile sets one, so the surface's own applies.
-  #withOptionalFields = (profile) => ({ q0: null, ...profile });
 
   dispose = () => {
     this.#map.un("singleclick", this.#handleMapClick);
@@ -491,4 +520,11 @@ export default class SweluxModel {
     this.#map.removeOverlay(this.#popup);
     this.#map.removeLayer(this.#highlightLayer);
   };
+}
+
+function median(values) {
+  const v = values
+    .filter((x) => typeof x === "number" && Number.isFinite(x))
+    .sort((a, b) => a - b);
+  return v.length ? v[Math.floor(v.length / 2)] : null;
 }

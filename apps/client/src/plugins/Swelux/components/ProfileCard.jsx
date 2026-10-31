@@ -11,13 +11,7 @@ import {
   Typography,
 } from "@mui/material";
 import TuneIcon from "@mui/icons-material/Tune";
-import {
-  ARRANGEMENTS,
-  CLASSES,
-  SURFACES,
-  arrangementLabel,
-  nf,
-} from "../utils";
+import { ARRANGEMENTS, arrangementLabel, nf } from "../utils";
 
 function Field({ children, ...props }) {
   return (
@@ -29,33 +23,50 @@ function Field({ children, ...props }) {
   );
 }
 
-/**
- * Road profile as a one-line summary; the full form opens on demand so the
- * actions stay above the fold.
- */
-function ProfileCard({ profile, onChange }) {
-  const [open, setOpen] = React.useState(false);
+const metres = (v) => `${nf(v, 1).replace(",0", "")} m`;
 
-  const set =
-    (key, numeric = true) =>
-    (e) =>
-      onChange(key, numeric ? Number(e.target.value) : e.target.value);
+/**
+ * The street and its poles as a one-line summary; the full form opens on
+ * demand so the actions stay above the fold. Fields are the platform's street
+ * (class, width, lanes, surface, maintenance factor, Q0) and placement
+ * (arrangement, spacing, light centre height, outreach, tilt).
+ */
+function ProfileCard({ profile, onChange, classes, surfaces }) {
+  const [open, setOpen] = React.useState(false);
+  const { street, placement } = profile;
+  const surface = surfaces.find((s) => s.id === street.roadSurfaceId);
+
+  const number = (section, key) => (e) =>
+    onChange(
+      section,
+      key,
+      e.target.value === "" ? null : Number(e.target.value)
+    );
+  const text = (section, key) => (e) => onChange(section, key, e.target.value);
+
+  // A class from the profile that the standard doesn't list still shows.
+  const classCodes = classes.map((c) => c.code);
+  const classOptions = classCodes.includes(street.lightingClass)
+    ? classes
+    : [{ code: street.lightingClass, description: "" }, ...classes];
 
   const summary = [
-    profile.requiredClass,
-    `${nf(profile.roadWidthM, 1).replace(",0", "")} m väg`,
-    `${nf(profile.spacingM)} m c/c`,
-    `${nf(profile.poleHeightM, 1).replace(",0", "")} m höjd`,
-    arrangementLabel(profile.arrangement).toLowerCase(),
-    profile.surfaceClass,
-  ].join(" · ");
+    street.lightingClass,
+    `${metres(street.width)} väg`,
+    `${nf(placement.spacing)} m c/c`,
+    `${metres(placement.lightCentreHeight)} höjd`,
+    arrangementLabel(placement.arrangement).toLowerCase(),
+    surface?.name,
+  ]
+    .filter(Boolean)
+    .join(" · ");
 
   return (
     <Paper variant="outlined" sx={{ px: 1.75, py: 1.25 }}>
       <Stack direction="row" alignItems="center" spacing={1}>
         <Box sx={{ flex: 1, minWidth: 0 }}>
           <Typography variant="caption" color="text.secondary">
-            Vägprofil
+            Gata och stolpar
           </Typography>
           <Typography variant="body2" sx={{ fontWeight: 500 }}>
             {summary}
@@ -75,38 +86,44 @@ function ProfileCard({ profile, onChange }) {
         <Grid container spacing={1.5} sx={{ mt: 1.5 }}>
           <Field
             label="Belysningsklass"
-            value={profile.requiredClass}
-            onChange={set("requiredClass", false)}
+            value={street.lightingClass}
+            onChange={text("street", "lightingClass")}
             select
           >
-            {CLASSES.map((c) => (
-              <MenuItem key={c} value={c}>
-                {c}
+            {classOptions.map((c) => (
+              <MenuItem key={c.code} value={c.code} title={c.description}>
+                {c.code}
+              </MenuItem>
+            ))}
+          </Field>
+          <Field
+            label="Beläggning"
+            value={surface ? street.roadSurfaceId : ""}
+            onChange={text("street", "roadSurfaceId")}
+            select
+          >
+            {surfaces.map((s) => (
+              <MenuItem key={s.id} value={s.id}>
+                {s.name}
               </MenuItem>
             ))}
           </Field>
           <Field
             label="Vägbredd (m)"
-            value={profile.roadWidthM}
-            onChange={set("roadWidthM")}
+            value={street.width ?? ""}
+            onChange={number("street", "width")}
             type="number"
           />
           <Field
-            label="Stolpavstånd (m)"
-            value={profile.spacingM}
-            onChange={set("spacingM")}
-            type="number"
-          />
-          <Field
-            label="Ljuspunktshöjd (m)"
-            value={profile.poleHeightM}
-            onChange={set("poleHeightM")}
+            label="Körfält"
+            value={street.laneCount ?? ""}
+            onChange={number("street", "laneCount")}
             type="number"
           />
           <Field
             label="Uppställning"
-            value={profile.arrangement}
-            onChange={set("arrangement", false)}
+            value={placement.arrangement}
+            onChange={text("placement", "arrangement")}
             select
           >
             {ARRANGEMENTS.map((a) => (
@@ -116,17 +133,46 @@ function ProfileCard({ profile, onChange }) {
             ))}
           </Field>
           <Field
-            label="Beläggning"
-            value={profile.surfaceClass}
-            onChange={set("surfaceClass", false)}
-            select
-          >
-            {SURFACES.map((s) => (
-              <MenuItem key={s} value={s}>
-                {s}
-              </MenuItem>
-            ))}
-          </Field>
+            label="Stolpavstånd (m)"
+            value={placement.spacing ?? ""}
+            onChange={number("placement", "spacing")}
+            type="number"
+          />
+          <Field
+            label="Ljuspunktshöjd (m)"
+            value={placement.lightCentreHeight ?? ""}
+            onChange={number("placement", "lightCentreHeight")}
+            type="number"
+          />
+          <Field
+            label="Utliggare (m)"
+            value={placement.outreach ?? ""}
+            onChange={number("placement", "outreach")}
+            type="number"
+          />
+          <Field
+            label="Lutning (°)"
+            value={placement.tiltDegrees ?? ""}
+            onChange={number("placement", "tiltDegrees")}
+            type="number"
+          />
+          <Field
+            label="Underhållsfaktor"
+            value={street.maintenanceFactor ?? ""}
+            onChange={number("street", "maintenanceFactor")}
+            type="number"
+            slotProps={{ htmlInput: { step: 0.05, min: 0, max: 1 } }}
+          />
+          <Field
+            label="Uppmätt Q0 (valfritt)"
+            value={street.averageLuminanceCoefficient ?? ""}
+            onChange={number("street", "averageLuminanceCoefficient")}
+            type="number"
+            placeholder={
+              surface ? nf(surface.averageLuminanceCoefficient, 2) : ""
+            }
+            slotProps={{ htmlInput: { step: 0.01, min: 0, max: 1 } }}
+          />
         </Grid>
         <Typography
           variant="caption"
@@ -134,10 +180,10 @@ function ProfileCard({ profile, onChange }) {
           component="p"
           sx={{ mt: 1.25, mb: 0.5 }}
         >
-          Stolpavståndet är uppskattat från era ljuspunkter – kontrollera det om
-          stolparna står på båda sidor. Klass och vägbredd är standardvärden
-          här; i skarp drift hämtas de från ert GIS och NVDB. Underhållsfaktor{" "}
-          {nf(profile.maintenanceFactor, 2)}.
+          Stolpavstånd, ljuspunktshöjd och utliggare är uppskattade från era
+          ljuspunkter – kontrollera dem om stolparna står på båda sidor. Klass
+          och vägbredd är standardvärden här; i skarp drift hämtas de från ert
+          GIS och NVDB. Utan uppmätt Q0 används beläggningens eget värde.
         </Typography>
       </Collapse>
     </Paper>
