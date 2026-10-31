@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import CalculateOutlinedIcon from "@mui/icons-material/CalculateOutlined";
-import { nf } from "../utils";
+import { NO_STREET, nf } from "../utils";
 
 function Row({ label, value }) {
   return (
@@ -29,7 +29,7 @@ function Row({ label, value }) {
 
 /** Map popup for a clicked light point, anchored at the pole. */
 function LightPointPopup({ street, point, onCalculate, onClose }) {
-  const named = street && street.key !== "UNASSIGNED";
+  const named = street && street.key !== NO_STREET;
   return (
     <Box
       sx={{
@@ -54,7 +54,7 @@ function LightPointPopup({ street, point, onCalculate, onClose }) {
               {named ? street.name : "Ljuspunkt utan gatunamn"}
             </Typography>
             <Typography variant="caption" sx={{ opacity: 0.75 }}>
-              {point.stolpe ? `Stolpe ${point.stolpe}` : "Ljuspunkt"}
+              {point.poleId ? `Stolpe ${point.poleId}` : "Ljuspunkt"}
             </Typography>
           </Box>
           <IconButton
@@ -68,10 +68,19 @@ function LightPointPopup({ street, point, onCalculate, onClose }) {
         </Stack>
 
         <Box sx={{ px: 2, pt: 1.25, pb: 1.5 }}>
-          <Row label="Armatur" value={point.armatur || "Okänd"} />
+          <Row
+            label="Armatur"
+            value={
+              [point.existingManufacturer, point.existingLuminaire]
+                .filter(Boolean)
+                .join(" · ") || "Okänd"
+            }
+          />
           <Row
             label="Effekt"
-            value={point.effekt ? `${nf(point.effekt)} W` : "Okänd"}
+            value={
+              point.existingWattage ? `${nf(point.existingWattage)} W` : "Okänd"
+            }
           />
           {named && (
             <Typography

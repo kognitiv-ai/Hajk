@@ -34,7 +34,7 @@ function StreetSummary({ street, clicked }) {
         {street.name}
       </Typography>
       <Typography variant="body2" color="text.secondary">
-        {[street.area, clicked?.stolpe && `stolpe ${clicked.stolpe}`]
+        {[street.area, clicked?.poleId && `stolpe ${clicked.poleId}`]
           .filter(Boolean)
           .join(" · ")}
       </Typography>
@@ -52,7 +52,7 @@ function StreetSummary({ street, clicked }) {
           hint="Genomsnittlig lampeffekt enligt ert register"
         />
         <Figure
-          value={stats.spacingM ? `${nf(stats.spacingM)} m` : "–"}
+          value={stats.spacing ? `${nf(stats.spacing)} m` : "–"}
           label="stolpavstånd"
           hint="Uppskattat från avståndet mellan gatans ljuspunkter"
         />
