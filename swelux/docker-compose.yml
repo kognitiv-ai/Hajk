@@ -3,14 +3,15 @@
 #   GATEWAY_PORT              host port the tunnel / reverse proxy points at
 #   SWELUX_PLATFORM_UPSTREAM  base URL of the swelux-platform API, as seen from the gateway
 #   SWELUX_NETWORK            docker network where the platform container is reachable
+#   HAJK_NAME                 container and image name, so a second install (e.g. a beta) can run beside the first
 
 services:
   hajk:
     build:
       context: ..
       dockerfile: Dockerfile
-    image: swelux-hajk:latest
-    container_name: swelux-hajk
+    image: ${HAJK_NAME:-swelux-hajk}:latest
+    container_name: ${HAJK_NAME:-swelux-hajk}
     restart: unless-stopped
     environment:
       NODE_ENV: production
@@ -26,12 +27,12 @@ services:
 
   gateway:
     image: nginx:1.27-alpine
-    container_name: swelux-hajk-gateway
+    container_name: ${HAJK_NAME:-swelux-hajk}-gateway
     restart: unless-stopped
     depends_on:
       - hajk
     environment:
-      HAJK_UPSTREAM: http://swelux-hajk:3002
+      HAJK_UPSTREAM: http://hajk:3002
       SWELUX_PLATFORM_UPSTREAM: ${SWELUX_PLATFORM_UPSTREAM:-http://swelux-platform:8080}
     ports:
       - "127.0.0.1:${GATEWAY_PORT:-8092}:80"
