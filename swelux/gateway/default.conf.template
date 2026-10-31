@@ -13,9 +13,9 @@
 #   swelux_tenant          id (GUID) of the picked organisation.
 #
 # The gate is auth_request against GET /api/v1/organisations/<swelux_tenant>/map/access
-# (204 = allowed). Only the map API of the picked organisation and the sign-in
-# routes are exposed; everything else under /api is 404. Hajk itself is served
-# read-only: no admin, GET only.
+# (204 = allowed). Only the map API of the picked organisation, the lighting
+# classes and road surfaces, and the sign-in routes are exposed; everything else
+# under /api/v1 is 404. Hajk itself is served read-only: no admin, GET only.
 
 map $cookie_swelux_token $swelux_bearer {
     ""      "";
@@ -128,6 +128,17 @@ server {
     location ~ ^/api/v1/me(?<swelux_me_route>/map-organisations)?$ {
         limit_except GET { deny all; }
         proxy_pass $platform/api/v1/me$swelux_me_route;
+        proxy_set_header Authorization $swelux_bearer;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-Proto https;
+    }
+
+    # Shared reference data for the plugin: the standard's lighting classes and the
+    # road surfaces. Not organisation-scoped, but only for signed-in map users.
+    location ~ ^/api/v1/(?<swelux_reference>standards|road-surfaces)$ {
+        auth_request /_auth;
+        limit_except GET { deny all; }
+        proxy_pass $platform/api/v1/$swelux_reference;
         proxy_set_header Authorization $swelux_bearer;
         proxy_set_header Host $host;
         proxy_set_header X-Forwarded-Proto https;
