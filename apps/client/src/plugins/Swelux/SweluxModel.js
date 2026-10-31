@@ -463,7 +463,10 @@ export default class SweluxModel {
   fetchDetail = (profile, luminaireId) =>
     this.#request("/evaluations/detail", {
       method: "POST",
-      body: JSON.stringify({ ...profile, luminaireId }),
+      body: JSON.stringify({
+        ...this.#withOptionalFields(profile),
+        luminaireId,
+      }),
     });
 
   ldtUrl = (luminaireId) =>
@@ -472,8 +475,15 @@ export default class SweluxModel {
   evaluate = (profile, luminaireIds = null) =>
     this.#request("/evaluations", {
       method: "POST",
-      body: JSON.stringify({ ...profile, luminaireIds }),
+      body: JSON.stringify({
+        ...this.#withOptionalFields(profile),
+        luminaireIds,
+      }),
     });
+
+  // The platform expects every profile field to be present: q0 (a measured road
+  // surface value) is null unless the profile sets one, so the surface's own applies.
+  #withOptionalFields = (profile) => ({ q0: null, ...profile });
 
   dispose = () => {
     this.#map.un("singleclick", this.#handleMapClick);
