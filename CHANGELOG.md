@@ -18,6 +18,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Client: Swelux plugin - street lighting calculations according to EN 13201 for the light points in the map, using the [swelux.ai](https://swelux.ai) calculation engine. Requires a swelux.ai account. See the plugin's [README.md](apps/client/src/plugins/Swelux/README.md).
+- Client: `loadingStrategy` on a vector layer now reaches the layer, so `"loadingStrategy": "all"` loads a GeoJSON layer once instead of on every pan. `ConfigMapper` left the setting out, although `VectorLayer` reads it.
 - Admin + Client: Map setting `replaceAppStateInHash` (default off, and only used when `enableAppStateInHash` is on). When on, hash updates use `history.replaceState` so the browser Back button leaves the map instead of stepping through pans, layer toggles, and opened tools. Missing or any value other than `true` keeps assigning `location.hash`.
 - Backend: The delimiter used between groups in the AD group header is now configurable via `AD_TRUSTED_GROUP_HEADER_DELIMITER`, making it possible to use the same header for Hajk and GeoServer. [#1914](https://github.com/hajkmap/Hajk/issues/1914)
 - Client: Measurer/Sketch - Angle snapping can be repeated while Ctrl/Cmd is held. Clicking a green snap guide removes that guide and draws a new one from the clicked point. [#1923](https://github.com/hajkmap/Hajk/issues/1923)

@@ -35,5 +35,6 @@ export const AVAILABLE_TOOLS = [
   "Search",
   "Sketch",
   "StreetView",
+  "Swelux",
   "TimeSlider",
 ];

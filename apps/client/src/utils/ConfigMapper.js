@@ -364,6 +364,7 @@ export default class ConfigMapper {
         lineColor: args.lineColor,
         lineStyle: args.lineStyle,
         lineWidth: args.lineWidth,
+        loadingStrategy: args.loadingStrategy,
         maxZoom: args.maxZoom,
         minZoom: args.minZoom,
         name: args.id,
