@@ -1,100 +1,125 @@
 ## The Swelux plugin
 
-Street lighting calculations according to EN 13201 for the light points in the map. A user clicks a light point, the plugin selects the street it belongs to, and the [swelux.ai](https://swelux.ai) calculation engine says whether a luminaire meets the street's lighting class, or ranks a whole catalogue of luminaires against it.
+Street lighting calculations according to EN 13201 for the light points in the map. A user clicks a light point, the plugin selects the street it belongs to, and the [swelux.ai](https://swelux.ai) calculation engine says whether a luminaire meets the street's lighting class, or ranks a catalogue of luminaires against it.
 
-The plugin only provides the map side. The calculations, luminaire catalogue and light point data come from the swelux.ai platform, so a swelux.ai account for the organisation is required. Without one, the plugin has nothing to calculate with.
+The plugin is the map side only. The calculations and the luminaire catalogue come from swelux.ai, which the plugin calls with a key for the map. The light points are the municipality's own layer, or can be hosted in swelux.ai.
 
 ### Maintainer
 
-Anoop Mathew, Kognitiv: [anoop@kognitiv.se](mailto:anoop@kognitiv.se). Questions and bug reports about this plugin go here.
+Anoop Mathew, Kognitiv: [anoop@kognitiv.se](mailto:anoop@kognitiv.se). Questions, bug reports and keys for a map go here.
 
 ### How it works
 
-1. Click a light point in the layer named by `lightPointLayerId`. Every point with the same `streetId` is selected and highlighted, together with the street's centrelines from `streetsUrl`.
-2. The street and placement are pre-filled. Spacing is estimated from the light points (median nearest-neighbour distance), light centre height and outreach come from the register's `poleHeight` and `armLength` where plausible, and the rest from `defaultProfile`. Everything can be edited.
-3. Choose a luminaire and press **Beräkna**, or press **Hitta bästa armatur** to calculate the organisation's whole catalogue. The window shows the engine's verdict with each metric of the lighting class, the ranking, luminaires that could not be calculated and why, and the energy difference against today's wattage.
-4. **Detaljer** shows the road from above as calculated, the metrics per observer, the light distribution, and exports: the photometric file, a DIALux evo exchange file and print/PDF.
+1. Click a light point, or search for a street. Every point with the same street id is selected and highlighted.
+2. The street and placement are pre-filled. Spacing is estimated from the light points (the median distance to the nearest neighbour, measured in the map's own projection), light centre height and outreach come from the register where plausible, and the rest from `defaultProfile`. Everything can be edited.
+3. Choose a luminaire and press **Beräkna**, or press **Hitta bästa armatur** to calculate the whole catalogue. The window shows the engine's verdict with each metric of the lighting class, the ranking, luminaires that could not be calculated and why, and the energy use against today's wattage.
 
-### Configuration
+### Trying it out
 
-The light points must be a vector layer that loads once, so that the plugin sees the whole street:
+`sample/light-points.geojson` holds made-up light points on two streets. Serve it from anywhere the map can reach (for example the client's `public` folder), add it as a vector layer and add the tool with the demo key:
 
 ```json
 {
   "id": "swelux-ljuspunkter",
-  "url": "/swelux-map/light-points",
+  "caption": "Ljuspunkter",
+  "url": "/swelux-sample/light-points.geojson",
   "dataFormat": "GeoJSON",
   "projection": "EPSG:4326",
   "loadingStrategy": "all"
 }
 ```
 
-Each light point needs these properties: `id`, `streetId` (null when the point belongs to no street), `street` (display name), `area`, `poleId`, `existingLuminaire`, `existingManufacturer`, `existingWattage` (W), `poleHeight` and `armLength` (m).
-
-The tool in the map configuration:
-
 ```json
 {
   "type": "swelux",
   "options": {
     "target": "left",
-    "tenantId": "<the organisation's id in swelux.ai>",
     "lightPointLayerId": "swelux-ljuspunkter",
-    "defaultProfile": {
-      "street": {
-        "lightingClass": "M4",
-        "width": 7,
-        "laneCount": 2,
-        "roadSurface": "CIE R3",
-        "maintenanceFactor": 0.9,
-        "averageLuminanceCoefficient": null
-      },
-      "placement": {
-        "arrangement": "OneSide",
-        "spacing": 32,
-        "lightCentreHeight": 8,
-        "outreach": 0.5,
-        "tiltDegrees": 5
-      }
-    },
-    "operatingHoursPerYear": 4100
+    "apiKey": "<demo key>",
+    "tenantId": "<demo organisation id>",
+    "apiBase": "https://swelux.ai/api/v1/organisations/{tenantId}/map",
+    "standardsUrl": "https://swelux.ai/api/v1/standards",
+    "roadSurfacesUrl": "https://swelux.ai/api/v1/road-surfaces",
+    "fitToData": true
   }
 }
 ```
 
-| Option                  | Default                                | Description                                                                                                                                    |
-| ----------------------- | -------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| `lightPointLayerId`     |                                        | The `id` of the light point layer. Required.                                                                                                   |
-| `tenantId`              |                                        | The organisation's id in swelux.ai. Replaces `{tenantId}` in `apiBase`, `streetsUrl` and `contextUrl`.                                         |
-| `tenantIdCookie`        |                                        | Instead of `tenantId`: the name of a cookie holding the organisation's id, for a sign-in gateway that lets the user pick an organisation.      |
-| `apiBase`               | `/api/v1/organisations/{tenantId}/map` | Base of the organisation's map API.                                                                                                            |
-| `streetsUrl`            |                                        | Street centrelines as GeoJSON (`streetId`, `street`), for the highlight. Without it, only the light points are highlighted.                    |
-| `contextUrl`            |                                        | The organisation's name and light point count for the window, and whether the user can switch organisation.                                    |
-| `standardsUrl`          | `/api/v1/standards`                    | Lighting classes.                                                                                                                              |
-| `roadSurfacesUrl`       | `/api/v1/road-surfaces`                | Road surfaces.                                                                                                                                 |
-| `fitToData`             | `false`                                | Zoom the map to the light points once they have loaded.                                                                                        |
-| `defaultProfile`        |                                        | The street and placement to start from, in the platform's terms. The road surface is given by name (`roadSurface`) or by id (`roadSurfaceId`). |
-| `operatingHoursPerYear` | `4000`                                 | Used for the yearly energy figures.                                                                                                            |
+The demo key is shared, has a small quota and a small catalogue, and may change. A map in use gets its own key: ask the maintainer.
 
-### API calls
+### Light points
 
-All calls are same-origin, relative to `apiBase`:
+The light points must be a vector layer (GeoJSON or WFS) that has all of a street's points, so `"loadingStrategy": "all"` is the safest. A WMS layer won't do: the browser only gets a picture of it, and the plugin says so in its window. Any projection works.
 
-| Endpoint                                | Purpose                                                                                      |
-| --------------------------------------- | -------------------------------------------------------------------------------------------- |
-| `GET /luminaires`                       | The organisation's luminaires                                                                |
-| `POST /evaluations`                     | `{ street, placement, luminaireIds }` (`null` for the whole catalogue): the verdicts, ranked |
-| `POST /evaluations/detail`              | `{ street, placement, luminaireId }`: the street design and the engine's whole assessment    |
-| `GET /luminaires/{id}/photometry`       | Polar curves and key figures of the photometric file                                         |
-| `GET /luminaires/{id}/photometric-file` | The luminaire's photometric file                                                             |
+The plugin reads these properties: `id`, `streetId` (empty when the point belongs to no street), `street` (the street's name), `area`, `poleId`, `existingLuminaire`, `existingManufacturer`, `existingWattage` (W), `poleHeight` and `armLength` (m). Only `streetId` and `street` are needed; the others improve the pre-filled values. A layer with its own names maps them with `properties`:
 
-### Authentication
+```json
+"properties": { "streetId": "GATU_ID", "street": "GATUNAMN", "poleHeight": "STOLPHOJD" }
+```
 
-The plugin sends no credentials of its own and holds no API key. It expects the map's origin to forward these paths to swelux.ai with the signed-in user's token, which today means running Hajk behind a gateway that does so.
+### Options
 
-### Known limitations
+| Option                  | Default                                | Description                                                                                                                                                 |
+| ----------------------- | -------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `lightPointLayerId`     |                                        | The `id` of the light point layer. Required.                                                                                                                |
+| `apiKey`                |                                        | The map's key to swelux.ai, sent as the `X-Swelux-Map-Key` header. Without it, calls go to the map's own origin (see below).                                |
+| `tenantId`              |                                        | The organisation's id in swelux.ai. Replaces `{tenantId}` in `apiBase`, `streetsUrl` and `contextUrl`.                                                      |
+| `apiBase`               | `/api/v1/organisations/{tenantId}/map` | Base of the organisation's map API.                                                                                                                         |
+| `standardsUrl`          | `/api/v1/standards`                    | Lighting classes.                                                                                                                                           |
+| `roadSurfacesUrl`       | `/api/v1/road-surfaces`                | Road surfaces.                                                                                                                                              |
+| `properties`            |                                        | The layer's own names for the light point properties.                                                                                                       |
+| `streetsUrl`            |                                        | Street centrelines as GeoJSON (`streetId`, `street`, in WGS 84), to highlight the lit stretches of the street. Without it, only the points are highlighted. |
+| `contextUrl`            |                                        | The organisation's name and light point count, shown in the window.                                                                                         |
+| `fitToData`             | `false`                                | Zoom the map to the light points once they have loaded.                                                                                                     |
+| `defaultProfile`        |                                        | The street and placement to start from, in swelux.ai's terms. The road surface is given by name (`roadSurface`) or by id (`roadSurfaceId`).                 |
+| `operatingHoursPerYear` | `4000`                                 | Used for the yearly energy figures.                                                                                                                         |
+| `tenantIdCookie`        |                                        | Instead of `tenantId`: the name of a cookie holding the organisation's id, for a sign-in gateway that lets the user pick an organisation.                   |
 
-- Spacing is estimated assuming the map's projection is EPSG:3857. In another projection the estimate is wrong, though it can be corrected by hand.
-- The layer named by `lightPointLayerId` must be a vector layer that has loaded all its features. The plugin indexes the streets once, and waits until that layer has features.
-- The property names above are fixed. A register with other names has to be mapped before it reaches the layer.
+`defaultProfile` looks like this:
+
+```json
+{
+  "street": {
+    "lightingClass": "M4",
+    "width": 7,
+    "laneCount": 2,
+    "roadSurface": "CIE R3",
+    "maintenanceFactor": 0.9,
+    "averageLuminanceCoefficient": null
+  },
+  "placement": {
+    "arrangement": "OneSide",
+    "spacing": 32,
+    "lightCentreHeight": 8,
+    "outreach": 0.5,
+    "tiltDegrees": 5
+  }
+}
+```
+
+### Calls to swelux.ai
+
+Relative to `apiBase`, with the key in the `X-Swelux-Map-Key` header:
+
+| Endpoint                          | Purpose                                                                                      |
+| --------------------------------- | -------------------------------------------------------------------------------------------- |
+| `GET /luminaires`                 | The luminaires the map may use                                                               |
+| `POST /evaluations`               | `{ street, placement, luminaireIds }` (`null` for the whole catalogue): the verdicts, ranked |
+| `GET /luminaires/{id}/photometry` | Key figures and intensity curves of a luminaire, for its diagram                             |
+
+A map without `apiKey` makes the same calls to its own origin, for a Hajk behind a gateway that adds a signed-in user's token. That is how the hosted map at swelux.ai runs.
+
+A map key identifies the map; it is visible in the browser and is not a secret. swelux.ai checks the page's origin against the key and limits how many calculations it may make.
+
+### Tests
+
+From `apps/client`:
+
+```bash
+node --test src/plugins/Swelux/tests/*.test.mjs
+```
+
+### Limitations
+
 - The user interface is in Swedish only.
+- Calculations cover existing streets with one lighting class; new streets come later.

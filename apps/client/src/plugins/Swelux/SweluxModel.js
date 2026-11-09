@@ -8,7 +8,15 @@ import { getPointResolution, toLonLat } from "ol/proj";
 import LineString from "ol/geom/LineString";
 import Feature from "ol/Feature";
 import { boundingExtent, buffer } from "ol/extent";
-import { NO_STREET, STANDARD_ID } from "./utils";
+import { NO_STREET } from "./utils";
+import SweluxApi from "./api";
+import { litStretches } from "./highlight";
+import {
+  groupByStreet,
+  readLightPoint,
+  streetKey,
+  streetStats,
+} from "./streets";
 
 // Colours follow the swelux palette; pass/fail match the plugin's result table.
 const AMBER = "#F2B544";
@@ -16,9 +24,11 @@ const NAVY = "#10162A";
 const PASS = "#2E9B66";
 const FAIL = "#D2603A";
 
-// A road sample counts as lit when a light point of the street is this close.
-const LIT_DISTANCE_M = 35;
-const SAMPLE_STEP_M = 5;
+// How long to look for the light point layer before saying it is missing.
+const LAYER_WAIT_MS = 30000;
+const LAYER_POLL_MS = 500;
+// Features arrive in batches; index the streets once a batch has settled.
+const REINDEX_DELAY_MS = 300;
 
 /**
  * @summary Map side of the Swelux plugin: finds the street behind a clicked
@@ -42,12 +52,17 @@ export default class SweluxModel {
   #pointerCursor = false;
   #context = null; // { id, name, slug, canSwitch, lightPointCount } from contextUrl
   #fitted = false;
+  #layerProblem = null; // null | "missing" | "notVector"
+  #source = null; // the light point layer's vector source, once found
+  #reindexTimer = null;
+  #layerTimer = null;
 
   constructor(settings) {
     this.#map = settings.map;
     this.#app = settings.app;
     this.#localObserver = settings.localObserver;
     this.#options = settings.options;
+    this.api = new SweluxApi(this.#options, this.#resolve);
 
     this.#highlightLayer = new VectorLayer({
       source: this.#highlightSource,
@@ -70,19 +85,13 @@ export default class SweluxModel {
     this.#map.on("pointermove", this.#handlePointerMove);
     this.#loadRoads();
     this.#loadContext();
-    this.#waitForLightPoints();
+    this.#findLightPointLayer(Date.now());
   }
 
-  // Base of the organisation's map API. "{tenantId}" in apiBase, streetsUrl and
-  // contextUrl is replaced by the organisation id: the tenantId option, or the
-  // value of the cookie named by tenantIdCookie (set by a sign-in gateway that
-  // lets the user pick an organisation).
-  get apiBase() {
-    return this.#resolve(
-      this.#options.apiBase || "/api/v1/organisations/{tenantId}/map"
-    );
-  }
-
+  // "{tenantId}" in apiBase, streetsUrl and contextUrl is replaced by the
+  // organisation id: the tenantId option, or the value of the cookie named by
+  // tenantIdCookie (set by a sign-in gateway that lets the user pick an
+  // organisation).
   #tenantId = () => {
     if (this.#options.tenantId) return this.#options.tenantId;
     const name = this.#options.tenantIdCookie;
@@ -106,37 +115,64 @@ export default class SweluxModel {
 
   getContext = () => this.#context;
 
-  // Hosted map only: which tenant's data is shown, and how much of it there is.
+  getLayerProblem = () => this.#layerProblem;
+
+  // Which organisation's data is shown, and how much of it there is.
   #loadContext = async () => {
     if (!this.#options.contextUrl) return;
     try {
-      const res = await fetch(this.#resolve(this.#options.contextUrl), {
-        credentials: "same-origin",
-      });
-      if (!res.ok) return;
-      this.#context = await res.json();
+      this.#context = await this.api.get(this.#options.contextUrl);
       this.#localObserver.publish("swelux.context", this.#context);
     } catch (error) {
       console.warn("Swelux: could not load the map context", error);
     }
   };
 
-  // The light point layer loads asynchronously (Hajk vector layer, GeoJSON) and
-  // signals nothing when done. Poll its source until features arrive, then index
-  // them by street; stop when the context says there is nothing to wait for.
-  #waitForLightPoints = () => {
+  // Hajk may add the light point layer after the plugin starts, so look for it
+  // for a while. Once found, index its features now and whenever they change:
+  // a layer that loads by extent adds features as the user pans.
+  #findLightPointLayer = (startedAt) => {
     const layer = this.#lightPointLayer();
-    const source = layer?.getSource();
-    if (source && source.getFeatures().length > 0) {
-      this.#indexStreets(source.getFeatures());
-      this.#fitToData(source.getFeatures());
+    if (!layer) {
+      if (Date.now() - startedAt > LAYER_WAIT_MS) {
+        this.#reportLayerProblem("missing");
+        return;
+      }
+      this.#layerTimer = setTimeout(
+        () => this.#findLightPointLayer(startedAt),
+        LAYER_POLL_MS
+      );
       return;
     }
-    if (this.#context?.lightPointCount === 0) return;
-    setTimeout(this.#waitForLightPoints, 500);
+    const source = layer.getSource();
+    // A WMS layer is a picture: there are no light points to click or group.
+    if (typeof source?.getFeatures !== "function") {
+      this.#reportLayerProblem("notVector");
+      return;
+    }
+    this.#source = source;
+    source.on("change", this.#scheduleReindex);
+    this.#reindex();
   };
 
-  // One map serves every tenant, so start where this tenant's light points are.
+  #reportLayerProblem = (problem) => {
+    this.#layerProblem = problem;
+    this.#localObserver.publish("swelux.layerProblem", problem);
+  };
+
+  #scheduleReindex = () => {
+    clearTimeout(this.#reindexTimer);
+    this.#reindexTimer = setTimeout(this.#reindex, REINDEX_DELAY_MS);
+  };
+
+  #reindex = () => {
+    const features = this.#source.getFeatures();
+    if (features.length === 0) return;
+    this.#indexStreets(features);
+    this.#fitToData(features);
+  };
+
+  // One map can serve several organisations, so start where the light points are.
   #fitToData = (features) => {
     if (!this.#options.fitToData || this.#fitted) return;
     this.#fitted = true;
@@ -155,75 +191,41 @@ export default class SweluxModel {
       .getAllLayers()
       .find((l) => l.get("name") === this.#options.lightPointLayerId);
 
-  #streetKey = (feature) => {
-    const id = feature.get("streetId");
-    return id == null || id === "" ? NO_STREET : String(id);
-  };
+  // A light point's properties, read through the configured property names.
+  #read = (feature) =>
+    readLightPoint((name) => feature.get(name), this.#options.properties);
+
+  #streetKey = (feature) => streetKey(this.#read(feature));
 
   #indexStreets = (features) => {
-    const groups = new Map();
-    features.forEach((f) => {
-      const key = this.#streetKey(f);
-      if (!groups.has(key)) groups.set(key, []);
-      groups.get(key).push(f);
-    });
-    groups.forEach((points, key) => {
+    // Distances are measured on the ellipsoid, from the map's own projection,
+    // so the spacing is right in SWEREF 99 as well as in Web Mercator.
+    const projection = this.#map.getView().getProjection();
+    const entries = features.map((feature) => ({
+      feature,
+      point: this.#read(feature),
+      lonLat: toLonLat(feature.getGeometry().getCoordinates(), projection),
+    }));
+    this.#streets.clear();
+    groupByStreet(entries).forEach((group, key) => {
       this.#streets.set(key, {
         key,
-        name: points[0].get("street") || "Okänd gata",
-        area: points[0].get("area") || "",
-        points,
-        stats: this.#streetStats(points),
+        name: group[0].point.street || "Okänd gata",
+        area: group[0].point.area || "",
+        points: group.map((e) => e.feature),
+        stats: streetStats(group, getDistance),
       });
     });
+    if (this.#selected) {
+      this.#selected = this.#streets.get(this.#selected.key) || null;
+    }
     this.#localObserver.publish("swelux.streetsReady", this.getStreets());
-  };
-
-  #streetStats = (points) => {
-    const watts = points
-      .map((p) => p.get("existingWattage"))
-      .filter((w) => w > 0);
-    const lums = new Map();
-    points.forEach((p) => {
-      const l = p.get("existingLuminaire");
-      if (l) lums.set(l, (lums.get(l) || 0) + 1);
-    });
-    const typical = [...lums.entries()].sort((a, b) => b[1] - a[1])[0];
-    return {
-      count: points.length,
-      avgWattage: watts.length
-        ? watts.reduce((a, b) => a + b, 0) / watts.length
-        : null,
-      typicalLuminaire: typical ? typical[0] : null,
-      spacing: this.#medianNeighbourDistance(points),
-      poleHeight: median(points.map((p) => p.get("poleHeight"))),
-      armLength: median(points.map((p) => p.get("armLength"))),
-    };
-  };
-
-  // Median nearest-neighbour distance between the street's light points: a
-  // reasonable first guess at pole spacing, which the user can correct.
-  #medianNeighbourDistance = (points) => {
-    if (points.length < 3) return null;
-    const ll = points.map((p) => toLonLat(p.getGeometry().getCoordinates()));
-    const nn = ll.map((a, i) => {
-      let best = Infinity;
-      ll.forEach((b, j) => {
-        if (i !== j) best = Math.min(best, getDistance(a, b));
-      });
-      return best;
-    });
-    nn.sort((a, b) => a - b);
-    return nn[Math.floor(nn.length / 2)];
   };
 
   #loadRoads = async () => {
     if (!this.#options.streetsUrl) return;
     try {
-      const res = await fetch(this.#resolve(this.#options.streetsUrl), {
-        credentials: "same-origin",
-      });
-      const geojson = await res.json();
+      const geojson = await this.api.get(this.#options.streetsUrl);
       const features = new GeoJSON().readFeatures(geojson, {
         dataProjection: "EPSG:4326",
         featureProjection: this.#map.getView().getProjection(),
@@ -285,13 +287,16 @@ export default class SweluxModel {
     this.#map.getTargetElement().style.cursor = over ? "pointer" : "";
   };
 
-  #pointInfo = (f) => ({
-    id: f.get("id"),
-    poleId: f.get("poleId"),
-    existingLuminaire: f.get("existingLuminaire"),
-    existingManufacturer: f.get("existingManufacturer"),
-    existingWattage: f.get("existingWattage"),
-  });
+  #pointInfo = (f) => {
+    const p = this.#read(f);
+    return {
+      id: p.id,
+      poleId: p.poleId,
+      existingLuminaire: p.existingLuminaire,
+      existingManufacturer: p.existingManufacturer,
+      existingWattage: p.existingWattage,
+    };
+  };
 
   getPopupElement = () => this.#popupElement;
 
@@ -352,8 +357,6 @@ export default class SweluxModel {
     this.#highlightSource.clear();
     const street = this.#selected;
     if (!street) return;
-    // OSM roads often run well past the lit part (and same-named roads exist
-    // elsewhere in the city), so only draw the stretches with light points along them.
     const pointCoords = street.points.map((p) =>
       p.getGeometry().getCoordinates()
     );
@@ -362,9 +365,8 @@ export default class SweluxModel {
       1 / getPointResolution(view.getProjection(), 1, pointCoords[0]);
     const roads = this.#roads
       .filter((r) => r.key === street.key)
-      .flatMap((r) =>
-        this.#litStretches(r.feature.getGeometry(), pointCoords, unitsPerMetre)
-      )
+      .flatMap((r) => lineStrings(r.feature.getGeometry()))
+      .flatMap((coords) => litStretches(coords, pointCoords, unitsPerMetre))
       .map((coords) => new Feature(new LineString(coords)));
     roads.forEach((f) => f.set("kind", "road"));
     const points = street.points.map((p) => {
@@ -373,46 +375,6 @@ export default class SweluxModel {
       return c;
     });
     this.#highlightSource.addFeatures([...roads, ...points]);
-  };
-
-  #litStretches = (geometry, pointCoords, unitsPerMetre) => {
-    if (geometry.getType() === "MultiLineString") {
-      return geometry
-        .getLineStrings()
-        .flatMap((line) =>
-          this.#litStretches(line, pointCoords, unitsPerMetre)
-        );
-    }
-    if (geometry.getType() !== "LineString") return [];
-    const maxSq = (LIT_DISTANCE_M * unitsPerMetre) ** 2;
-    const step = SAMPLE_STEP_M * unitsPerMetre;
-    const isLit = (c) =>
-      pointCoords.some((p) => (p[0] - c[0]) ** 2 + (p[1] - c[1]) ** 2 <= maxSq);
-
-    const coords = geometry.getCoordinates();
-    const runs = [];
-    let run = [];
-    const visit = (c) => {
-      if (isLit(c)) {
-        run.push(c);
-      } else {
-        if (run.length > 1) runs.push(run);
-        run = [];
-      }
-    };
-    for (let i = 0; i < coords.length - 1; i++) {
-      const [a, b] = [coords[i], coords[i + 1]];
-      const n = Math.max(
-        1,
-        Math.ceil(Math.hypot(b[0] - a[0], b[1] - a[1]) / step)
-      );
-      for (let k = 0; k < n; k++) {
-        visit([a[0] + ((b[0] - a[0]) * k) / n, a[1] + ((b[1] - a[1]) * k) / n]);
-      }
-    }
-    visit(coords[coords.length - 1]);
-    if (run.length > 1) runs.push(run);
-    return runs;
   };
 
   #highlightStyle = (feature) => {
@@ -433,88 +395,10 @@ export default class SweluxModel {
     });
   };
 
-  // ---- swelux.ai map API (same origin; the gateway adds the user's token) ----
-
-  #request = async (url, init = {}) => {
-    const res = await fetch(url, {
-      credentials: "same-origin",
-      ...init,
-      headers: { "Content-Type": "application/json", ...(init.headers || {}) },
-    });
-    if (res.status === 401) {
-      throw new Error(
-        "Din inloggning har gått ut. Ladda om sidan och logga in igen."
-      );
-    }
-    const body = await res.json().catch(() => ({}));
-    if (!res.ok) {
-      // The platform answers with RFC 9457 problem details.
-      throw new Error(
-        body.detail ||
-          body.title ||
-          body.error ||
-          `Beräkningstjänsten svarade ${res.status}`
-      );
-    }
-    return body;
-  };
-
-  #mapApi = (path, init) => this.#request(`${this.apiBase}${path}`, init);
-
-  fetchLuminaires = () => this.#mapApi("/luminaires");
-
-  // The EN 13201 lighting classes, with their requirements, from the platform.
-  fetchLightingClasses = async () => {
-    const standards = await this.#request(
-      this.#options.standardsUrl || "/api/v1/standards"
-    );
-    const standard =
-      standards.find((s) => s.standard.id === STANDARD_ID) || standards[0];
-    return standard ? standard.lightingClasses : [];
-  };
-
-  // Dry road surfaces (CIE R-tables) to choose from; wet tables are not a
-  // street's surface on their own.
-  fetchRoadSurfaces = async () => {
-    const surfaces = await this.#request(
-      this.#options.roadSurfacesUrl || "/api/v1/road-surfaces"
-    );
-    return surfaces.filter((s) => s.condition !== "Wet");
-  };
-
-  // Luminaire ids are opaque strings (GUIDs); use them as given.
-  #photometry = new Map();
-
-  // What the engine reads from the luminaire's photometric file, cached per luminaire.
-  fetchPhotometry = (luminaireId) => {
-    const key = String(luminaireId);
-    if (!this.#photometry.has(key)) {
-      const req = this.#mapApi(
-        `/luminaires/${encodeURIComponent(key)}/photometry`
-      );
-      req.catch(() => this.#photometry.delete(key));
-      this.#photometry.set(key, req);
-    }
-    return this.#photometry.get(key);
-  };
-
-  // profile = { street, placement } in the platform's terms; every field is sent.
-  fetchDetail = ({ street, placement }, luminaireId) =>
-    this.#mapApi("/evaluations/detail", {
-      method: "POST",
-      body: JSON.stringify({ street, placement, luminaireId }),
-    });
-
-  ldtUrl = (luminaireId) =>
-    `${this.apiBase}/luminaires/${encodeURIComponent(luminaireId)}/photometric-file`;
-
-  evaluate = ({ street, placement }, luminaireIds = null) =>
-    this.#mapApi("/evaluations", {
-      method: "POST",
-      body: JSON.stringify({ street, placement, luminaireIds }),
-    });
-
   dispose = () => {
+    clearTimeout(this.#layerTimer);
+    clearTimeout(this.#reindexTimer);
+    this.#source?.un("change", this.#scheduleReindex);
     this.#map.un("singleclick", this.#handleMapClick);
     this.#map.un("pointermove", this.#handlePointerMove);
     this.#map.removeOverlay(this.#popup);
@@ -522,9 +406,10 @@ export default class SweluxModel {
   };
 }
 
-function median(values) {
-  const v = values
-    .filter((x) => typeof x === "number" && Number.isFinite(x))
-    .sort((a, b) => a - b);
-  return v.length ? v[Math.floor(v.length / 2)] : null;
+// The line strings of a LineString or MultiLineString, as coordinate arrays.
+function lineStrings(geometry) {
+  if (geometry.getType() === "MultiLineString") {
+    return geometry.getLineStrings().map((l) => l.getCoordinates());
+  }
+  return geometry.getType() === "LineString" ? [geometry.getCoordinates()] : [];
 }

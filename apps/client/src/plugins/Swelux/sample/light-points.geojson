@@ -1,0 +1,461 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [12.25, 57.105]
+      },
+      "properties": {
+        "id": "demo-1-01",
+        "streetId": "demo-1",
+        "street": "Exempelgatan",
+        "area": "Exempelstaden",
+        "poleId": "S0001",
+        "existingLuminaire": "Exempelarmatur HPS",
+        "existingManufacturer": "Exempel AB",
+        "existingWattage": 70,
+        "poleHeight": 8,
+        "armLength": 0.5
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [12.2505293, 57.105]
+      },
+      "properties": {
+        "id": "demo-1-02",
+        "streetId": "demo-1",
+        "street": "Exempelgatan",
+        "area": "Exempelstaden",
+        "poleId": "S0002",
+        "existingLuminaire": "Exempelarmatur HPS",
+        "existingManufacturer": "Exempel AB",
+        "existingWattage": 70,
+        "poleHeight": 8,
+        "armLength": 0.5
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [12.2510586, 57.105]
+      },
+      "properties": {
+        "id": "demo-1-03",
+        "streetId": "demo-1",
+        "street": "Exempelgatan",
+        "area": "Exempelstaden",
+        "poleId": "S0003",
+        "existingLuminaire": "Exempelarmatur HPS",
+        "existingManufacturer": "Exempel AB",
+        "existingWattage": 70,
+        "poleHeight": 8,
+        "armLength": 0.5
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [12.2515879, 57.105]
+      },
+      "properties": {
+        "id": "demo-1-04",
+        "streetId": "demo-1",
+        "street": "Exempelgatan",
+        "area": "Exempelstaden",
+        "poleId": "S0004",
+        "existingLuminaire": "Exempelarmatur HPS",
+        "existingManufacturer": "Exempel AB",
+        "existingWattage": 70,
+        "poleHeight": 8,
+        "armLength": 0.5
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [12.2521172, 57.105]
+      },
+      "properties": {
+        "id": "demo-1-05",
+        "streetId": "demo-1",
+        "street": "Exempelgatan",
+        "area": "Exempelstaden",
+        "poleId": "S0005",
+        "existingLuminaire": "Exempelarmatur HPS",
+        "existingManufacturer": "Exempel AB",
+        "existingWattage": 70,
+        "poleHeight": 8,
+        "armLength": 0.5
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [12.2526465, 57.105]
+      },
+      "properties": {
+        "id": "demo-1-06",
+        "streetId": "demo-1",
+        "street": "Exempelgatan",
+        "area": "Exempelstaden",
+        "poleId": "S0006",
+        "existingLuminaire": "Exempelarmatur HPS",
+        "existingManufacturer": "Exempel AB",
+        "existingWattage": 70,
+        "poleHeight": 8,
+        "armLength": 0.5
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [12.2531758, 57.105]
+      },
+      "properties": {
+        "id": "demo-1-07",
+        "streetId": "demo-1",
+        "street": "Exempelgatan",
+        "area": "Exempelstaden",
+        "poleId": "S0007",
+        "existingLuminaire": "Exempelarmatur HPS",
+        "existingManufacturer": "Exempel AB",
+        "existingWattage": 70,
+        "poleHeight": 8,
+        "armLength": 0.5
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [12.2537051, 57.105]
+      },
+      "properties": {
+        "id": "demo-1-08",
+        "streetId": "demo-1",
+        "street": "Exempelgatan",
+        "area": "Exempelstaden",
+        "poleId": "S0008",
+        "existingLuminaire": "Exempelarmatur HPS",
+        "existingManufacturer": "Exempel AB",
+        "existingWattage": 70,
+        "poleHeight": 8,
+        "armLength": 0.5
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [12.2542343, 57.105]
+      },
+      "properties": {
+        "id": "demo-1-09",
+        "streetId": "demo-1",
+        "street": "Exempelgatan",
+        "area": "Exempelstaden",
+        "poleId": "S0009",
+        "existingLuminaire": "Exempelarmatur HPS",
+        "existingManufacturer": "Exempel AB",
+        "existingWattage": 70,
+        "poleHeight": 8,
+        "armLength": 0.5
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [12.2547636, 57.105]
+      },
+      "properties": {
+        "id": "demo-1-10",
+        "streetId": "demo-1",
+        "street": "Exempelgatan",
+        "area": "Exempelstaden",
+        "poleId": "S0010",
+        "existingLuminaire": "Exempelarmatur HPS",
+        "existingManufacturer": "Exempel AB",
+        "existingWattage": 70,
+        "poleHeight": 8,
+        "armLength": 0.5
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [12.2552929, 57.105]
+      },
+      "properties": {
+        "id": "demo-1-11",
+        "streetId": "demo-1",
+        "street": "Exempelgatan",
+        "area": "Exempelstaden",
+        "poleId": "S0011",
+        "existingLuminaire": "Exempelarmatur HPS",
+        "existingManufacturer": "Exempel AB",
+        "existingWattage": 70,
+        "poleHeight": 8,
+        "armLength": 0.5
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [12.2558222, 57.105]
+      },
+      "properties": {
+        "id": "demo-1-12",
+        "streetId": "demo-1",
+        "street": "Exempelgatan",
+        "area": "Exempelstaden",
+        "poleId": "S0012",
+        "existingLuminaire": "Exempelarmatur HPS",
+        "existingManufacturer": "Exempel AB",
+        "existingWattage": 70,
+        "poleHeight": 8,
+        "armLength": 0.5
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [12.2563515, 57.105]
+      },
+      "properties": {
+        "id": "demo-1-13",
+        "streetId": "demo-1",
+        "street": "Exempelgatan",
+        "area": "Exempelstaden",
+        "poleId": "S0013",
+        "existingLuminaire": "Exempelarmatur HPS",
+        "existingManufacturer": "Exempel AB",
+        "existingWattage": 70,
+        "poleHeight": 8,
+        "armLength": 0.5
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [12.2568808, 57.105]
+      },
+      "properties": {
+        "id": "demo-1-14",
+        "streetId": "demo-1",
+        "street": "Exempelgatan",
+        "area": "Exempelstaden",
+        "poleId": "S0014",
+        "existingLuminaire": "Exempelarmatur HPS",
+        "existingManufacturer": "Exempel AB",
+        "existingWattage": 70,
+        "poleHeight": 8,
+        "armLength": 0.5
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [12.256, 57.106]
+      },
+      "properties": {
+        "id": "demo-2-01",
+        "streetId": "demo-2",
+        "street": "Provvägen",
+        "area": "Exempelstaden",
+        "poleId": "S0101",
+        "existingLuminaire": "Exempelarmatur LED",
+        "existingManufacturer": "Exempel AB",
+        "existingWattage": 36,
+        "poleHeight": 6,
+        "armLength": 0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [12.256, 57.1062515]
+      },
+      "properties": {
+        "id": "demo-2-02",
+        "streetId": "demo-2",
+        "street": "Provvägen",
+        "area": "Exempelstaden",
+        "poleId": "S0102",
+        "existingLuminaire": "Exempelarmatur LED",
+        "existingManufacturer": "Exempel AB",
+        "existingWattage": 36,
+        "poleHeight": 6,
+        "armLength": 0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [12.256, 57.1065031]
+      },
+      "properties": {
+        "id": "demo-2-03",
+        "streetId": "demo-2",
+        "street": "Provvägen",
+        "area": "Exempelstaden",
+        "poleId": "S0103",
+        "existingLuminaire": "Exempelarmatur LED",
+        "existingManufacturer": "Exempel AB",
+        "existingWattage": 36,
+        "poleHeight": 6,
+        "armLength": 0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [12.256, 57.1067546]
+      },
+      "properties": {
+        "id": "demo-2-04",
+        "streetId": "demo-2",
+        "street": "Provvägen",
+        "area": "Exempelstaden",
+        "poleId": "S0104",
+        "existingLuminaire": "Exempelarmatur LED",
+        "existingManufacturer": "Exempel AB",
+        "existingWattage": 36,
+        "poleHeight": 6,
+        "armLength": 0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [12.256, 57.1070061]
+      },
+      "properties": {
+        "id": "demo-2-05",
+        "streetId": "demo-2",
+        "street": "Provvägen",
+        "area": "Exempelstaden",
+        "poleId": "S0105",
+        "existingLuminaire": "Exempelarmatur LED",
+        "existingManufacturer": "Exempel AB",
+        "existingWattage": 36,
+        "poleHeight": 6,
+        "armLength": 0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [12.256, 57.1072576]
+      },
+      "properties": {
+        "id": "demo-2-06",
+        "streetId": "demo-2",
+        "street": "Provvägen",
+        "area": "Exempelstaden",
+        "poleId": "S0106",
+        "existingLuminaire": "Exempelarmatur LED",
+        "existingManufacturer": "Exempel AB",
+        "existingWattage": 36,
+        "poleHeight": 6,
+        "armLength": 0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [12.256, 57.1075092]
+      },
+      "properties": {
+        "id": "demo-2-07",
+        "streetId": "demo-2",
+        "street": "Provvägen",
+        "area": "Exempelstaden",
+        "poleId": "S0107",
+        "existingLuminaire": "Exempelarmatur LED",
+        "existingManufacturer": "Exempel AB",
+        "existingWattage": 36,
+        "poleHeight": 6,
+        "armLength": 0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [12.256, 57.1077607]
+      },
+      "properties": {
+        "id": "demo-2-08",
+        "streetId": "demo-2",
+        "street": "Provvägen",
+        "area": "Exempelstaden",
+        "poleId": "S0108",
+        "existingLuminaire": "Exempelarmatur LED",
+        "existingManufacturer": "Exempel AB",
+        "existingWattage": 36,
+        "poleHeight": 6,
+        "armLength": 0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [12.256, 57.1080122]
+      },
+      "properties": {
+        "id": "demo-2-09",
+        "streetId": "demo-2",
+        "street": "Provvägen",
+        "area": "Exempelstaden",
+        "poleId": "S0109",
+        "existingLuminaire": "Exempelarmatur LED",
+        "existingManufacturer": "Exempel AB",
+        "existingWattage": 36,
+        "poleHeight": 6,
+        "armLength": 0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [12.256, 57.1082637]
+      },
+      "properties": {
+        "id": "demo-2-10",
+        "streetId": "demo-2",
+        "street": "Provvägen",
+        "area": "Exempelstaden",
+        "poleId": "S0110",
+        "existingLuminaire": "Exempelarmatur LED",
+        "existingManufacturer": "Exempel AB",
+        "existingWattage": 36,
+        "poleHeight": 6,
+        "armLength": 0
+      }
+    }
+  ]
+}

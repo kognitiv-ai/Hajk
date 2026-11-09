@@ -13,7 +13,7 @@ import LightPointPopup from "./components/LightPointPopup";
  * powered by the swelux.ai calculation engine.
  */
 function Swelux(props) {
-  const [localObserver] = React.useState(Observer());
+  const [localObserver] = React.useState(() => Observer());
   const [model] = React.useState(
     () =>
       new SweluxModel({

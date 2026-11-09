@@ -1,5 +1,4 @@
-import { Box, Button, Paper, Stack, Typography } from "@mui/material";
-import OpenInFullIcon from "@mui/icons-material/OpenInFull";
+import { Box, Paper, Stack, Typography } from "@mui/material";
 import { alpha } from "@mui/material/styles";
 import PhotometryPanel from "./PhotometryPanel";
 import MetricTable, { StatusIcon } from "./MetricTable";
@@ -8,14 +7,7 @@ import { energyFor, isCompliant, nf, statusText } from "../utils";
 const TONES = { Compliant: "success", NonCompliant: "error" };
 
 /** Result for one luminaire: the engine's verdict, its metrics and energy. */
-function VerdictCard({
-  result,
-  lightingClass,
-  street,
-  hours,
-  photometry,
-  onDetails,
-}) {
+function VerdictCard({ result, lightingClass, street, hours, photometry }) {
   const { luminaire } = result;
   const tone = TONES[result.status] || "warning";
   const energy = energyFor(result, street, hours);
@@ -60,17 +52,6 @@ function VerdictCard({
               : ""}
           </Typography>
         </Box>
-        {onDetails && (
-          <Button
-            size="small"
-            color="inherit"
-            startIcon={<OpenInFullIcon sx={{ fontSize: 16 }} />}
-            onClick={onDetails}
-            sx={{ flex: "none", textTransform: "none" }}
-          >
-            Detaljer
-          </Button>
-        )}
       </Stack>
 
       {photometry && <PhotometryPanel data={photometry} />}

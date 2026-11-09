@@ -120,15 +120,3 @@ export function energyFor(result, street, hours) {
   const savedKwh = ((existingW - power) * street.stats.count * hours) / 1000;
   return { existingW, existingPerKm, perKm, savedPct, savedKwh };
 }
-
-// The road area's grids of one quantity: the fine isoline grids when the
-// engine sent them (edge to edge), else the standard's calculation points.
-// Wet-road luminance is left out of the dry picture.
-export function gridsFor(area, quantity) {
-  const pick = (list) =>
-    (list || []).filter(
-      (g) => g.quantity === quantity && !g.id.startsWith("wet-")
-    );
-  const fine = pick(area?.isolineGrids);
-  return fine.length ? fine : pick(area?.grids);
-}
