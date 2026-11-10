@@ -130,10 +130,17 @@ export default class SweluxApi {
   /**
    * Saves a calculation for swelux.ai's details page (road view, grids, exports):
    * `{ id, url, expiresAt }`. The key decides whether the page needs a sign-in.
+   * The street's name and area from the map name the page and a saved project.
    */
-  handover = ({ street, placement }, luminaireId) =>
+  handover = ({ street, placement }, luminaireId, { name, area } = {}) =>
     this.#mapApi("/handovers", {
       method: "POST",
-      body: JSON.stringify({ street, placement, luminaireId }),
+      body: JSON.stringify({
+        street,
+        placement,
+        luminaireId,
+        ...(name ? { streetName: name } : {}),
+        ...(area ? { area } : {}),
+      }),
     });
 }

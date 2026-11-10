@@ -243,7 +243,7 @@ function SweluxView({ model, options, localObserver }) {
               onOpenDetails={
                 options.detailsLink === false
                   ? null
-                  : () => details.open(calculated, result.luminaire.id)
+                  : () => details.open(calculated, result.luminaire.id, street)
               }
               opening={details.opening}
             />

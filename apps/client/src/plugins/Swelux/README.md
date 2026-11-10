@@ -131,12 +131,12 @@ Either way, swelux.ai limits each key's calculations per day and can revoke it.
 
 Relative to `apiBase`:
 
-| Endpoint                          | Purpose                                                                                      |
-| --------------------------------- | -------------------------------------------------------------------------------------------- |
-| `GET /luminaires`                 | The luminaires the map may use                                                               |
-| `POST /evaluations`               | `{ street, placement, luminaireIds }` (`null` for the whole catalogue): the verdicts, ranked |
-| `GET /luminaires/{id}/photometry` | Key figures and intensity curves of a luminaire, for its diagram                             |
-| `POST /handovers`                 | `{ street, placement, luminaireId }`: saves a calculation and returns its details page `url` |
+| Endpoint                          | Purpose                                                                                                        |
+| --------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `GET /luminaires`                 | The luminaires the map may use                                                                                 |
+| `POST /evaluations`               | `{ street, placement, luminaireIds }` (`null` for the whole catalogue): the verdicts, ranked                   |
+| `GET /luminaires/{id}/photometry` | Key figures and intensity curves of a luminaire, for its diagram                                               |
+| `POST /handovers`                 | `{ street, placement, luminaireId, streetName, area }`: saves a calculation and returns its details page `url` |
 
 ### Tests
 

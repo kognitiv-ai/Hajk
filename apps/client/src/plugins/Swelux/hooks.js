@@ -121,12 +121,16 @@ export function useManufacturerChoice(luminaires, defaults) {
  */
 export function useDetailsLink(model, onError) {
   const [opening, setOpening] = React.useState(false);
-  const open = async (calculation, luminaireId) => {
+  const open = async (calculation, luminaireId, street) => {
     const win = window.open("", "_blank");
     setOpening(true);
     onError(null);
     try {
-      const { url } = await model.api.handover(calculation, luminaireId);
+      const { url } = await model.api.handover(
+        calculation,
+        luminaireId,
+        street
+      );
       if (win) {
         win.opener = null;
         win.location.href = url;
