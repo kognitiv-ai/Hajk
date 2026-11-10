@@ -2,7 +2,7 @@
 
 Street lighting calculations according to EN 13201 for the light points in the map. A user clicks a light point, the plugin selects the street it belongs to, and the [swelux.ai](https://swelux.ai) calculation engine says whether a luminaire meets the street's lighting class, or ranks a catalogue of luminaires against it.
 
-The plugin is the map side only. The calculations and the luminaire catalogue come from swelux.ai, which the plugin calls with a key for the map. The light points are the municipality's own layer, or can be hosted in swelux.ai.
+The plugin is the map side only. The calculations and the luminaire catalogue come from swelux.ai, which identifies the map by a key. The light points are the municipality's own layer, or can be hosted in swelux.ai.
 
 ### Maintainer
 
@@ -16,7 +16,7 @@ Anoop Mathew, Kognitiv: [anoop@kognitiv.se](mailto:anoop@kognitiv.se). Questions
 
 ### Trying it out
 
-`sample/light-points.geojson` holds made-up light points on two streets. Serve it from anywhere the map can reach (for example the client's `public` folder), add it as a vector layer and add the tool with the demo key:
+`sample/light-points.geojson` holds made-up light points along seven real streets on Hisingen, Göteborg (street geometry © [OpenStreetMap](https://www.openstreetmap.org/copyright) contributors; the poles, luminaires and wattages are invented). Serve it from anywhere the map can reach (for example the client's `public` folder), add it as a vector layer and add the tool with the demo key:
 
 ```json
 {
@@ -45,7 +45,7 @@ Anoop Mathew, Kognitiv: [anoop@kognitiv.se](mailto:anoop@kognitiv.se). Questions
 }
 ```
 
-The demo key is shared, has a small quota and a small catalogue, and may change. A map in use gets its own key: ask the maintainer.
+The demo key is shared, has a daily quota and may change. A map in use gets its own key: ask the maintainer. The key sits in the browser here, which is fine for trying the plugin; for a map in use, keep it in Hajk's backend (below).
 
 ### Light points
 
@@ -62,7 +62,7 @@ The plugin reads these properties: `id`, `streetId` (empty when the point belong
 | Option                  | Default                                | Description                                                                                                                                                 |
 | ----------------------- | -------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `lightPointLayerId`     |                                        | The `id` of the light point layer. Required.                                                                                                                |
-| `apiKey`                |                                        | The map's key to swelux.ai, sent as the `X-Swelux-Map-Key` header. Without it, calls go to the map's own origin (see below).                                |
+| `apiKey`                |                                        | The map's key, sent from the browser as the `X-Swelux-Map-Key` header. Leave it out when Hajk's backend proxy adds the key (see below).                     |
 | `tenantId`              |                                        | The organisation's id in swelux.ai. Replaces `{tenantId}` in `apiBase`, `streetsUrl` and `contextUrl`.                                                      |
 | `apiBase`               | `/api/v1/organisations/{tenantId}/map` | Base of the organisation's map API.                                                                                                                         |
 | `standardsUrl`          | `/api/v1/standards`                    | Lighting classes.                                                                                                                                           |
@@ -97,19 +97,42 @@ The plugin reads these properties: `id`, `streetId` (empty when the point belong
 }
 ```
 
+### The key: in Hajk's backend, or in the browser
+
+swelux.ai knows a map by its key. There are two ways to give it:
+
+**Through Hajk's backend proxy (recommended).** The key stays on the server, and whoever may reach your Hajk (for example through your own login) may calculate. In the backend's `.env`:
+
+```
+PROXY_SWELUX=https://swelux.ai/api/v1
+PROXY_SWELUX_USER=<your organisation, any label>
+PROXY_SWELUX_PASSWORD=<the map key>
+```
+
+and in the tool's options, no `apiKey`, with the addresses pointing at the proxy:
+
+```json
+"tenantId": "<the organisation's id in swelux.ai>",
+"apiBase": "/api/v2/proxy/swelux/organisations/{tenantId}/map",
+"standardsUrl": "/api/v2/proxy/swelux/standards",
+"roadSurfacesUrl": "/api/v2/proxy/swelux/road-surfaces"
+```
+
+Hajk's proxy sends the key as HTTP Basic credentials. As with any `PROXY_*` with a service account, it applies the key to every request through the proxy, so protect the proxy the way you protect the map.
+
+**In the browser, with `apiKey`.** The plugin sends the key in the `X-Swelux-Map-Key` header, straight to swelux.ai. Simple, and right for trying the plugin or for a public map, but anyone can copy the key from the page. swelux.ai accepts a browser key only from the map's own address, but a script can still use it within its quota.
+
+Either way, swelux.ai limits each key's calculations per day and can revoke it.
+
 ### Calls to swelux.ai
 
-Relative to `apiBase`, with the key in the `X-Swelux-Map-Key` header:
+Relative to `apiBase`:
 
 | Endpoint                          | Purpose                                                                                      |
 | --------------------------------- | -------------------------------------------------------------------------------------------- |
 | `GET /luminaires`                 | The luminaires the map may use                                                               |
 | `POST /evaluations`               | `{ street, placement, luminaireIds }` (`null` for the whole catalogue): the verdicts, ranked |
 | `GET /luminaires/{id}/photometry` | Key figures and intensity curves of a luminaire, for its diagram                             |
-
-A map without `apiKey` makes the same calls to its own origin, for a Hajk behind a gateway that adds a signed-in user's token. That is how the hosted map at swelux.ai runs.
-
-A map key identifies the map; it is visible in the browser and is not a secret. swelux.ai checks the page's origin against the key and limits how many calculations it may make.
 
 ### Tests
 

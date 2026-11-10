@@ -1,461 +1,2316 @@
 {
-  "type": "FeatureCollection",
-  "features": [
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [12.25, 57.105]
-      },
-      "properties": {
-        "id": "demo-1-01",
-        "streetId": "demo-1",
-        "street": "Exempelgatan",
-        "area": "Exempelstaden",
-        "poleId": "S0001",
-        "existingLuminaire": "Exempelarmatur HPS",
-        "existingManufacturer": "Exempel AB",
-        "existingWattage": 70,
-        "poleHeight": 8,
-        "armLength": 0.5
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [12.2505293, 57.105]
-      },
-      "properties": {
-        "id": "demo-1-02",
-        "streetId": "demo-1",
-        "street": "Exempelgatan",
-        "area": "Exempelstaden",
-        "poleId": "S0002",
-        "existingLuminaire": "Exempelarmatur HPS",
-        "existingManufacturer": "Exempel AB",
-        "existingWattage": 70,
-        "poleHeight": 8,
-        "armLength": 0.5
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [12.2510586, 57.105]
-      },
-      "properties": {
-        "id": "demo-1-03",
-        "streetId": "demo-1",
-        "street": "Exempelgatan",
-        "area": "Exempelstaden",
-        "poleId": "S0003",
-        "existingLuminaire": "Exempelarmatur HPS",
-        "existingManufacturer": "Exempel AB",
-        "existingWattage": 70,
-        "poleHeight": 8,
-        "armLength": 0.5
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [12.2515879, 57.105]
-      },
-      "properties": {
-        "id": "demo-1-04",
-        "streetId": "demo-1",
-        "street": "Exempelgatan",
-        "area": "Exempelstaden",
-        "poleId": "S0004",
-        "existingLuminaire": "Exempelarmatur HPS",
-        "existingManufacturer": "Exempel AB",
-        "existingWattage": 70,
-        "poleHeight": 8,
-        "armLength": 0.5
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [12.2521172, 57.105]
-      },
-      "properties": {
-        "id": "demo-1-05",
-        "streetId": "demo-1",
-        "street": "Exempelgatan",
-        "area": "Exempelstaden",
-        "poleId": "S0005",
-        "existingLuminaire": "Exempelarmatur HPS",
-        "existingManufacturer": "Exempel AB",
-        "existingWattage": 70,
-        "poleHeight": 8,
-        "armLength": 0.5
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [12.2526465, 57.105]
-      },
-      "properties": {
-        "id": "demo-1-06",
-        "streetId": "demo-1",
-        "street": "Exempelgatan",
-        "area": "Exempelstaden",
-        "poleId": "S0006",
-        "existingLuminaire": "Exempelarmatur HPS",
-        "existingManufacturer": "Exempel AB",
-        "existingWattage": 70,
-        "poleHeight": 8,
-        "armLength": 0.5
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [12.2531758, 57.105]
-      },
-      "properties": {
-        "id": "demo-1-07",
-        "streetId": "demo-1",
-        "street": "Exempelgatan",
-        "area": "Exempelstaden",
-        "poleId": "S0007",
-        "existingLuminaire": "Exempelarmatur HPS",
-        "existingManufacturer": "Exempel AB",
-        "existingWattage": 70,
-        "poleHeight": 8,
-        "armLength": 0.5
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [12.2537051, 57.105]
-      },
-      "properties": {
-        "id": "demo-1-08",
-        "streetId": "demo-1",
-        "street": "Exempelgatan",
-        "area": "Exempelstaden",
-        "poleId": "S0008",
-        "existingLuminaire": "Exempelarmatur HPS",
-        "existingManufacturer": "Exempel AB",
-        "existingWattage": 70,
-        "poleHeight": 8,
-        "armLength": 0.5
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [12.2542343, 57.105]
-      },
-      "properties": {
-        "id": "demo-1-09",
-        "streetId": "demo-1",
-        "street": "Exempelgatan",
-        "area": "Exempelstaden",
-        "poleId": "S0009",
-        "existingLuminaire": "Exempelarmatur HPS",
-        "existingManufacturer": "Exempel AB",
-        "existingWattage": 70,
-        "poleHeight": 8,
-        "armLength": 0.5
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [12.2547636, 57.105]
-      },
-      "properties": {
-        "id": "demo-1-10",
-        "streetId": "demo-1",
-        "street": "Exempelgatan",
-        "area": "Exempelstaden",
-        "poleId": "S0010",
-        "existingLuminaire": "Exempelarmatur HPS",
-        "existingManufacturer": "Exempel AB",
-        "existingWattage": 70,
-        "poleHeight": 8,
-        "armLength": 0.5
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [12.2552929, 57.105]
-      },
-      "properties": {
-        "id": "demo-1-11",
-        "streetId": "demo-1",
-        "street": "Exempelgatan",
-        "area": "Exempelstaden",
-        "poleId": "S0011",
-        "existingLuminaire": "Exempelarmatur HPS",
-        "existingManufacturer": "Exempel AB",
-        "existingWattage": 70,
-        "poleHeight": 8,
-        "armLength": 0.5
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [12.2558222, 57.105]
-      },
-      "properties": {
-        "id": "demo-1-12",
-        "streetId": "demo-1",
-        "street": "Exempelgatan",
-        "area": "Exempelstaden",
-        "poleId": "S0012",
-        "existingLuminaire": "Exempelarmatur HPS",
-        "existingManufacturer": "Exempel AB",
-        "existingWattage": 70,
-        "poleHeight": 8,
-        "armLength": 0.5
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [12.2563515, 57.105]
-      },
-      "properties": {
-        "id": "demo-1-13",
-        "streetId": "demo-1",
-        "street": "Exempelgatan",
-        "area": "Exempelstaden",
-        "poleId": "S0013",
-        "existingLuminaire": "Exempelarmatur HPS",
-        "existingManufacturer": "Exempel AB",
-        "existingWattage": 70,
-        "poleHeight": 8,
-        "armLength": 0.5
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [12.2568808, 57.105]
-      },
-      "properties": {
-        "id": "demo-1-14",
-        "streetId": "demo-1",
-        "street": "Exempelgatan",
-        "area": "Exempelstaden",
-        "poleId": "S0014",
-        "existingLuminaire": "Exempelarmatur HPS",
-        "existingManufacturer": "Exempel AB",
-        "existingWattage": 70,
-        "poleHeight": 8,
-        "armLength": 0.5
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [12.256, 57.106]
-      },
-      "properties": {
-        "id": "demo-2-01",
-        "streetId": "demo-2",
-        "street": "Provvägen",
-        "area": "Exempelstaden",
-        "poleId": "S0101",
-        "existingLuminaire": "Exempelarmatur LED",
-        "existingManufacturer": "Exempel AB",
-        "existingWattage": 36,
-        "poleHeight": 6,
-        "armLength": 0
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [12.256, 57.1062515]
-      },
-      "properties": {
-        "id": "demo-2-02",
-        "streetId": "demo-2",
-        "street": "Provvägen",
-        "area": "Exempelstaden",
-        "poleId": "S0102",
-        "existingLuminaire": "Exempelarmatur LED",
-        "existingManufacturer": "Exempel AB",
-        "existingWattage": 36,
-        "poleHeight": 6,
-        "armLength": 0
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [12.256, 57.1065031]
-      },
-      "properties": {
-        "id": "demo-2-03",
-        "streetId": "demo-2",
-        "street": "Provvägen",
-        "area": "Exempelstaden",
-        "poleId": "S0103",
-        "existingLuminaire": "Exempelarmatur LED",
-        "existingManufacturer": "Exempel AB",
-        "existingWattage": 36,
-        "poleHeight": 6,
-        "armLength": 0
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [12.256, 57.1067546]
-      },
-      "properties": {
-        "id": "demo-2-04",
-        "streetId": "demo-2",
-        "street": "Provvägen",
-        "area": "Exempelstaden",
-        "poleId": "S0104",
-        "existingLuminaire": "Exempelarmatur LED",
-        "existingManufacturer": "Exempel AB",
-        "existingWattage": 36,
-        "poleHeight": 6,
-        "armLength": 0
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [12.256, 57.1070061]
-      },
-      "properties": {
-        "id": "demo-2-05",
-        "streetId": "demo-2",
-        "street": "Provvägen",
-        "area": "Exempelstaden",
-        "poleId": "S0105",
-        "existingLuminaire": "Exempelarmatur LED",
-        "existingManufacturer": "Exempel AB",
-        "existingWattage": 36,
-        "poleHeight": 6,
-        "armLength": 0
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [12.256, 57.1072576]
-      },
-      "properties": {
-        "id": "demo-2-06",
-        "streetId": "demo-2",
-        "street": "Provvägen",
-        "area": "Exempelstaden",
-        "poleId": "S0106",
-        "existingLuminaire": "Exempelarmatur LED",
-        "existingManufacturer": "Exempel AB",
-        "existingWattage": 36,
-        "poleHeight": 6,
-        "armLength": 0
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [12.256, 57.1075092]
-      },
-      "properties": {
-        "id": "demo-2-07",
-        "streetId": "demo-2",
-        "street": "Provvägen",
-        "area": "Exempelstaden",
-        "poleId": "S0107",
-        "existingLuminaire": "Exempelarmatur LED",
-        "existingManufacturer": "Exempel AB",
-        "existingWattage": 36,
-        "poleHeight": 6,
-        "armLength": 0
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [12.256, 57.1077607]
-      },
-      "properties": {
-        "id": "demo-2-08",
-        "streetId": "demo-2",
-        "street": "Provvägen",
-        "area": "Exempelstaden",
-        "poleId": "S0108",
-        "existingLuminaire": "Exempelarmatur LED",
-        "existingManufacturer": "Exempel AB",
-        "existingWattage": 36,
-        "poleHeight": 6,
-        "armLength": 0
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [12.256, 57.1080122]
-      },
-      "properties": {
-        "id": "demo-2-09",
-        "streetId": "demo-2",
-        "street": "Provvägen",
-        "area": "Exempelstaden",
-        "poleId": "S0109",
-        "existingLuminaire": "Exempelarmatur LED",
-        "existingManufacturer": "Exempel AB",
-        "existingWattage": 36,
-        "poleHeight": 6,
-        "armLength": 0
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [12.256, 57.1082637]
-      },
-      "properties": {
-        "id": "demo-2-10",
-        "streetId": "demo-2",
-        "street": "Provvägen",
-        "area": "Exempelstaden",
-        "poleId": "S0110",
-        "existingLuminaire": "Exempelarmatur LED",
-        "existingManufacturer": "Exempel AB",
-        "existingWattage": 36,
-        "poleHeight": 6,
-        "armLength": 0
-      }
-    }
-  ]
+ "type": "FeatureCollection",
+ "_about": "Made-up light points along real streets on Hisingen, Göteborg. Street geometry: © OpenStreetMap contributors (ODbL). Poles, luminaires and wattages are invented; this is not a municipality's register.",
+ "features": [
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9446523,
+     57.7146677
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-03-01",
+    "streetId": "lindholmen-03",
+    "street": "Herkulesgatan",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0301",
+    "existingLuminaire": "Exempel Gata LED 36",
+    "existingManufacturer": "Exempel Ljus AB",
+    "existingWattage": 36,
+    "poleHeight": 6,
+    "armLength": 0.5
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9449566,
+     57.714873
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-03-02",
+    "streetId": "lindholmen-03",
+    "street": "Herkulesgatan",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0302",
+    "existingLuminaire": "Exempel Gata LED 36",
+    "existingManufacturer": "Exempel Ljus AB",
+    "existingWattage": 36,
+    "poleHeight": 6,
+    "armLength": 0.5
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9449325,
+     57.7149065
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-03-03",
+    "streetId": "lindholmen-03",
+    "street": "Herkulesgatan",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0303",
+    "existingLuminaire": "Exempel Gata LED 36",
+    "existingManufacturer": "Exempel Ljus AB",
+    "existingWattage": 36,
+    "poleHeight": 6,
+    "armLength": 0.5
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9445957,
+     57.7142408
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-01-01",
+    "streetId": "lindholmen-01",
+    "street": "Myntgatan",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0101",
+    "existingLuminaire": "Exempel Väg HPS 100",
+    "existingManufacturer": "Exempel Ljus AB",
+    "existingWattage": 100,
+    "poleHeight": 10,
+    "armLength": 1.5
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9327183,
+     57.704287
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-04-01",
+    "streetId": "lindholmen-04",
+    "street": "Plejadgatan",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0401",
+    "existingLuminaire": "Exempel Park MH 70",
+    "existingManufacturer": "Exempel Belysning",
+    "existingWattage": 70,
+    "poleHeight": 6,
+    "armLength": 0.5
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9327126,
+     57.7045039
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-04-02",
+    "streetId": "lindholmen-04",
+    "street": "Plejadgatan",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0402",
+    "existingLuminaire": "Exempel Park MH 70",
+    "existingManufacturer": "Exempel Belysning",
+    "existingWattage": 70,
+    "poleHeight": 6,
+    "armLength": 0.5
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9327945,
+     57.7047595
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-04-03",
+    "streetId": "lindholmen-04",
+    "street": "Plejadgatan",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0403",
+    "existingLuminaire": "Exempel Park MH 70",
+    "existingManufacturer": "Exempel Belysning",
+    "existingWattage": 70,
+    "poleHeight": 6,
+    "armLength": 0.5
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9330929,
+     57.7049622
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-04-04",
+    "streetId": "lindholmen-04",
+    "street": "Plejadgatan",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0404",
+    "existingLuminaire": "Exempel Park MH 70",
+    "existingManufacturer": "Exempel Belysning",
+    "existingWattage": 70,
+    "poleHeight": 6,
+    "armLength": 0.5
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9334175,
+     57.7051328
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-04-05",
+    "streetId": "lindholmen-04",
+    "street": "Plejadgatan",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0405",
+    "existingLuminaire": "Exempel Park MH 70",
+    "existingManufacturer": "Exempel Belysning",
+    "existingWattage": 70,
+    "poleHeight": 6,
+    "armLength": 0.5
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9336957,
+     57.7052876
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-04-06",
+    "streetId": "lindholmen-04",
+    "street": "Plejadgatan",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0406",
+    "existingLuminaire": "Exempel Park MH 70",
+    "existingManufacturer": "Exempel Belysning",
+    "existingWattage": 70,
+    "poleHeight": 6,
+    "armLength": 0.5
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9339461,
+     57.7054749
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-04-07",
+    "streetId": "lindholmen-04",
+    "street": "Plejadgatan",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0407",
+    "existingLuminaire": "Exempel Park MH 70",
+    "existingManufacturer": "Exempel Belysning",
+    "existingWattage": 70,
+    "poleHeight": 6,
+    "armLength": 0.5
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9342187,
+     57.7056696
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-04-08",
+    "streetId": "lindholmen-04",
+    "street": "Plejadgatan",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0408",
+    "existingLuminaire": "Exempel Park MH 70",
+    "existingManufacturer": "Exempel Belysning",
+    "existingWattage": 70,
+    "poleHeight": 6,
+    "armLength": 0.5
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9344732,
+     57.7058692
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-04-09",
+    "streetId": "lindholmen-04",
+    "street": "Plejadgatan",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0409",
+    "existingLuminaire": "Exempel Park MH 70",
+    "existingManufacturer": "Exempel Belysning",
+    "existingWattage": 70,
+    "poleHeight": 6,
+    "armLength": 0.5
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9346894,
+     57.7060575
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-04-10",
+    "streetId": "lindholmen-04",
+    "street": "Plejadgatan",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0410",
+    "existingLuminaire": "Exempel Park MH 70",
+    "existingManufacturer": "Exempel Belysning",
+    "existingWattage": 70,
+    "poleHeight": 6,
+    "armLength": 0.5
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9347871,
+     57.706265
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-04-11",
+    "streetId": "lindholmen-04",
+    "street": "Plejadgatan",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0411",
+    "existingLuminaire": "Exempel Park MH 70",
+    "existingManufacturer": "Exempel Belysning",
+    "existingWattage": 70,
+    "poleHeight": 6,
+    "armLength": 0.5
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9318197,
+     57.7046863
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-06-01",
+    "streetId": "lindholmen-06",
+    "street": "Verkmästaregatan",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0601",
+    "existingLuminaire": "Exempel Park MH 70",
+    "existingManufacturer": "Exempel Belysning",
+    "existingWattage": 70,
+    "poleHeight": 6,
+    "armLength": 0.0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9320016,
+     57.7049471
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-06-02",
+    "streetId": "lindholmen-06",
+    "street": "Verkmästaregatan",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0602",
+    "existingLuminaire": "Exempel Park MH 70",
+    "existingManufacturer": "Exempel Belysning",
+    "existingWattage": 70,
+    "poleHeight": 6,
+    "armLength": 0.0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9322154,
+     57.7051967
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-06-03",
+    "streetId": "lindholmen-06",
+    "street": "Verkmästaregatan",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0603",
+    "existingLuminaire": "Exempel Park MH 70",
+    "existingManufacturer": "Exempel Belysning",
+    "existingWattage": 70,
+    "poleHeight": 6,
+    "armLength": 0.0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9324399,
+     57.7054352
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-06-04",
+    "streetId": "lindholmen-06",
+    "street": "Verkmästaregatan",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0604",
+    "existingLuminaire": "Exempel Park MH 70",
+    "existingManufacturer": "Exempel Belysning",
+    "existingWattage": 70,
+    "poleHeight": 6,
+    "armLength": 0.0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9326641,
+     57.7056772
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-06-05",
+    "streetId": "lindholmen-06",
+    "street": "Verkmästaregatan",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0605",
+    "existingLuminaire": "Exempel Park MH 70",
+    "existingManufacturer": "Exempel Belysning",
+    "existingWattage": 70,
+    "poleHeight": 6,
+    "armLength": 0.0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9328776,
+     57.7059155
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-06-06",
+    "streetId": "lindholmen-06",
+    "street": "Verkmästaregatan",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0606",
+    "existingLuminaire": "Exempel Park MH 70",
+    "existingManufacturer": "Exempel Belysning",
+    "existingWattage": 70,
+    "poleHeight": 6,
+    "armLength": 0.0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9330774,
+     57.7061559
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-06-07",
+    "streetId": "lindholmen-06",
+    "street": "Verkmästaregatan",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0607",
+    "existingLuminaire": "Exempel Park MH 70",
+    "existingManufacturer": "Exempel Belysning",
+    "existingWattage": 70,
+    "poleHeight": 6,
+    "armLength": 0.0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9332819,
+     57.7063992
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-06-08",
+    "streetId": "lindholmen-06",
+    "street": "Verkmästaregatan",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0608",
+    "existingLuminaire": "Exempel Park MH 70",
+    "existingManufacturer": "Exempel Belysning",
+    "existingWattage": 70,
+    "poleHeight": 6,
+    "armLength": 0.0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9334809,
+     57.7066286
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-06-09",
+    "streetId": "lindholmen-06",
+    "street": "Verkmästaregatan",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0609",
+    "existingLuminaire": "Exempel Park MH 70",
+    "existingManufacturer": "Exempel Belysning",
+    "existingWattage": 70,
+    "poleHeight": 6,
+    "armLength": 0.0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9336879,
+     57.7068755
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-06-10",
+    "streetId": "lindholmen-06",
+    "street": "Verkmästaregatan",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0610",
+    "existingLuminaire": "Exempel Park MH 70",
+    "existingManufacturer": "Exempel Belysning",
+    "existingWattage": 70,
+    "poleHeight": 6,
+    "armLength": 0.0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9339118,
+     57.7071237
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-06-11",
+    "streetId": "lindholmen-06",
+    "street": "Verkmästaregatan",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0611",
+    "existingLuminaire": "Exempel Park MH 70",
+    "existingManufacturer": "Exempel Belysning",
+    "existingWattage": 70,
+    "poleHeight": 6,
+    "armLength": 0.0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9309345,
+     57.7075303
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-05-01",
+    "streetId": "lindholmen-05",
+    "street": "Arbetaregatan",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0501",
+    "existingLuminaire": "Exempel Gata LED 36",
+    "existingManufacturer": "Exempel Ljus AB",
+    "existingWattage": 36,
+    "poleHeight": 6,
+    "armLength": 0.0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9310374,
+     57.7073084
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-05-02",
+    "streetId": "lindholmen-05",
+    "street": "Arbetaregatan",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0502",
+    "existingLuminaire": "Exempel Gata LED 36",
+    "existingManufacturer": "Exempel Ljus AB",
+    "existingWattage": 36,
+    "poleHeight": 6,
+    "armLength": 0.0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9311045,
+     57.7070683
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-05-03",
+    "streetId": "lindholmen-05",
+    "street": "Arbetaregatan",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0503",
+    "existingLuminaire": "Exempel Gata LED 36",
+    "existingManufacturer": "Exempel Ljus AB",
+    "existingWattage": 36,
+    "poleHeight": 6,
+    "armLength": 0.0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9311807,
+     57.7068384
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-05-04",
+    "streetId": "lindholmen-05",
+    "street": "Arbetaregatan",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0504",
+    "existingLuminaire": "Exempel Gata LED 36",
+    "existingManufacturer": "Exempel Ljus AB",
+    "existingWattage": 36,
+    "poleHeight": 6,
+    "armLength": 0.0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9313526,
+     57.7066411
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-05-05",
+    "streetId": "lindholmen-05",
+    "street": "Arbetaregatan",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0505",
+    "existingLuminaire": "Exempel Gata LED 36",
+    "existingManufacturer": "Exempel Ljus AB",
+    "existingWattage": 36,
+    "poleHeight": 6,
+    "armLength": 0.0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9317403,
+     57.7065378
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-05-06",
+    "streetId": "lindholmen-05",
+    "street": "Arbetaregatan",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0506",
+    "existingLuminaire": "Exempel Gata LED 36",
+    "existingManufacturer": "Exempel Ljus AB",
+    "existingWattage": 36,
+    "poleHeight": 6,
+    "armLength": 0.0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9321477,
+     57.7064281
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-05-07",
+    "streetId": "lindholmen-05",
+    "street": "Arbetaregatan",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0507",
+    "existingLuminaire": "Exempel Gata LED 36",
+    "existingManufacturer": "Exempel Ljus AB",
+    "existingWattage": 36,
+    "poleHeight": 6,
+    "armLength": 0.0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9325461,
+     57.7063199
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-05-08",
+    "streetId": "lindholmen-05",
+    "street": "Arbetaregatan",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0508",
+    "existingLuminaire": "Exempel Gata LED 36",
+    "existingManufacturer": "Exempel Ljus AB",
+    "existingWattage": 36,
+    "poleHeight": 6,
+    "armLength": 0.0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9329365,
+     57.7062139
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-05-09",
+    "streetId": "lindholmen-05",
+    "street": "Arbetaregatan",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0509",
+    "existingLuminaire": "Exempel Gata LED 36",
+    "existingManufacturer": "Exempel Ljus AB",
+    "existingWattage": 36,
+    "poleHeight": 6,
+    "armLength": 0.0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9333485,
+     57.7061055
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-05-10",
+    "streetId": "lindholmen-05",
+    "street": "Arbetaregatan",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0510",
+    "existingLuminaire": "Exempel Gata LED 36",
+    "existingManufacturer": "Exempel Ljus AB",
+    "existingWattage": 36,
+    "poleHeight": 6,
+    "armLength": 0.0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9337497,
+     57.7059983
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-05-11",
+    "streetId": "lindholmen-05",
+    "street": "Arbetaregatan",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0511",
+    "existingLuminaire": "Exempel Gata LED 36",
+    "existingManufacturer": "Exempel Ljus AB",
+    "existingWattage": 36,
+    "poleHeight": 6,
+    "armLength": 0.0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9312312,
+     57.7071463
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-05-12",
+    "streetId": "lindholmen-05",
+    "street": "Arbetaregatan",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0512",
+    "existingLuminaire": "Exempel Gata LED 36",
+    "existingManufacturer": "Exempel Ljus AB",
+    "existingWattage": 36,
+    "poleHeight": 6,
+    "armLength": 0.0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9316567,
+     57.7071988
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-05-13",
+    "streetId": "lindholmen-05",
+    "street": "Arbetaregatan",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0513",
+    "existingLuminaire": "Exempel Gata LED 36",
+    "existingManufacturer": "Exempel Ljus AB",
+    "existingWattage": 36,
+    "poleHeight": 6,
+    "armLength": 0.0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9446932,
+     57.714637
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-01-02",
+    "streetId": "lindholmen-01",
+    "street": "Myntgatan",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0102",
+    "existingLuminaire": "Exempel Väg HPS 100",
+    "existingManufacturer": "Exempel Ljus AB",
+    "existingWattage": 100,
+    "poleHeight": 10,
+    "armLength": 1.5
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9444181,
+     57.7143748
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-01-03",
+    "streetId": "lindholmen-01",
+    "street": "Myntgatan",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0103",
+    "existingLuminaire": "Exempel Väg HPS 100",
+    "existingManufacturer": "Exempel Ljus AB",
+    "existingWattage": 100,
+    "poleHeight": 10,
+    "armLength": 1.5
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9445605,
+     57.7149368
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-01-04",
+    "streetId": "lindholmen-01",
+    "street": "Myntgatan",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0104",
+    "existingLuminaire": "Exempel Väg HPS 100",
+    "existingManufacturer": "Exempel Ljus AB",
+    "existingWattage": 100,
+    "poleHeight": 10,
+    "armLength": 1.5
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9448201,
+     57.7152249
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-01-05",
+    "streetId": "lindholmen-01",
+    "street": "Myntgatan",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0105",
+    "existingLuminaire": "Exempel Väg HPS 100",
+    "existingManufacturer": "Exempel Ljus AB",
+    "existingWattage": 100,
+    "poleHeight": 10,
+    "armLength": 1.5
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9446161,
+     57.715524
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-01-06",
+    "streetId": "lindholmen-01",
+    "street": "Myntgatan",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0106",
+    "existingLuminaire": "Exempel Väg HPS 100",
+    "existingManufacturer": "Exempel Ljus AB",
+    "existingWattage": 100,
+    "poleHeight": 10,
+    "armLength": 1.5
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.944897,
+     57.7157966
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-01-07",
+    "streetId": "lindholmen-01",
+    "street": "Myntgatan",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0107",
+    "existingLuminaire": "Exempel Väg HPS 100",
+    "existingManufacturer": "Exempel Ljus AB",
+    "existingWattage": 100,
+    "poleHeight": 10,
+    "armLength": 1.5
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9446827,
+     57.7160939
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-01-08",
+    "streetId": "lindholmen-01",
+    "street": "Myntgatan",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0108",
+    "existingLuminaire": "Exempel Väg HPS 100",
+    "existingManufacturer": "Exempel Ljus AB",
+    "existingWattage": 100,
+    "poleHeight": 10,
+    "armLength": 1.5
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9449577,
+     57.7163795
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-01-09",
+    "streetId": "lindholmen-01",
+    "street": "Myntgatan",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0109",
+    "existingLuminaire": "Exempel Väg HPS 100",
+    "existingManufacturer": "Exempel Ljus AB",
+    "existingWattage": 100,
+    "poleHeight": 10,
+    "armLength": 1.5
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.944769,
+     57.7166792
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-01-10",
+    "streetId": "lindholmen-01",
+    "street": "Myntgatan",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0110",
+    "existingLuminaire": "Exempel Väg HPS 100",
+    "existingManufacturer": "Exempel Ljus AB",
+    "existingWattage": 100,
+    "poleHeight": 10,
+    "armLength": 1.5
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.945053,
+     57.7169663
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-01-11",
+    "streetId": "lindholmen-01",
+    "street": "Myntgatan",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0111",
+    "existingLuminaire": "Exempel Väg HPS 100",
+    "existingManufacturer": "Exempel Ljus AB",
+    "existingWattage": 100,
+    "poleHeight": 10,
+    "armLength": 1.5
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9448702,
+     57.717262
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-01-12",
+    "streetId": "lindholmen-01",
+    "street": "Myntgatan",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0112",
+    "existingLuminaire": "Exempel Väg HPS 100",
+    "existingManufacturer": "Exempel Ljus AB",
+    "existingWattage": 100,
+    "poleHeight": 10,
+    "armLength": 1.5
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9452853,
+     57.7150771
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-03-04",
+    "streetId": "lindholmen-03",
+    "street": "Herkulesgatan",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0304",
+    "existingLuminaire": "Exempel Gata LED 36",
+    "existingManufacturer": "Exempel Ljus AB",
+    "existingWattage": 36,
+    "poleHeight": 6,
+    "armLength": 0.5
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9456181,
+     57.7152577
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-03-05",
+    "streetId": "lindholmen-03",
+    "street": "Herkulesgatan",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0305",
+    "existingLuminaire": "Exempel Gata LED 36",
+    "existingManufacturer": "Exempel Ljus AB",
+    "existingWattage": 36,
+    "poleHeight": 6,
+    "armLength": 0.5
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9459369,
+     57.715439
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-03-06",
+    "streetId": "lindholmen-03",
+    "street": "Herkulesgatan",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0306",
+    "existingLuminaire": "Exempel Gata LED 36",
+    "existingManufacturer": "Exempel Ljus AB",
+    "existingWattage": 36,
+    "poleHeight": 6,
+    "armLength": 0.5
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9462819,
+     57.715629
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-03-07",
+    "streetId": "lindholmen-03",
+    "street": "Herkulesgatan",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0307",
+    "existingLuminaire": "Exempel Gata LED 36",
+    "existingManufacturer": "Exempel Ljus AB",
+    "existingWattage": 36,
+    "poleHeight": 6,
+    "armLength": 0.5
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9466063,
+     57.7158167
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-03-08",
+    "streetId": "lindholmen-03",
+    "street": "Herkulesgatan",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0308",
+    "existingLuminaire": "Exempel Gata LED 36",
+    "existingManufacturer": "Exempel Ljus AB",
+    "existingWattage": 36,
+    "poleHeight": 6,
+    "armLength": 0.5
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9469382,
+     57.716002
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-03-09",
+    "streetId": "lindholmen-03",
+    "street": "Herkulesgatan",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0309",
+    "existingLuminaire": "Exempel Gata LED 36",
+    "existingManufacturer": "Exempel Ljus AB",
+    "existingWattage": 36,
+    "poleHeight": 6,
+    "armLength": 0.5
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9472722,
+     57.7161898
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-03-10",
+    "streetId": "lindholmen-03",
+    "street": "Herkulesgatan",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0310",
+    "existingLuminaire": "Exempel Gata LED 36",
+    "existingManufacturer": "Exempel Ljus AB",
+    "existingWattage": 36,
+    "poleHeight": 6,
+    "armLength": 0.5
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9475553,
+     57.7163951
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-03-11",
+    "streetId": "lindholmen-03",
+    "street": "Herkulesgatan",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0311",
+    "existingLuminaire": "Exempel Gata LED 36",
+    "existingManufacturer": "Exempel Ljus AB",
+    "existingWattage": 36,
+    "poleHeight": 6,
+    "armLength": 0.5
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9478095,
+     57.7165979
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-03-12",
+    "streetId": "lindholmen-03",
+    "street": "Herkulesgatan",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0312",
+    "existingLuminaire": "Exempel Gata LED 36",
+    "existingManufacturer": "Exempel Ljus AB",
+    "existingWattage": 36,
+    "poleHeight": 6,
+    "armLength": 0.5
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9480545,
+     57.7167998
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-03-13",
+    "streetId": "lindholmen-03",
+    "street": "Herkulesgatan",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0313",
+    "existingLuminaire": "Exempel Gata LED 36",
+    "existingManufacturer": "Exempel Ljus AB",
+    "existingWattage": 36,
+    "poleHeight": 6,
+    "armLength": 0.5
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9483106,
+     57.7170056
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-03-14",
+    "streetId": "lindholmen-03",
+    "street": "Herkulesgatan",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0314",
+    "existingLuminaire": "Exempel Gata LED 36",
+    "existingManufacturer": "Exempel Ljus AB",
+    "existingWattage": 36,
+    "poleHeight": 6,
+    "armLength": 0.5
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9485821,
+     57.7172206
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-03-15",
+    "streetId": "lindholmen-03",
+    "street": "Herkulesgatan",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0315",
+    "existingLuminaire": "Exempel Gata LED 36",
+    "existingManufacturer": "Exempel Ljus AB",
+    "existingWattage": 36,
+    "poleHeight": 6,
+    "armLength": 0.5
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9488618,
+     57.7174264
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-03-16",
+    "streetId": "lindholmen-03",
+    "street": "Herkulesgatan",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0316",
+    "existingLuminaire": "Exempel Gata LED 36",
+    "existingManufacturer": "Exempel Ljus AB",
+    "existingWattage": 36,
+    "poleHeight": 6,
+    "armLength": 0.5
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9491162,
+     57.7176308
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-03-17",
+    "streetId": "lindholmen-03",
+    "street": "Herkulesgatan",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0317",
+    "existingLuminaire": "Exempel Gata LED 36",
+    "existingManufacturer": "Exempel Ljus AB",
+    "existingWattage": 36,
+    "poleHeight": 6,
+    "armLength": 0.5
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9493953,
+     57.7178434
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-03-18",
+    "streetId": "lindholmen-03",
+    "street": "Herkulesgatan",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0318",
+    "existingLuminaire": "Exempel Gata LED 36",
+    "existingManufacturer": "Exempel Ljus AB",
+    "existingWattage": 36,
+    "poleHeight": 6,
+    "armLength": 0.5
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9496562,
+     57.7180491
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-03-19",
+    "streetId": "lindholmen-03",
+    "street": "Herkulesgatan",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0319",
+    "existingLuminaire": "Exempel Gata LED 36",
+    "existingManufacturer": "Exempel Ljus AB",
+    "existingWattage": 36,
+    "poleHeight": 6,
+    "armLength": 0.5
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9499285,
+     57.7182654
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-03-20",
+    "streetId": "lindholmen-03",
+    "street": "Herkulesgatan",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0320",
+    "existingLuminaire": "Exempel Gata LED 36",
+    "existingManufacturer": "Exempel Ljus AB",
+    "existingWattage": 36,
+    "poleHeight": 6,
+    "armLength": 0.5
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.950188,
+     57.7184662
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-03-21",
+    "streetId": "lindholmen-03",
+    "street": "Herkulesgatan",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0321",
+    "existingLuminaire": "Exempel Gata LED 36",
+    "existingManufacturer": "Exempel Ljus AB",
+    "existingWattage": 36,
+    "poleHeight": 6,
+    "armLength": 0.5
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9348626,
+     57.7072094
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-04-12",
+    "streetId": "lindholmen-04",
+    "street": "Plejadgatan",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0412",
+    "existingLuminaire": "Exempel Park MH 70",
+    "existingManufacturer": "Exempel Belysning",
+    "existingWattage": 70,
+    "poleHeight": 6,
+    "armLength": 0.5
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9347831,
+     57.706558
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-04-13",
+    "streetId": "lindholmen-04",
+    "street": "Plejadgatan",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0413",
+    "existingLuminaire": "Exempel Park MH 70",
+    "existingManufacturer": "Exempel Belysning",
+    "existingWattage": 70,
+    "poleHeight": 6,
+    "armLength": 0.5
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9347795,
+     57.7068014
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-04-14",
+    "streetId": "lindholmen-04",
+    "street": "Plejadgatan",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0414",
+    "existingLuminaire": "Exempel Park MH 70",
+    "existingManufacturer": "Exempel Belysning",
+    "existingWattage": 70,
+    "poleHeight": 6,
+    "armLength": 0.5
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9347586,
+     57.7070471
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-04-15",
+    "streetId": "lindholmen-04",
+    "street": "Plejadgatan",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0415",
+    "existingLuminaire": "Exempel Park MH 70",
+    "existingManufacturer": "Exempel Belysning",
+    "existingWattage": 70,
+    "poleHeight": 6,
+    "armLength": 0.5
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.943043,
+     57.7081739
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-07-01",
+    "streetId": "lindholmen-07",
+    "street": "Lindholmshamnen",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0701",
+    "existingLuminaire": "Exempel Torg LED 25",
+    "existingManufacturer": "Exempel Belysning",
+    "existingWattage": 25,
+    "poleHeight": 4.5,
+    "armLength": 0.0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9427044,
+     57.7080999
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-07-02",
+    "streetId": "lindholmen-07",
+    "street": "Lindholmshamnen",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0702",
+    "existingLuminaire": "Exempel Torg LED 25",
+    "existingManufacturer": "Exempel Belysning",
+    "existingWattage": 25,
+    "poleHeight": 4.5,
+    "armLength": 0.0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9423551,
+     57.7080211
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-07-03",
+    "streetId": "lindholmen-07",
+    "street": "Lindholmshamnen",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0703",
+    "existingLuminaire": "Exempel Torg LED 25",
+    "existingManufacturer": "Exempel Belysning",
+    "existingWattage": 25,
+    "poleHeight": 4.5,
+    "armLength": 0.0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9420666,
+     57.7080215
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-07-04",
+    "streetId": "lindholmen-07",
+    "street": "Lindholmshamnen",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0704",
+    "existingLuminaire": "Exempel Torg LED 25",
+    "existingManufacturer": "Exempel Belysning",
+    "existingWattage": 25,
+    "poleHeight": 4.5,
+    "armLength": 0.0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.941736,
+     57.7079468
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-07-05",
+    "streetId": "lindholmen-07",
+    "street": "Lindholmshamnen",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0705",
+    "existingLuminaire": "Exempel Torg LED 25",
+    "existingManufacturer": "Exempel Belysning",
+    "existingWattage": 25,
+    "poleHeight": 4.5,
+    "armLength": 0.0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9415066,
+     57.707818
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-07-06",
+    "streetId": "lindholmen-07",
+    "street": "Lindholmshamnen",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0706",
+    "existingLuminaire": "Exempel Torg LED 25",
+    "existingManufacturer": "Exempel Belysning",
+    "existingWattage": 25,
+    "poleHeight": 4.5,
+    "armLength": 0.0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.941076,
+     57.7080943
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-07-07",
+    "streetId": "lindholmen-07",
+    "street": "Lindholmshamnen",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0707",
+    "existingLuminaire": "Exempel Torg LED 25",
+    "existingManufacturer": "Exempel Belysning",
+    "existingWattage": 25,
+    "poleHeight": 4.5,
+    "armLength": 0.0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9409056,
+     57.7082673
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-07-08",
+    "streetId": "lindholmen-07",
+    "street": "Lindholmshamnen",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0708",
+    "existingLuminaire": "Exempel Torg LED 25",
+    "existingManufacturer": "Exempel Belysning",
+    "existingWattage": 25,
+    "poleHeight": 4.5,
+    "armLength": 0.0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9407654,
+     57.7084428
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-07-09",
+    "streetId": "lindholmen-07",
+    "street": "Lindholmshamnen",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0709",
+    "existingLuminaire": "Exempel Torg LED 25",
+    "existingManufacturer": "Exempel Belysning",
+    "existingWattage": 25,
+    "poleHeight": 4.5,
+    "armLength": 0.0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9406563,
+     57.7086214
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-07-10",
+    "streetId": "lindholmen-07",
+    "street": "Lindholmshamnen",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0710",
+    "existingLuminaire": "Exempel Torg LED 25",
+    "existingManufacturer": "Exempel Belysning",
+    "existingWattage": 25,
+    "poleHeight": 4.5,
+    "armLength": 0.0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9405247,
+     57.7087798
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-07-11",
+    "streetId": "lindholmen-07",
+    "street": "Lindholmshamnen",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0711",
+    "existingLuminaire": "Exempel Torg LED 25",
+    "existingManufacturer": "Exempel Belysning",
+    "existingWattage": 25,
+    "poleHeight": 4.5,
+    "armLength": 0.0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9402852,
+     57.7089361
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-07-12",
+    "streetId": "lindholmen-07",
+    "street": "Lindholmshamnen",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0712",
+    "existingLuminaire": "Exempel Torg LED 25",
+    "existingManufacturer": "Exempel Belysning",
+    "existingWattage": 25,
+    "poleHeight": 4.5,
+    "armLength": 0.0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9401942,
+     57.7082946
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-07-13",
+    "streetId": "lindholmen-07",
+    "street": "Lindholmshamnen",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0713",
+    "existingLuminaire": "Exempel Torg LED 25",
+    "existingManufacturer": "Exempel Belysning",
+    "existingWattage": 25,
+    "poleHeight": 4.5,
+    "armLength": 0.0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9405702,
+     57.7083654
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-07-14",
+    "streetId": "lindholmen-07",
+    "street": "Lindholmshamnen",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0714",
+    "existingLuminaire": "Exempel Torg LED 25",
+    "existingManufacturer": "Exempel Belysning",
+    "existingWattage": 25,
+    "poleHeight": 4.5,
+    "armLength": 0.0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9409136,
+     57.708421
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-07-15",
+    "streetId": "lindholmen-07",
+    "street": "Lindholmshamnen",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0715",
+    "existingLuminaire": "Exempel Torg LED 25",
+    "existingManufacturer": "Exempel Belysning",
+    "existingWattage": 25,
+    "poleHeight": 4.5,
+    "armLength": 0.0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9412521,
+     57.70847
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-07-16",
+    "streetId": "lindholmen-07",
+    "street": "Lindholmshamnen",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0716",
+    "existingLuminaire": "Exempel Torg LED 25",
+    "existingManufacturer": "Exempel Belysning",
+    "existingWattage": 25,
+    "poleHeight": 4.5,
+    "armLength": 0.0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.941597,
+     57.708523
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-07-17",
+    "streetId": "lindholmen-07",
+    "street": "Lindholmshamnen",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0717",
+    "existingLuminaire": "Exempel Torg LED 25",
+    "existingManufacturer": "Exempel Belysning",
+    "existingWattage": 25,
+    "poleHeight": 4.5,
+    "armLength": 0.0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9419934,
+     57.7085083
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-07-18",
+    "streetId": "lindholmen-07",
+    "street": "Lindholmshamnen",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0718",
+    "existingLuminaire": "Exempel Torg LED 25",
+    "existingManufacturer": "Exempel Belysning",
+    "existingWattage": 25,
+    "poleHeight": 4.5,
+    "armLength": 0.0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9420795,
+     57.708336
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-07-19",
+    "streetId": "lindholmen-07",
+    "street": "Lindholmshamnen",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0719",
+    "existingLuminaire": "Exempel Torg LED 25",
+    "existingManufacturer": "Exempel Belysning",
+    "existingWattage": 25,
+    "poleHeight": 4.5,
+    "armLength": 0.0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9422206,
+     57.7081643
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-07-20",
+    "streetId": "lindholmen-07",
+    "street": "Lindholmshamnen",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0720",
+    "existingLuminaire": "Exempel Torg LED 25",
+    "existingManufacturer": "Exempel Belysning",
+    "existingWattage": 25,
+    "poleHeight": 4.5,
+    "armLength": 0.0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9418272,
+     57.7086237
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-07-21",
+    "streetId": "lindholmen-07",
+    "street": "Lindholmshamnen",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0721",
+    "existingLuminaire": "Exempel Torg LED 25",
+    "existingManufacturer": "Exempel Belysning",
+    "existingWattage": 25,
+    "poleHeight": 4.5,
+    "armLength": 0.0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9417515,
+     57.7088122
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-07-22",
+    "streetId": "lindholmen-07",
+    "street": "Lindholmshamnen",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0722",
+    "existingLuminaire": "Exempel Torg LED 25",
+    "existingManufacturer": "Exempel Belysning",
+    "existingWattage": 25,
+    "poleHeight": 4.5,
+    "armLength": 0.0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9419588,
+     57.7089083
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-07-23",
+    "streetId": "lindholmen-07",
+    "street": "Lindholmshamnen",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0723",
+    "existingLuminaire": "Exempel Torg LED 25",
+    "existingManufacturer": "Exempel Belysning",
+    "existingWattage": 25,
+    "poleHeight": 4.5,
+    "armLength": 0.0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9423003,
+     57.7089826
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-07-24",
+    "streetId": "lindholmen-07",
+    "street": "Lindholmshamnen",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0724",
+    "existingLuminaire": "Exempel Torg LED 25",
+    "existingManufacturer": "Exempel Belysning",
+    "existingWattage": 25,
+    "poleHeight": 4.5,
+    "armLength": 0.0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9251742,
+     57.7115859
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-02-01",
+    "streetId": "lindholmen-02",
+    "street": "Bengt Ekeblads Gata",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0201",
+    "existingLuminaire": "Exempel Väg HPS 100",
+    "existingManufacturer": "Exempel Ljus AB",
+    "existingWattage": 100,
+    "poleHeight": 10,
+    "armLength": 1.5
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9256909,
+     57.7117732
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-02-02",
+    "streetId": "lindholmen-02",
+    "street": "Bengt Ekeblads Gata",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0202",
+    "existingLuminaire": "Exempel Väg HPS 100",
+    "existingManufacturer": "Exempel Ljus AB",
+    "existingWattage": 100,
+    "poleHeight": 10,
+    "armLength": 1.5
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9258014,
+     57.7120959
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-02-03",
+    "streetId": "lindholmen-02",
+    "street": "Bengt Ekeblads Gata",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0203",
+    "existingLuminaire": "Exempel Väg HPS 100",
+    "existingManufacturer": "Exempel Ljus AB",
+    "existingWattage": 100,
+    "poleHeight": 10,
+    "armLength": 1.5
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9263238,
+     57.712282
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-02-04",
+    "streetId": "lindholmen-02",
+    "street": "Bengt Ekeblads Gata",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0204",
+    "existingLuminaire": "Exempel Väg HPS 100",
+    "existingManufacturer": "Exempel Ljus AB",
+    "existingWattage": 100,
+    "poleHeight": 10,
+    "armLength": 1.5
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9265484,
+     57.7125733
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-02-05",
+    "streetId": "lindholmen-02",
+    "street": "Bengt Ekeblads Gata",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0205",
+    "existingLuminaire": "Exempel Väg HPS 100",
+    "existingManufacturer": "Exempel Ljus AB",
+    "existingWattage": 100,
+    "poleHeight": 10,
+    "armLength": 1.5
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9271418,
+     57.7126632
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-02-06",
+    "streetId": "lindholmen-02",
+    "street": "Bengt Ekeblads Gata",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0206",
+    "existingLuminaire": "Exempel Väg HPS 100",
+    "existingManufacturer": "Exempel Ljus AB",
+    "existingWattage": 100,
+    "poleHeight": 10,
+    "armLength": 1.5
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9274768,
+     57.7129517
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-02-07",
+    "streetId": "lindholmen-02",
+    "street": "Bengt Ekeblads Gata",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0207",
+    "existingLuminaire": "Exempel Väg HPS 100",
+    "existingManufacturer": "Exempel Ljus AB",
+    "existingWattage": 100,
+    "poleHeight": 10,
+    "armLength": 1.5
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9414124,
+     57.7079286
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-07-25",
+    "streetId": "lindholmen-07",
+    "street": "Lindholmshamnen",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0725",
+    "existingLuminaire": "Exempel Torg LED 25",
+    "existingManufacturer": "Exempel Belysning",
+    "existingWattage": 25,
+    "poleHeight": 4.5,
+    "armLength": 0.0
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     11.9413253,
+     57.7078724
+    ]
+   },
+   "properties": {
+    "id": "lindholmen-07-26",
+    "streetId": "lindholmen-07",
+    "street": "Lindholmshamnen",
+    "area": "Hisingen (exempel)",
+    "poleId": "EX-0726",
+    "existingLuminaire": "Exempel Torg LED 25",
+    "existingManufacturer": "Exempel Belysning",
+    "existingWattage": 25,
+    "poleHeight": 4.5,
+    "armLength": 0.0
+   }
+  }
+ ]
 }
