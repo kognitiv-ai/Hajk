@@ -13,6 +13,7 @@ Anoop Mathew, Kognitiv: [anoop@kognitiv.se](mailto:anoop@kognitiv.se). Questions
 1. Click a light point, or search for a street. Every point with the same street id is selected and highlighted.
 2. The street and placement are pre-filled. Spacing is estimated from the light points (the median distance to the nearest neighbour, measured in the map's own projection), light centre height and outreach come from the register where plausible, and the rest from `defaultProfile`. Everything can be edited.
 3. Choose a luminaire and press **Beräkna**, or press **Hitta bästa armatur** to calculate the whole catalogue. The window shows the engine's verdict with each metric of the lighting class, the ranking, luminaires that could not be calculated and why, and the energy use against today's wattage.
+4. **Detaljer i swelux.ai** opens the calculation on swelux.ai: the road view, the calculation grids and reports. Whether that page needs a swelux.ai sign-in is set per key.
 
 ### Trying it out
 
@@ -73,6 +74,7 @@ The plugin reads these properties: `id`, `streetId` (empty when the point belong
 | `fitToData`             | `false`                                | Zoom the map to the light points once they have loaded.                                                                                                     |
 | `defaultProfile`        |                                        | The street and placement to start from, in swelux.ai's terms. The road surface is given by name (`roadSurface`) or by id (`roadSurfaceId`).                 |
 | `defaultManufacturers`  |                                        | Names of the manufacturers selected at first; the user can choose others, and the choice is remembered in the browser. Without it, all are selected.        |
+| `detailsLink`           | `true`                                 | Show **Detaljer i swelux.ai** under a verdict: opens the calculation in swelux.ai, with the road view, grids and reports.                                    |
 | `operatingHoursPerYear` | `4000`                                 | Used for the yearly energy figures.                                                                                                                         |
 | `tenantIdCookie`        |                                        | Instead of `tenantId`: the name of a cookie holding the organisation's id, for a sign-in gateway that lets the user pick an organisation.                   |
 
@@ -134,6 +136,7 @@ Relative to `apiBase`:
 | `GET /luminaires`                 | The luminaires the map may use                                                               |
 | `POST /evaluations`               | `{ street, placement, luminaireIds }` (`null` for the whole catalogue): the verdicts, ranked |
 | `GET /luminaires/{id}/photometry` | Key figures and intensity curves of a luminaire, for its diagram                             |
+| `POST /handovers`                 | `{ street, placement, luminaireId }`: saves a calculation and returns its details page `url` |
 
 ### Tests
 

@@ -113,3 +113,32 @@ export function useManufacturerChoice(luminaires, defaults) {
   };
   return { manufacturers, selected, choose };
 }
+
+/**
+ * Opens swelux.ai's details page for a calculation. The window is opened at the
+ * click, since one opened after the request would be blocked as a popup, and is
+ * sent to the page once swelux.ai has saved the calculation.
+ */
+export function useDetailsLink(model, onError) {
+  const [opening, setOpening] = React.useState(false);
+  const open = async (calculation, luminaireId) => {
+    const win = window.open("", "_blank");
+    setOpening(true);
+    onError(null);
+    try {
+      const { url } = await model.api.handover(calculation, luminaireId);
+      if (win) {
+        win.opener = null;
+        win.location.href = url;
+      } else {
+        window.open(url, "_blank", "noopener");
+      }
+    } catch (e) {
+      win?.close();
+      onError(e.message);
+    } finally {
+      setOpening(false);
+    }
+  };
+  return { open, opening };
+}

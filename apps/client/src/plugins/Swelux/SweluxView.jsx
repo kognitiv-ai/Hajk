@@ -21,6 +21,7 @@ import Footer from "./components/Footer";
 import {
   useElapsed,
   useManufacturerChoice,
+  useDetailsLink,
   useModelEvent,
   usePhotometry,
   useReferenceData,
@@ -154,6 +155,8 @@ function SweluxView({ model, options, localObserver }) {
     }
   };
 
+  const details = useDetailsLink(model, setError);
+
   const showPicker = !layerProblem && context?.lightPointCount !== 0;
 
   return (
@@ -237,6 +240,12 @@ function SweluxView({ model, options, localObserver }) {
               street={street}
               hours={hours}
               photometry={photometry}
+              onOpenDetails={
+                options.detailsLink === false
+                  ? null
+                  : () => details.open(calculated, result.luminaire.id)
+              }
+              opening={details.opening}
             />
           )}
 

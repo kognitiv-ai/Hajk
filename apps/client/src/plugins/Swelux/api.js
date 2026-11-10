@@ -126,4 +126,14 @@ export default class SweluxApi {
         ...(manufacturerIds ? { manufacturerIds } : {}),
       }),
     });
+
+  /**
+   * Saves a calculation for swelux.ai's details page (road view, grids, exports):
+   * `{ id, url, expiresAt }`. The key decides whether the page needs a sign-in.
+   */
+  handover = ({ street, placement }, luminaireId) =>
+    this.#mapApi("/handovers", {
+      method: "POST",
+      body: JSON.stringify({ street, placement, luminaireId }),
+    });
 }

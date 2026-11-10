@@ -1,4 +1,5 @@
-import { Box, Paper, Stack, Typography } from "@mui/material";
+import { Box, Button, Paper, Stack, Typography } from "@mui/material";
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import { alpha } from "@mui/material/styles";
 import PhotometryPanel from "./PhotometryPanel";
 import MetricTable, { StatusIcon } from "./MetricTable";
@@ -7,7 +8,15 @@ import { energyFor, isCompliant, nf, statusText } from "../utils";
 const TONES = { Compliant: "success", NonCompliant: "error" };
 
 /** Result for one luminaire: the engine's verdict, its metrics and energy. */
-function VerdictCard({ result, lightingClass, street, hours, photometry }) {
+function VerdictCard({
+  result,
+  lightingClass,
+  street,
+  hours,
+  photometry,
+  onOpenDetails,
+  opening,
+}) {
   const { luminaire } = result;
   const tone = TONES[result.status] || "warning";
   const energy = energyFor(result, street, hours);
@@ -81,6 +90,22 @@ function VerdictCard({ result, lightingClass, street, hours, photometry }) {
           <Typography variant="caption" color="text.secondary">
             Lampeffekt i ert register mot armaturens systemeffekt, {nf(hours)}{" "}
             h/år. Äldre armaturer drar oftast mer i väggen.
+          </Typography>
+        </Box>
+      )}
+
+      {onOpenDetails && (
+        <Box sx={{ px: 1.75, py: 1, borderTop: 1, borderColor: "divider" }}>
+          <Button
+            size="small"
+            endIcon={<OpenInNewIcon fontSize="small" />}
+            disabled={opening}
+            onClick={onOpenDetails}
+          >
+            {opening ? "Öppnar …" : "Detaljer i swelux.ai"}
+          </Button>
+          <Typography variant="caption" color="text.secondary" component="p">
+            Vägvy, beräkningsrutnät och rapporter.
           </Typography>
         </Box>
       )}
