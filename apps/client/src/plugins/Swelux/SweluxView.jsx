@@ -12,6 +12,7 @@ import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 import StreetPicker from "./components/StreetPicker";
 import StreetSummary from "./components/StreetSummary";
 import ProfileCard from "./components/ProfileCard";
+import ManufacturerFilter from "./components/ManufacturerFilter";
 import VerdictCard from "./components/VerdictCard";
 import RankingList from "./components/RankingList";
 import LuminairePicker from "./components/LuminairePicker";
@@ -19,10 +20,12 @@ import MapNotice from "./components/MapNotice";
 import Footer from "./components/Footer";
 import {
   useElapsed,
+  useManufacturerChoice,
   useModelEvent,
   usePhotometry,
   useReferenceData,
 } from "./hooks";
+import { luminairesOf } from "./manufacturers";
 import { nf, profileFor } from "./utils";
 
 function SweluxView({ model, options, localObserver }) {
@@ -35,6 +38,15 @@ function SweluxView({ model, options, localObserver }) {
     luminaires,
     error: loadError,
   } = useReferenceData(model);
+  const { manufacturers, selected, choose } = useManufacturerChoice(
+    luminaires,
+    options.defaultManufacturers
+  );
+  const offered = React.useMemo(
+    () => luminairesOf(luminaires, selected),
+    [luminaires, selected]
+  );
+  const allManufacturers = selected.length === manufacturers.length;
   const [streets, setStreets] = React.useState(model.getStreets());
   const [context, setContext] = React.useState(model.getContext());
   const [layerProblem, setLayerProblem] = React.useState(
@@ -99,6 +111,23 @@ function SweluxView({ model, options, localObserver }) {
     setRanking(null);
   };
 
+  // The whole catalogue, or only the chosen manufacturers. A platform that
+  // doesn't know manufacturer ids ranks everything, and the result is narrowed here.
+  const rankChosen = async () => {
+    if (allManufacturers) return model.api.evaluate(calculated, null);
+    const ids = manufacturers
+      .filter((m) => selected.includes(m.name))
+      .map((m) => m.id);
+    if (ids.every(Boolean)) return model.api.evaluate(calculated, null, ids);
+    const r = await model.api.evaluate(calculated, null);
+    const keep = new Set(offered.map((l) => l.id));
+    return {
+      ...r,
+      results: r.results.filter((x) => keep.has(x.luminaire.id)),
+      skipped: r.skipped.filter((x) => keep.has(x.luminaireId)),
+    };
+  };
+
   const run = async (kind) => {
     setBusy({ kind, startedAt: Date.now() });
     setError(null);
@@ -113,7 +142,7 @@ function SweluxView({ model, options, localObserver }) {
         }
         setEvaluation(r);
       } else {
-        const r = await model.api.evaluate(calculated, null);
+        const r = await rankChosen();
         setEvaluation(null);
         setRanking(r);
         if (r.results.length) setLuminaire(r.results[0].luminaire);
@@ -149,6 +178,18 @@ function SweluxView({ model, options, localObserver }) {
             surfaces={surfaces}
           />
 
+          {manufacturers.length > 1 && (
+            <ManufacturerFilter
+              manufacturers={manufacturers}
+              selected={selected}
+              onChange={(names) => {
+                choose(names);
+                setRanking(null);
+                setEvaluation(null);
+              }}
+            />
+          )}
+
           <Box>
             <Button
               variant="contained"
@@ -167,7 +208,7 @@ function SweluxView({ model, options, localObserver }) {
                 <LinearProgress color="secondary" />
                 <Typography variant="caption" color="text.secondary">
                   {busy.kind === "rank"
-                    ? `Beräknar ${nf(luminaires.length)} armaturer mot gatans profil … ${elapsed} s`
+                    ? `Beräknar ${nf(offered.length)} armaturer mot gatans profil … ${elapsed} s`
                     : "Beräknar …"}
                 </Typography>
               </Box>
@@ -178,8 +219,9 @@ function SweluxView({ model, options, localObserver }) {
                 component="p"
                 sx={{ mt: 0.75, textAlign: "center" }}
               >
-                Beräknar alla {nf(luminaires.length)} armaturer i katalogen mot
-                gatans profil
+                {allManufacturers
+                  ? `Beräknar alla ${nf(offered.length)} armaturer i katalogen mot gatans profil`
+                  : `Beräknar ${nf(offered.length)} armaturer från ${selected.length} tillverkare mot gatans profil`}
               </Typography>
             )}
           </Box>
@@ -210,7 +252,7 @@ function SweluxView({ model, options, localObserver }) {
           )}
 
           <LuminairePicker
-            luminaires={luminaires}
+            luminaires={offered}
             luminaire={luminaire}
             onChange={(l) => {
               setLuminaire(l);

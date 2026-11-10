@@ -30,6 +30,7 @@ function LuminairePicker({
           sx={{ flex: 1, minWidth: 0 }}
           options={luminaires}
           value={luminaire}
+          groupBy={(l) => l.manufacturer || "Okänd"}
           getOptionLabel={lumLabel}
           isOptionEqualToValue={(a, b) => a.id === b.id}
           onChange={(e, l) => onChange(l)}

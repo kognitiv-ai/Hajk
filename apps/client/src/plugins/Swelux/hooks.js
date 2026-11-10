@@ -1,5 +1,7 @@
 import React from "react";
-import { lumLabel } from "./utils";
+import LocalStorageHelper from "../../utils/LocalStorageHelper";
+import { functionalOk } from "../../models/Cookie";
+import { initialSelection, manufacturersOf } from "./manufacturers";
 
 /** Subscribes to one of the model's events for as long as the component lives. */
 export function useModelEvent(localObserver, event, handler) {
@@ -40,9 +42,7 @@ export function useReferenceData(model) {
       .fetchLuminaires()
       .then((list) =>
         update({
-          luminaires: [...list].sort((a, b) =>
-            lumLabel(a).localeCompare(lumLabel(b), "sv")
-          ),
+          luminaires: list,
         })
       )
       .catch(fail);
@@ -79,4 +79,37 @@ export function usePhotometry(model, luminaireId) {
     };
   }, [model, luminaireId]);
   return loaded.id === luminaireId ? loaded.data : null;
+}
+
+const STORAGE_KEY = "swelux";
+
+/**
+ * The manufacturers the user calculates with, remembered in the browser per
+ * map (when the user allows functional cookies). Starts from the last choice,
+ * else the tool's `defaultManufacturers`, else all.
+ */
+export function useManufacturerChoice(luminaires, defaults) {
+  const manufacturers = React.useMemo(
+    () => manufacturersOf(luminaires),
+    [luminaires]
+  );
+  const [chosen, setChosen] = React.useState(null); // null until the user changes it
+  const selected = React.useMemo(
+    () =>
+      chosen ||
+      initialSelection(
+        manufacturers,
+        LocalStorageHelper.get(STORAGE_KEY, { manufacturers: [] })
+          .manufacturers,
+        defaults
+      ),
+    [chosen, manufacturers, defaults]
+  );
+  const choose = (names) => {
+    setChosen(names);
+    if (functionalOk()) {
+      LocalStorageHelper.set(STORAGE_KEY, { manufacturers: names });
+    }
+  };
+  return { manufacturers, selected, choose };
 }

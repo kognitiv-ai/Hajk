@@ -112,9 +112,18 @@ export default class SweluxApi {
    * The engine's verdict for the street and placement (the platform's own
    * shapes) with each luminaire, ranked; `null` calculates the whole catalogue.
    */
-  evaluate = ({ street, placement }, luminaireIds = null) =>
+  evaluate = (
+    { street, placement },
+    luminaireIds = null,
+    manufacturerIds = null
+  ) =>
     this.#mapApi("/evaluations", {
       method: "POST",
-      body: JSON.stringify({ street, placement, luminaireIds }),
+      body: JSON.stringify({
+        street,
+        placement,
+        luminaireIds,
+        ...(manufacturerIds ? { manufacturerIds } : {}),
+      }),
     });
 }
