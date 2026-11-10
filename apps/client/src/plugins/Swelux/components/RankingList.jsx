@@ -144,7 +144,9 @@ function RankingList({ ranking, selectedId, onSelect, luminaires }) {
               >
                 {r.powerPerKilometre != null
                   ? `${nf(r.powerPerKilometre / 1000, 2)} kW/km`
-                  : `${nf(r.luminaire.systemPower, 1)} W`}
+                  : r.luminaire.systemPower != null
+                    ? `${nf(r.luminaire.systemPower, 1)} W`
+                    : "–"}
               </Typography>
               {r.metrics[0] && (
                 <Typography
