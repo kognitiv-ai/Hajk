@@ -74,7 +74,7 @@ The plugin reads these properties: `id`, `streetId` (empty when the point belong
 | `fitToData`             | `false`                                | Zoom the map to the light points once they have loaded.                                                                                                     |
 | `defaultProfile`        |                                        | The street and placement to start from, in swelux.ai's terms. The road surface is given by name (`roadSurface`) or by id (`roadSurfaceId`).                 |
 | `defaultManufacturers`  |                                        | Names of the manufacturers selected at first; the user can choose others, and the choice is remembered in the browser. Without it, all are selected.        |
-| `detailsLink`           | `true`                                 | Show **Detaljer i swelux.ai** under a verdict: opens the calculation in swelux.ai, with the road view, grids and reports.                                    |
+| `detailsLink`           | `true`                                 | Show **Detaljer i swelux.ai** under a verdict: opens the calculation in swelux.ai, with the road view, grids and reports.                                   |
 | `operatingHoursPerYear` | `4000`                                 | Used for the yearly energy figures.                                                                                                                         |
 | `tenantIdCookie`        |                                        | Instead of `tenantId`: the name of a cookie holding the organisation's id, for a sign-in gateway that lets the user pick an organisation.                   |
 
